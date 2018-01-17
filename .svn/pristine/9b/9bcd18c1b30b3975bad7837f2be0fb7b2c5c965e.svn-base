@@ -1,0 +1,166 @@
+﻿@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<div class="panel panel-success">
+    <div class="panel-heading">Process Wise Email Setting </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="process_code_id">Process Module&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="process_code_id" name="process_code_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="mail_subject">Email Subject&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="mail_subject" name="mail_subject" class="k-textbox" placeholder="Mail Subject" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="mail_body">Email Body&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="30" rows="5" name="mail_body" id="mail_body" class="k-textbox" placeholder="Enter your mail body here"></textarea>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-3" style="margin-left: 15px">
+                <input type="button" class="k-button" id="btnConfigMail" name="btnConfigMail" value="Save Email Configuration" />
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <br />
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Load All Process Code
+        $("#process_code_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Process Module ---",
+            dataTextField: "process_code_name",
+            dataValueField: "process_code_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProcessCode", "ProcessWiseEmailSetting")"
+                    }
+                }
+            }
+        });
+
+        $("#btnConfigMail").click(function () {
+            Loading(true);
+
+            //mail parameter
+            var process_code_id = $('#process_code_id').val();
+            var email_subject = $('#mail_subject').val();
+            var email_body = $('#mail_body').val();
+            var userId = '@userId';
+            //alert(userId);
+
+            //if (userId) {
+            //    swal("Warning", "Please login  first!!", "warning");
+            //    return false;
+            //}
+            if (process_code_id == "") {
+                swal("Warning", "Please select process module!!", "warning");
+                return false;
+            }
+            if (email_subject == "") {
+                swal("Warning", "Please enter email subject!!", "warning");
+                return false;
+            }
+            if (email_body == "") {
+                swal("Warning", "Please enter email body!!", "warning");
+                return false;
+            }
+         
+
+            var objProcessWiseEmailSetting = {
+                process_code_id: process_code_id,
+                email_subject: email_subject,
+                email_body: email_body,
+                created_by: userId
+            };
+
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("post", "ProcessWiseEmailSetting")",
+                data: JSON.stringify(objProcessWiseEmailSetting),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        swal(data.output, data.msg, data.output);
+                        window.location.href = '/ProcessWiseEmailSetting/Index';
+                        return false;
+                    } else {
+                        swal(data.output, data.msg, data.output);
+                        return false;
+                    }
+                }
+            });
+
+        });
+    });
+</script>

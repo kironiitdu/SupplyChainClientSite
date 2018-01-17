@@ -1,0 +1,437 @@
+﻿@{
+    ViewBag.Title = "LoadGridData";
+    var userId = "";
+    var partyTypeId = "";
+    var roleId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        roleId = Session["user_role_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+}
+<script id="excel-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Inventory/GetAllInventoryStockIMEIExcel?product_id=#=product_id#&color_id=#=color_id#&warehouse_id=#=warehouse_id#&product_version_id=#=product_version_id#" class="k-button k-grid-even">Download Excel</a>
+</script>
+<script id="pdf-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Inventory/GetAllInventoryStockPDF?product_id=#=product_id#&color_id=#=color_id#&warehouse_id=#=warehouse_id#&product_version_id=#=product_version_id#&user_id=#=userId#" class="k-button k-grid-even" target="_blank">Print</a>
+</script>
+<div class="panel panel-success">
+    <div class="panel-heading"><h4> Inventory Stock </h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="warehouse_id">Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="warehouse_id" name="warehouse_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="product_id">Product</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_id" name="product_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="color_id">Product Color</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="color_id" name="color_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="version_id">Product Version</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="version_id" name="version_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnInventoryStockView" name="btnInventoryReport" value="View Inventory Stock " />
+        </div>
+    </div>
+</div>
+<div class="panel-body">
+    <input type="button" class="k-button" id="exportExcel" name="exportExcel" value="Export to Excel" />
+    <br />
+    <div id="grid" style="overflow-y: scroll;"></div>
+    <script type="text/javascript">
+        var userId = @userId;
+        var partyTypeId = @partyTypeId;
+        var roleId = @roleId;
+        var partyId = @partyId;
+        var product_version_id = 0;
+        $(document).ready(function () {
+            $("#exportExcel").hide();
+            $("#btnInventoryStockView").click(function () {
+                $("#exportExcel").show();
+                var warehouse_id = $("#warehouse_id").val();
+                var product_id = $("#product_id").val();
+                var color_id = $("#color_id").val();
+                product_version_id= $("#version_id").val();
+                if (warehouse_id == "" || warehouse_id == null) {
+                    warehouse_id = 0;
+                }
+                if (product_id == "" || product_id == null) {
+                    product_id = 0;
+                }
+                if (color_id == "" || color_id == null) {
+                    color_id = 0;
+                }
+                if (color_id == '' || color_id == null) {
+                    color_id = 0;
+                }
+                if (product_version_id == ""|| product_version_id == null) {
+                    product_version_id = 0;
+                }
+                if (warehouse_id == "" || warehouse_id == null) {
+                    sweetAlert("Sorry...", "Please Select Warehouse", "warning");
+                    $("#exportExcel").hide();
+                    return false;
+                }
+                else
+                    //start
+                {
+
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("LoadAllInventoryStock", "Inventory")?warehouse_id=" + warehouse_id + "&product_id=" + product_id + "&color_id=" + color_id +  "&product_version_id=" + product_version_id +"",
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (data) {
+                            Loading(false);
+                            console.log(data);
+
+                            var sampleData = [];
+
+                            if (data != '') {
+
+                                for (var i = 0; i < data.length; i++) {
+                                    var paymentRequestDetails;
+                                    //alert(data[i].color_id);
+                                    if (data[i].color_id != undefined) {
+                                         paymentRequestDetails = {
+                                            inventory_stock_id: data[i].inventory_stock_id,
+                                            product_name: data[i].product_name,
+                                            product_id: data[i].product_id,
+                                            color_name: data[i].color_name,
+                                            color_id: data[i].color_id,
+                                            product_version_id: data[i].product_version_id,
+                                            product_version_name: data[i].product_version_name,
+                                            warehouse_name: data[i].warehouse_name,
+                                            warehouse_id: data[i].warehouse_id,
+                                            unit_name: data[i].unit_name,
+                                            unit_id: data[i].unit_id,
+                                            stock_quantity: data[i].stock_quantity,
+                                            update_date: data[i].update_date
+
+                                        };
+                                    } else {
+                                        //alert("Else");
+                                        paymentRequestDetails = {
+                                            inventory_stock_id: data[i].inventory_stock_id,
+                                            product_name: data[i].product_name,
+                                            product_id: data[i].product_id,
+                                            color_name: data[i].color_name,
+                                            color_id: 0,
+                                            product_version_id: 0,
+                                            product_version_name: data[i].product_version_name,
+                                            warehouse_name: data[i].warehouse_name,
+                                            warehouse_id: data[i].warehouse_id,
+                                            unit_name: data[i].unit_name,
+                                            unit_id: data[i].unit_id,
+                                            stock_quantity: data[i].stock_quantity,
+                                            update_date: data[i].update_date
+
+                                        };
+                                    }
+
+
+                                sampleData.push(paymentRequestDetails);
+                            }
+
+                            //grn Grid---------------------
+                            var dataSource = new kendo.data.DataSource({
+                                pageSize: 20,
+                                transport: {
+                                    read: function (e) {
+                                        // on success
+                                        e.success(sampleData);
+                                    }
+                                },
+                                //    code: "Ok",
+                                autoSync: false,
+                                schema: {
+                                    errors: function (e) {
+                                        console.log(e.errors);
+                                        //alert(e.error);
+                                        if (e.output === "error") {
+                                            console.log(e.output);
+                                            //KendoWindowFunction(e.msg, "error", "");
+                                            // this.cancelChanges();
+                                        }
+
+                                    },
+
+                                    model: {
+                                        id: "inventory_stock_id",
+                                        fields: {
+                                            inventory_stock_id: { editable: false, nullable: true },
+                                            product_name: { type: "string" },
+                                            product_id: { editable: false, nullable: true },
+                                            color_name: { type: "string" },
+                                            color_id: { editable: false, nullable: true },
+                                            product_version_id: { editable: false, nullable: true },
+                                            product_version_name: { type: "string" },
+                                            warehouse_name: { type: "string" },
+                                            warehouse_id: { editable: false, nullable: true },
+                                            unit_name: { type: "string" },
+                                            unit_id: { type: "number" },
+                                            stock_quantity: { type: "number" },
+                                            update_date: { type: "string" }
+                                        }
+
+                                    }
+                                }
+
+                            });
+
+                            var d = new Date();
+                            var dateTime = d.toJSON();
+
+                            jQuery("#grid").kendoGrid({
+                                excel: {
+                                    fileName: "Stock_Inventory_" + dateTime + ".xlsx",
+                                    allPages: true
+                                },
+                                dataSource: dataSource,
+                                filterable: true,
+                                pageable: {
+                                    refresh: true,
+                                    input: true,
+                                    pageSize: 20,
+                                    numeric: false,
+                                    pageSizes: [10, 20, 50]
+                                },
+                                sortable: true,
+                                groupable: true,
+                                resizable: true,
+                                columns: [
+                                           { field: "warehouse_name", title: "Warehouse Name", width: "150px" },
+                                           { field: "product_name", title: "Product Name", width: "150px" },
+                                           { field: "color_name", title: "Color Name", width: "150px" },
+                                           { field: "product_version_name", title: "Version Name", width: "150px" },
+                                           { field: "stock_quantity", title: "Stock Quantity", width: "150px" },
+                                           { title: "Action", width: "100px", template: kendo.template($("#excel-template").html()) },
+                                           { title: "Action", width: "100px", template: kendo.template($("#pdf-template").html()) }
+                                ],
+
+                                editable: "inline"
+                            });
+                            $("#btnExportExcel").show();
+                            // $("#btnExportPdf").show();
+
+                        } else {
+                                swal("Exception", "Data Not Available !!", "error");
+                    $("#grid").data("kendoGrid").dataSource.data([]);
+                    $("#btnExportExcel").hide();
+                    $("#btnExportPdf").hide();
+                    return false;
+                }
+            }
+            });
+        }
+        //end
+
+        $("#exportExcel").click(function () {
+            var grid = $("#grid").data("kendoGrid");
+            grid.saveAsExcel();
+        });
+        @*var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("LoadAllInventoryStock", "Inventory")",
+                            type: "GET",
+                            data: {
+                                warehouse_id: warehouse_id,
+                                product_id: product_id,
+                                color_id: color_id,
+                                product_version_id:product_version_id
+                            },
+
+                        },
+
+                        autoSync: false,
+                        schema: {
+                            model: {
+                                id: "inventory_stock_id",
+                                fields: {
+                                    inventory_stock_id: { editable: false, nullable: true },
+                                    product_name: { type: "string" },
+                                    product_id: { editable: false, nullable: true },
+                                    color_name: { type: "string" },
+                                    color_id: { editable: false, nullable: true },
+                                    product_version_id: { editable: false, nullable: true },
+                                    product_version_name: { type: "string" },
+                                    warehouse_name: { type: "string" },
+                                    warehouse_id: { editable: false, nullable: true },
+                                    unit_name: { type: "string" },
+                                    unit_id: { type: "number" },
+                                    stock_quantity: { type: "number" },
+                                    update_date: { type: "string" }
+                                }
+
+                            }
+                        }
+                    }
+                });
+                var d = new Date();
+                var dateTime = d.toJSON();
+                jQuery("#grid").kendoGrid({
+                    excel: {
+                        fileName: "Stock_Inventory_" + dateTime + ".xlsx"
+                    },
+                    dataSource: dataSource,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    columns: [
+                        { field: "warehouse_name", title: "Warehouse Name", width: "150px" },
+                        { field: "product_name", title: "Product Name", width: "150px" },
+                        { field: "color_name", title: "Color Name", width: "150px" },
+                        { field: "product_version_name", title: "Version Name", width: "150px" },
+                        { field: "stock_quantity", title: "Stock Quantity", width: "150px" },
+                        { title: "Action", width: "100px", template: kendo.template($("#excel-template").html()) },
+                        { title: "Action", width: "100px", template: kendo.template($("#pdf-template").html()) }
+                    ],
+                    editable: "inline"
+                });*@
+        //As per meraj vai said..... Kiron:03/11/2016
+        //$("#warehouse_id").data("kendoComboBox").value("");
+        //$("#product_id").data("kendoComboBox").value("");
+        //$("#color_id").data("kendoComboBox").value("");
+        });
+        });
+    </script>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#warehouse_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+               // serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllWarehouses", "Warehouse")"
+                    }
+                }
+            }
+
+        });
+        $("#product_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductList", "Product")"
+                    }
+                }
+            }
+
+        });
+        $("#color_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "product_id",
+            placeholder: "--- Select Color ---",
+            dataTextField: "color_name",
+            dataValueField: "color_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllColorMapping", "ProductColorMapping")",
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        $("#version_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "product_id",
+            placeholder: "--- Select Version ---",
+            dataTextField: "product_version_name",
+            dataValueField: "product_version_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetProductwiseVersion", "ProductVersionMapping")",
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+
+    });
+
+
+
+
+
+    //Selected for MD
+
+
+    //Party Stock By Login Party: Kiron : 10-12-2016
+    if (roleId == '4' || roleId == '5 ') {
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetWarehouseByPartyId", "Warehouse")",
+            data: { party_id: partyId },
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                $("#warehouse_id").data("kendoComboBox").value(data[0].warehouse_id);
+                $("#warehouse_id").data("kendoComboBox").enable(false);
+            }
+        });
+
+    }
+
+
+    // Play Ground//
+
+</script>

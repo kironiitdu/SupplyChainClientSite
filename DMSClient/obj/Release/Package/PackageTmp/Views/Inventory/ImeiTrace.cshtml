@@ -1,0 +1,499 @@
+﻿@{
+    ViewBag.Title = "ImeiTrace";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+
+<div id="context">
+    <div class="panel panel-success">
+
+        <div class="panel-heading"><h4>Find IMEI</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="imei_no" style="padding-left: 12px;color: black">IMEI No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="imei_no_find" name="imei_no_find" class="k-textbox" placeholder="Enter IMEI" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for=""></label>
+                    </div>
+                    @*<div class="col-md-3">
+                            <input type="button" class="k-button" id="btnFindIMEIStatus" name="btnFindIMEIStatus" value="Find IMEI Status" />
+                        </div>*@
+
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row" id="row_imei_no">
+                <div class="panel panel-success imeistat">
+                    <div class="panel-body">
+                        <div class="row" id="row_imei_no">
+                            <div class="col-md-12">
+                                <div class="col-md-2"><b style=" color: black;">Product Info</b> </div><hr />
+                                <div class="col-md-2">IMEI1 </div>
+                                <div class="col-md-3" id="imei_no"></div><br />
+                                <div class="col-md-2">IMEI2 </div>
+                                <div class="col-md-3" id="imei_no2"></div>
+                                <br />
+                                <div class="col-md-2">Product Name </div>
+                                <div class="col-md-3" id="product_name">:</div>
+
+                            </div>
+                        </div>
+                        <div class="row" id="row_color_name">
+                            <div class="col-md-12" style="border:1px;">
+
+                                <div class="col-md-2">Color Name </div>
+                                <div class="col-md-3" id="color_name"></div>
+                                <div class="col-md-1"></div><br />
+                                <div class="col-md-2">Version</div>
+                                <div class="col-md-3" id="product_version_name"></div>
+                                <div class="col-md-1"></div><br />
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="row" id="row_stock_in_since">
+                <div class="panel panel-success imeistat">
+                    <div class="panel-body">
+                        <div class="row" id="row_stock_in_since">
+                            <div class="col-md-12">
+                                <div class="col-md-2"><b style=" color :black;">GRN Info</b> </div><hr />
+                                <div class="col-md-2">GRN Date </div>
+                                <div class="col-md-3" id="stock_in_since"></div>
+                                <br />
+                                <div class="col-md-2">Warehouse</div>
+                                <div class="col-md-3" id="warehouse_name">:</div><br />
+                                <div class="col-md-2">Warehouse Region</div>
+                                <div class="col-md-3" id="grn_warehouse_province"></div><br />
+                                <div class="col-md-2">Warehouse Area</div>
+                                <div class="col-md-3" id="grn_warehouse_district_city"></div><br />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row" id="row_stock_in_party_since">
+                <div class="panel panel-success imeistat">
+                    <div class="panel-body">
+                        <div class="row" id="row_stock_in_since">
+                            <div class="col-md-12">
+                                <div class="col-md-2"><b style=" color :black;">Delivery Info</b> </div><hr />
+                                <div class="col-md-2">Delivered Date </div>
+                                <div class="col-md-3" id="stock_in_party_since"></div>
+                                <br />
+                            </div>
+                            <div id="row_party_name">
+                                <div class="col-md-12" style="border:1px;">
+                                    <div class="col-md-2">Party/MD/DBIS Name </div>
+                                    <div class="col-md-3" id="party_name"></div>
+                                    <br/>
+                                    <div class="col-md-2">Party Province </div>
+                                    <div class="col-md-3" id="party_province"></div>
+                                    <br />
+                                    <div class="col-md-2">Party District/City </div>
+                                    <div class="col-md-3" id="party_district_city"></div>
+                                    <br />
+                                    <div class="col-md-1"></div><br />
+                                </div>
+                            </div>
+                            <div id="row_retailer_name">
+                                <div class="col-md-12" style="border:1px;">
+                                    <div class="col-md-2" id="retailer_name">Retailer Name </div>
+                                    <div class="col-md-3" id="retailer_name"></div><br />
+                                    <div class="col-md-2" id="retailer_province">Retailer Province </div>
+                                    <div class="col-md-3" id="retailer_province"></div>
+                                    <br />
+                                    <div class="col-md-2" id="retailer_district_city">Retailer District/City </div>
+                                    <div class="col-md-3" id="retailer_district_city"></div>
+                                    <br />
+                                    <div class="col-md-2" id="delivery_to_retailer_date">Delivery Date In Retailer </div>
+                                    <div class="col-md-3" id="delivery_to_retailer_date"></div>
+                                    <br />
+                                    <div class="col-md-1"></div><br />
+                                </div>
+                            </div>
+                            <div id="row_party_type_name">
+                                <div class="col-md-12" style="border:1px;">
+                                    <div class="col-md-2">Customer Type </div>
+                                    <div class="col-md-3" id="party_type_name"></div>
+                                    <div class="col-md-1"></div><br />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row" id="row_Sales_Info">
+                <div class="panel panel-success imeistat">
+                    <div class="panel-body">
+                        <div class="row" id="row_sales_status">
+                            <div class="col-md-12">
+                                <div class="col-md-2"><b style=" color :black;">Sales Info</b> </div><hr />
+                                <div class="col-md-2">Sales Status</div>
+                                <div class="col-md-3" id="sales_status"></div>
+                                <br />
+                                <div class="col-md-2" id="sales_date_html">Sales Date</div>
+                                <div class="col-md-3" id="sales_date"></div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row" id="row_Return_Info">
+                <div class="panel panel-success imeistat">
+                    <div class="panel-body">
+                        <div class="row" id="row_sales_status">
+                            <div class="col-md-12">
+                                <div class="col-md-2"><b style=" color :black;">Return Info</b> </div><hr />
+                                <div class="col-md-2">Return Status</div>
+                                <div class="col-md-3" id="is_return"></div>
+                                <br />
+                                <div class="col-md-2">Return By</div>
+                                <div class="col-md-3" id="return_by_dbis"></div>
+                                <div class="col-md-3" id="return_by_retailer"></div>
+                                <br />
+                                <div class="col-md-2">Return Code</div>
+                                <div class="col-md-3" id="return_code"></div>
+                                <br />
+                                <div class="col-md-2">Return Date</div>
+                                <div class="col-md-3" id="return_date"></div>
+                                <br />
+                                <div class="col-md-2">Return Product Type</div>
+                                <div class="col-md-3" id="return_type_name"></div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row" id="row_Replace_Info">
+                <div class="panel panel-success imeistat">
+                    <div class="panel-body">
+                        <div class="row" id="row_sales_status">
+                            <div class="col-md-12">
+                                <div class="col-md-2"><b style=" color :black;">Replace Info</b> </div><hr />                             
+                                <div class="col-md-2">Replace Status</div>
+                                <div class="col-md-3" id="replaced_status"></div>
+                                <br />
+                                <div class="col-md-2">Replaced IMEI No</div>
+                                <div class="col-md-3" id="replaced_imei_no"></div>
+                                <br />
+                                <div class="col-md-2">Replace By IMEI</div>
+                                <div class="col-md-3" id="imei_replace_with"></div>
+                                <br />
+                                <div class="col-md-2">Replace Date</div>
+                                <div class="col-md-3" id="replace_date"></div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row" id="row_Current_Warehouse_Info">
+                <div class="panel panel-success imeistat">
+                    <div class="panel-body">
+                        <div class="row" id="row_sales_status">
+                            <div class="col-md-12">
+                                <div class="col-md-2"><b style=" color :black;">Current Warehouse Info</b> </div><hr />
+                                <div class="col-md-2">Warehouse Name</div>
+                                <div class="col-md-3" id="current_warehouse_name"></div><br />
+                                <div class="col-md-2">Warehouse Region</div>
+                                <div class="col-md-3" id="current_warehouse_province"></div><br />
+                                <div class="col-md-2">Warehouse Area</div>
+                                <div class="col-md-3" id="current_warehouse_district_city"></div><br />
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#imei_no_find").val("");
+        $('.imeistat').hide();
+        $('#row_imei_no').hide();
+        $('#row_product_name').hide();
+        $('#row_color_name').hide();
+        $('#row_warehouse_name').hide();
+        $('#row_stock_in_since').hide();
+        $('#row_sales_status').hide();
+        $('#row_party_name').hide();
+        $('#row_party_type_name').hide();
+        $('#row_stock_in_party_since').hide();
+        $('#row_Return_Info').hide();
+        $('#row_Replace_Info').hide();
+        $('#row_Current_Warehouse_Info').hide();
+
+        //On Scan trigger Fire By: Kiron :09/10/2016
+
+        $("#imei_no_find").live('keyup', function (e) {
+            if (e.keyCode === 13) {
+                $(this).trigger("enterKey");
+                var id = this.id;
+                var imeiNo = $('#imei_no_find').val();
+                if (imeiNo == "") {
+                    sweetAlert("Opps!...", "Please Enter a IMEI No", "warning");
+                    $("#imei_no_find").val("");
+                    $('.imeistat').hide();
+                    $('#row_imei_no').hide();
+                    $('#row_product_name').hide();
+                    $('#row_color_name').hide();
+                    $('#row_warehouse_name').hide();
+                    $('#row_stock_in_since').hide();
+                    $('#row_sales_status').hide();
+                    $('#row_party_name').hide();
+                    $('#row_party_type_name').hide();
+                    $('#row_stock_in_party_since').hide();
+                    $('#row_Return_Info').hide();
+                    $('#row_Replace_Info').hide();
+                    $('#row_Current_Warehouse_Info').hide();
+                    return false;
+                }
+                Loading(false);
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("TraceIMEINo", "Inventory")?imei_no=" + imeiNo + "",
+                    dataType: "json",
+                    success: function (data) {
+                        Loading(false);
+                        if (data == null) {
+                            sweetAlert("Sorry!...", "Incorrect IMEI! Enter Correct IMEI", "warning");
+                            $('.imeistat').hide();
+                            $('#imei_no_find').val("");
+                            $('#row_imei_no').hide();
+                            $('#row_product_name').hide();
+                            $('#row_color_name').hide();
+                            $('#row_warehouse_name').hide();
+                            $('#row_stock_in_since').hide();
+                            $('#row_sales_status').hide();
+                            $('#row_party_name').hide();
+                            $('#row_party_type_name').hide();
+                            $('#row_stock_in_party_since').hide();
+                            $('#row_Replace_Info').hide();
+
+                            // return false;
+                        }
+                        if (data.output === "warning") {
+                            sweetAlert("Opps!...", data.msg, "warning");
+                            $('#imei_no_find').val("");
+                            $('#row_imei_no').hide();
+                            $('#row_product_name').hide();
+                            $('#row_color_name').hide();
+                            $('#row_warehouse_name').hide();
+                            $('#row_stock_in_since').hide();
+                            $('#row_sales_status').hide();
+                            $('#row_party_name').hide();
+                            $('#row_party_type_name').hide();
+                            $('#row_stock_in_party_since').hide();
+                            $('#row_Replace_Info').hide();
+
+                            return false;
+                        }
+                        if (data.output != "warning") {
+                       
+                            //value bind to label
+                            $('#imei_no_find').val("");
+                            $('#imei_no').html(data.imei_no);
+                            $('#imei_no2').html(data.imei_no2);
+                            $('#product_name').html(data.product_name);
+                            $('#color_name').html(data.color_name);
+                            $('#product_version_name').html(data.product_version_name);
+                            $('#party_name').html(data.party_name);
+                            $('#party_type_name').html(data.party_type_name);
+                            $('#warehouse_name').html(data.warehouse_name);
+
+                            //$('#stock_in_since').html(data.stock_in_since);
+                            var date = eval(data.stock_in_since.replace(/\/Date\((\d+)\)\//gi, "new Date($1)"));
+                            var year = date.getFullYear();
+                            var month = date.getMonth() + 1;
+                            var day = date.getDate();
+                            var formatted = day+ "/" + month + "/" + year;
+                            $('#stock_in_since').html(formatted);
+
+                            $('#stock_in_party_since').html(data.stock_in_party_since);
+                          
+                            $('#grn_warehouse_province').html(data.grn_warehouse_province);
+                            $('#grn_warehouse_district_city').html(data.grn_warehouse_district_city);
+                            $('#party_province').html(data.party_province);
+                            $('#party_district_city').html(data.party_district_city);
+                            $('#sales_date').html(data.sales_date);                          
+                            $('#retailer_name').html(data.retailer_name);
+                            $('#retailer_province').html(data.retailer_province);
+                            $('#retailer_district_city').html(data.retailer_district_city);
+                            ////
+                            $('#delivery_to_retailer_date').html(data.delivery_to_retailer_date);                         
+                            $('#current_warehouse_name').html(data.current_warehouse_name);
+                            $('#current_warehouse_province').html(data.current_warehouse_province);
+                            $('#current_warehouse_district_city').html(data.current_warehouse_district_city);
+                            ////
+                            $('#return_by_dbis').html(data.return_by_dbis);
+                            $('#return_by_retailer').html(data.return_by_retailer);
+                            $('#return_code').html(data.return_code);
+                            $('#return_date').html(data.return_date);
+                            $('#return_type_name').html(data.return_type_name);
+                            $('#replaced_imei_no').html(data.replaced_imei_no);
+                            $('#imei_replace_with').html(data.imei_replace_with);
+                            $('#replace_date').html(data.replace_date);
+                            
+
+                            var sales_info = data.sales_status;
+                            if (sales_info === true) {
+                                $('#sales_status').html('Sold');
+                            }
+                            
+                            if (sales_info === false) {
+                                $('#sales_status').html('Not Sold');
+                            }
+                            //Return Status
+                            var return_Info = data.is_return;
+                            if (return_Info === true) {
+                                $('#is_return').html('Returned Product');
+                            }
+                            if (return_Info === false) {
+                                $('#is_return').hide();
+                            }
+                            //Replaced Status
+                            var replaced_Info = data.is_return;
+                            if (replaced_Info === true) {
+                                $('#replaced_status').html('Product Is Replaced');
+                            }
+                            if (replaced_Info === false) {
+                                $('#replaced_status').hide();
+                            }
+                          
+                       
+                            //showing hidden feilds
+                            $('.imeistat').show();
+                            $('#row_imei_no').show();
+                            $('#row_product_name').show();
+                            $('#row_color_name').show();
+                            $('#row_warehouse_name').show();
+                            $('#row_stock_in_since').show();
+                            $('#row_sales_status').show();
+                            $('#row_party_name').show();
+                            $('#row_party_type_name').show();
+                            $('#row_stock_in_party_since').show();
+                            $('#row_Return_Info').show();
+                            $('#row_Current_Warehouse_Info').show();
+                            $('#row_Replace_Info').show();
+                      
+            //Empty feilds hide when product found in "Central Warehouse"
+
+                            
+                            if (data.sales_date == null) {
+                                $('#sales_date_html').hide();
+                            }
+                            else { $("sales_date_html").show(); }
+                            if (data.sales_date== null) {
+                                $('#sales_date').hide();
+                            }
+                            else { $("sales_date").show(); }
+                            if (data.sales_status == null || data.is_return == null) {
+                                $('#row_Return_Info').hide();
+                            }
+                            else { $("stock_in_party_since").show(); }
+                           
+
+                            if (data.delivery_to_retailer_date == null) {
+                                $('#delivery_to_retailer_date').hide();
+                            }
+                            else { $("delivery_to_retailer_date").show(); }
+
+                            if (data.retailer_district_city == null) {
+                                $('#retailer_district_city').hide();
+                            }
+                            else { $("retailer_district_city").show(); }
+
+                            if (data.retailer_province == null) {
+                                $('#retailer_province').hide();
+                            }
+                            else { $("retailer_province").show(); }
+
+                            if (data.retailer_name == null) {
+                                $('#retailer_name').hide();
+                            }
+                            else { $("retailer_name").show(); }
+                            if (data.sales_date == null) {
+                                $('#sales_date').hide();
+                            }
+                            else { $("sales_date").show(); }
+                            /////////
+                            if (data.party_name == null) {
+                                $('#row_party_name').hide();
+                            }
+                            else { $("row_#party_name").show(); }
+
+                            if (data.party_type_name == null) {
+                                $('#row_party_type_name').hide();
+                            }
+                            else { $("#row_party_type_name").show(); }
+
+                            if (data.stock_in_party_since == "") {
+                                $('#row_stock_in_party_since').hide();
+                            }
+                            else { $("#row_stock_in_party_since").show(); }
+                            //Hide delivery If sales status null
+                            if (data.party_name == null) {
+                                $('#row_stock_in_party_since').hide();
+                            }
+                            else { $('#row_stock_in_party_since').show(); }
+                            //Return Status
+                            if (data.replaced_imei_no == null || data.imei_replace_with==null) {
+                                $('#row_Replace_Info').hide();
+                            }
+                            else { $('#row_Replace_Info').show(); }
+                        }
+
+
+
+
+                    }
+
+
+
+
+
+
+
+                });
+            }
+        });
+        //Kiron d challenger : 08/10/2016
+
+
+    });
+
+</script>

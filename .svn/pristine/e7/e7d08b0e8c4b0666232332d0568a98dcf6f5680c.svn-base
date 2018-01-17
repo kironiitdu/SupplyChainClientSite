@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "Online Return";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 widget-body" id="context">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Online Requisition Search</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="col-md-4">
+                                    <span>&nbsp;&nbsp;Online&nbsp;<i class="fa fa-asterisk fieldRequired"></i></span>
+                                    <input id="channal_id" name="channal_id" style="width: 245px;" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span>&nbsp;&nbsp;Requistion From&nbsp;<i class="fa fa-asterisk fieldRequired"></i></span>
+                                    <input id="requisition_from" name="requisition_from" style="width: 245px;" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span>&nbsp;&nbsp;Requistion To&nbsp;<i class="fa fa-asterisk fieldRequired"></i></span>
+                                    <input id="requisition_to" name="requisition_to" style="width: 245px;" />
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3">
+                                    <input type="button" style="width: 194px;float: right;" class="k-button" id="btnSearchRequisition" name="btnSearchRequisition" value="Search Requisition" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="pnlProduct">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Product Return</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    Return IMEI Scan
+                                    <input id="imei" name="imei" type="text" style="width: 245px;" />
+                                </div>
+                                <div class="col-md-10"></div>
+                            </div>
+                            <div class="col-md-12">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-12">
+                                <div id="grid"></div>
+                            </div>
+                            <div class="col-md-12">
+                                &nbsp;
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnRetrunRequisition" name="btnRetrunRequisition" value="Return Product" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#pnlProduct").hide();
+
+        $("#channal_id").kendoComboBox({
+            placeholder: "--- Select Channal ---"
+        });
+        var today = new Date();
+        var lastofthis = new Date(today.getUTCFullYear(), today.getUTCMonth() + 1, 1);
+        $("#requisition_from").val(lastofthis.toISOString().substring(0, 10));
+
+        $("#requisition_from").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+        $("#requisition_to").val(lastofthis.toISOString().substring(0, 10));
+
+        $("#requisition_to").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+        //grid
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllVerifiedPurchaseOrders", "PurchaseOrder")",
+                    type: "GET"
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        //KendoWindowFunction(e.msg, "error", "");
+                        // this.cancelChanges();
+                    }
+
+                },
+
+                model: {
+                    id: "purchase_order_master_id",
+                    fields: {
+                        purchase_order_master_id: { editable: false, nullable: true },
+                        order_no: { type: "string" },
+                        order_date: { type: 'date' },
+                        verify_status: { type: "string" },
+                        supplier_name: { type: "string" },
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: null,
+            scrollable: true,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+
+            sortable: true,
+            resizable: true,
+
+
+            columns: [
+                { field: "order_no", title: "Requisition No", id: "purchase_order_master_id", width: "50px" },
+                { field: "order_date", title: "Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                { field: "supplier_name", title: "Product", width: "50px" },
+                { field: "verify_status", title: "Color", width: "50px" },
+                { field: "verify_status", title: "Qty", width: "50px" },
+                { field: "verify_status", title: "Retrun Qty", width: "50px" }
+                //{ field: "verify_status", title: "Invoicable Qty", width: "50px" },
+                //{ field: "verify_status", title: "Price", width: "50px" },
+                //{ field: "verify_status", title: "Amount", width: "50px" }
+
+            ],
+            editable: "inline"
+        });        
+
+    });
+    $("#btnSearchRequisition").click(function () {
+        
+        $("#pnlProduct").show();
+
+    });
+
+</script>

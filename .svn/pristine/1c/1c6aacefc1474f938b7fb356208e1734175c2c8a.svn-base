@@ -1,0 +1,137 @@
+﻿@*Author: farzana islam
+    Date: 22/08/2016*@
+@{
+    ViewBag.Title = "Add";
+}
+
+<div class="row" id="context">
+    @*<div class="widget">*@
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Add Bank Information</h5></div>
+        <div class="panel-body">
+            <form id="BankBranchAdd">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="company_id">Bank Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="bank_name" id="bank_name" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_code">Bank Branch Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="bank_branch_name_pro" id="bank_branch_name_pro" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Bank Account No:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="account_no" id="account_no" style="width:80%;">
+                        </div>
+                    </div>
+
+
+                    @*<div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="emp_id">Swift Code:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="swift_code" id="swift_code" style="width:80%;">
+                            </div>
+                        </div>*@
+
+                    <div class="clearfix"></div>
+
+                </div>
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="BankBranchAddSubmit" value="Save Information" />
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Bank Branch Combobox
+      
+        $("#bank_name").kendoComboBox({
+            autoBind: true,
+            placeholder: "Select Bank...",
+            dataTextField: "bank_name",
+            dataValueField: "bank_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBank", "Bank")",
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+    });
+
+
+    $(document).ready(function () {
+        $("#BankBranchAddSubmit").click(function () {
+            Loading(true);
+            var bank_branch_id = $("#bank_branch_id").val();
+            var bank_id = $("#bank_name").val();
+            var bank_branch_name = $("#bank_branch_name_pro").val();
+            var account_no = $("#account_no").val();
+            //var swift_code = $("#swift_code").val();
+
+            var oBank = {
+                bank_branch_id: bank_branch_id,
+                bank_id: bank_id,
+                bank_branch_name: bank_branch_name,
+                account_no: account_no,
+                //swift_code: swift_code,
+
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "BankBranch")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oBank),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        NotificationMessage(data);
+                        //KendoWindowFunction(data.msg, "success", "");
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        // KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+
+        });
+    });
+</script>
+
+

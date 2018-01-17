@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<div id="grid"></div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var dataSource = new kendo.data.DataSource({
+            pageSize:20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetNotifierMailAccount", "NotifierMailAccount")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "NotifierMailAccount")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "NotifierMailAccount")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "NotifierMailAccount")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                        //Updated By Kiron:23-11-2016
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                       KendoWindowFunction(e.msg, "error", "");
+                       this.cancelChanges();
+                   }
+                },
+
+                model: {
+                    id: "notifier_mail_account_id",
+                    fields: {
+                        notifier_mail_account_id: { editable: false, nullable: true },
+                        account_title: { type: "string", validation: { required: true } },
+                        account_email: { type: "string", validation: { required: true } },
+                        accoutn_password: { type: "string", validation: { required: true } },
+                        is_active: { type: "boolean" }
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Notifier Mail Account" }],
+            columns: [
+                { field: "account_title", title: "Account Title", id: "notifier_mail_account_id", width: "100px" },
+                { field: "account_email", title: "Email", width: "100px" },
+                { field: "accoutn_password", title: "Password", width: "100px" },
+                { field: "is_active", title: "Is Active", width: "100px" },
+                { command: ["edit", "destroy"], title: "Action", width: "100px" }],
+            editable: "inline"
+        });
+    });
+</script>
+
+

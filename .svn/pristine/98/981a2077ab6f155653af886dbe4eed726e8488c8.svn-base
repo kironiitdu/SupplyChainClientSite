@@ -1,0 +1,494 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Add Courier Or Logistics";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+<div class="col-md-12 widget-body" id="context">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">E-Shop Requisition Master</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="requisition_code">Requistion No</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="requisition_code" name="requisition_code" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="requisition_date">Requistion Date</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="requisition_date" name="requisition_date" style="width: 245px;" />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="delivery_no">Delivery No</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="delivery_no" name="delivery_no" class="k-textbox" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="customer_po">Customer PO</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="customer_po" name="customer_po" class="k-textbox" />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="customer_name">Customer Name</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="customer_name" name="customer_name" class="k-textbox" />
+                                </div>
+                            </div>
+                            <input type="hidden" id="reqId" />
+                            <input type="hidden" id="delId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Requisition List</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="RequisitionDetailsGrid"></div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="amount">Order Amount</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="amount" name="amount" class="k-textbox" disabled />
+                                    <input type="hidden" id="status" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Courier Or Logictics Information</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="delivery_mathod">Choose Delivery Method</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="delivery_mathod" name="delivery_mathod" />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div id="logistics_div">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-md-2">
+                                        <label for="delivery_person">Delivery Person</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input id="delivery_person" name="delivery_person" class="k-textbox" />
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                    <div id="file_div">
+                                        <div class="col-md-2">
+                                            <label for="document_attachment">&nbsp;Challan Copy&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="file" class="" name="document_attachment" id="document_attachment" style="width:80%;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="courier_div">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="courier">Courier</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="courier" name="courier" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div id="cr_div">
+                                    <div class="col-md-2">
+                                        <label for="cr_no">CR No</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input id="cr_no" name="cr_no" class="k-textbox" />
+                                    </div>
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        @*<div class="col-md-3" style="visibility: hidden">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Available Promotions</div>
+                    <div class="panel-body" id="available_promotions">
+
+                    </div>
+                </div>
+            </div>*@
+    </div>
+
+
+    <div class="row" style="height: 100px;" id="btn">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnSaveRequisition" name="btnSaveRequisition" value="Save Information" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if (@ViewBag.delivery_master_id == 0 || @ViewBag.delivery_master_id == "") {
+            window.location.href = '/EShopRequisition/Index';
+        } else {
+            $("#logistics_div").hide();
+            $("#courier_div").hide();
+            $("#btn").hide();
+            //Load All DropDown
+            var deliveredMethod = [
+				{ text: "Courier", value: "1" },
+				{ text: "Logistics", value: "2" }
+            ];
+
+            $("#delivery_mathod").kendoComboBox({
+                placeholder: "--- Select Delivery Method ---",
+                dataTextField: "text",
+                dataValueField: "value",
+                dataSource: deliveredMethod
+            });
+
+            $("#courier").kendoComboBox({
+                autoBind: true,
+                placeholder: "--- Select Courier ---",
+                dataTextField: "courier_name",
+                dataValueField: "courier_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllCouriers", "Courier")"
+                        }
+                    }
+                }
+            });
+
+            $("#requisition_date").kendoDateTimePicker({
+                animation: {
+                    close: {
+                        effects: "fadeOut zoom:out",
+                        duration: 300
+                    },
+                    open: {
+                        effects: "fadeIn zoom:in",
+                        duration: 300
+                    }
+                },
+                value: new Date(),
+                format: "yyyy/MM/dd hh:mm tt"
+            });
+            //End
+
+            //Load Requisition
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetEshopReadyForDelivery", "EshopRequisition")",
+                data: { delivery_master_id: @ViewBag.delivery_master_id }, //Passing parameter
+                dataType: "json",
+                success: function(data) {
+                    Loading(false);
+                    $("#requisition_code").val(data.requisition_code);
+                    $("#delivery_no").val(data.delivery_no);
+                    $("#customer_po").val(data.reference_no);
+                    $("#customer_name").val(data.customer_name);
+                    $("#reqId").val(data.requisition_master_id);
+                    $("#delId").val(data.delivery_master_id);
+                    $("#status").val(data.status);
+                    grid(data.delivery_master_id);
+
+                    if (data.status == "Delivered") {
+                        $("#delivery_mathod").data("kendoComboBox").value(data.delivery_method_id);
+                        $("#delivery_mathod").data("kendoComboBox").enable(false);
+                        if (data.delivery_method_id == 1) {
+                            $("#courier").data("kendoComboBox").value(data.courier_id);
+                            $("#courier").data("kendoComboBox").enable(false);
+                            $("#courier_div").show();
+                        } else {
+                            $("#delivery_person").val(data.delivery_person_name);
+                            $("#logistics_div").show();
+                        }
+                        $("#btn").show();
+                    }
+                    sum();
+                    $("#requisition_date").val(data.requisition_date.toISOString().substring(0, 10));
+
+                }
+            });
+
+            //End
+
+            function sum() {
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetProductDetailsForDelivery", "EshopRequisition")",
+                    data: { delivery_master_id: @ViewBag.delivery_master_id }, //Passing parameter
+                    dataType: "json",
+                    success: function(data) {
+                        var t = 0;
+                        for (var i = 0; i < data.length; i++) {
+                        
+                            t = parseInt(t) + parseInt(data[i].line_total);
+                        }
+                        $("#amount").val(t);
+                    }
+                });
+            }
+
+            function grid(delivery_master_id) {
+                var dataSource2 = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetProductDetailsForDelivery", "EshopRequisition")?delivery_master_id="+delivery_master_id,
+                            type: "GET"
+                        }
+                    },
+
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "delivery_details_id",
+                            fields: {
+                                delivery_details_id: { editable: false, nullable: true },
+                                product_name: { type: "string" },
+                                color_name: { type: "string" },
+                                product_version_name: { type: "string" },
+                                unit_price: { type: "string" },
+                                line_total: { type: 'string' },
+                                delivered_quantity: { type: "string" },
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#RequisitionDetailsGrid").kendoGrid({
+                    dataSource: dataSource2,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    resizable: true,
+
+
+                    columns: [
+                       { field: "product_name", title: "Product", width: "130px" },
+                        { field: "color_name", title: "Color", width: "100px" },
+                        { field: "product_version_name", title: "Version", width: "100px" },
+                        { field: "delivered_quantity", title: "Quantity", width: "50px" },
+                        //{ field: "is_live_dummy", title: "Live Dummy?", width: "50px" },
+                        { field: "unit_price", title: "Price", width: "50px" },
+
+                        { field: "line_total", title: "Total Amount", width: "70px" }
+                    ],
+                    editable: "inline"
+                });
+            }
+
+            $("#delivery_mathod").change(function() {
+                var id = $("#delivery_mathod").val();
+                if (id == 1) {
+                    $("#courier_div").show();
+                    $("#logistics_div").hide();
+                    $("#btn").show();
+                    $("#file_div").hide();
+                    $("#cr_div").hide();
+                }
+                if (id == 2) {
+                    $("#courier_div").hide();
+                    $("#logistics_div").show();
+                    $("#btn").show();
+                    $("#file_div").hide();
+                    $("#cr_div").hide();
+                }
+
+            });
+
+            $("#btnSaveRequisition").click(function() {
+
+                Loading(false);
+
+                var fData = new FormData();
+                var deliverd_master_id = $("#delId").val();
+                var delivery_method_id = $("#delivery_mathod").val();
+                var delivery_person_name = $("#delivery_person").val();
+                var courier_id = $("#courier").val();
+
+                var status = $("#status").val();
+                var Files = "";
+                var cr_no = "";
+
+                if (status == "Delivered") {
+                    if (delivery_method_id == 1) {
+                        cr_no = $("#cr_no").val();
+                    } else {
+                        Files = $("#document_attachment").get(0).files;
+                    }
+                }
+
+
+                var userId = '@userId';
+
+                //alert(party_id);
+                if (delivery_method_id=="" ||delivery_method_id==null) {
+                    sweetAlert("Sorry...", "Please Select Payment!", "warning");
+                    return false;
+                }
+
+                if (delivery_method_id == 1) {
+                    if (status == "Delivered") {
+                        if (cr_no=="") {
+                            sweetAlert("Sorry...", "Please Give CR Number!", "warning");
+                            return false;
+                        }
+                    } else {
+                        if (courier_id=="" || courier_id == null) {
+                            sweetAlert("Sorry...", "Please Select Courier!", "warning");
+                            return false;
+                        }
+                    }
+
+                }
+                if (delivery_method_id == 2) {
+                    if (status == "Delivered") {
+                        if (Files.length < 1) {
+                            sweetAlert("Sorry...", "Please Select File", "warning");
+                            return false;
+                        }
+                    } else {
+                        if (delivery_person_name=="") {
+                            sweetAlert("Sorry...", "Please Give Delivery Person Name!", "warning");
+                            return false;
+                        }
+                    }
+                }
+
+                if (Files.length > 0) {
+
+                    fData.append("UploadedImage", Files[0]);
+                }
+
+                fData.append("deliverd_master_id", deliverd_master_id);
+                fData.append("delivery_method_id", delivery_method_id);
+                fData.append("delivery_person_name", delivery_person_name);
+                fData.append("courier_id", courier_id);
+                fData.append("courier_slip_no", cr_no);
+
+                fData.append("created_by", userId);
+
+                $.ajax({
+                    type: "PUT",
+                    url: "@UrlConfig.Action("Put", "EshopRequisition")",
+                    contentType: false,
+                    processData: false,
+                    data: fData,
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        if (data == true) {
+                            swal("Success", "Delivered Successful", "success");
+                            window.location.href = '/EshopRequisition/ConfirmList';
+                            return false;
+                        } else {
+                            swal("Error", "Delivered not Successful", "error");                            
+                            return false;
+                        }
+                        
+                    }
+                });
+
+            });
+
+        }
+
+    });
+
+</script>

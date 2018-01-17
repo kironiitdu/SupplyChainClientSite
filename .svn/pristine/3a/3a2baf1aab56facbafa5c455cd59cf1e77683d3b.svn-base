@@ -1,0 +1,111 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Web.Mvc;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using DMSClient.Models;
+using DMSClient.Reports.crystal_models;
+using Newtonsoft.Json;
+
+
+namespace DMSClient.Controllers
+{
+    public class TransferOrderController : Controller
+    {
+        // GET: TransferOrder
+        public ActionResult Index()
+        {
+            var roleid = (string)Session["user_role_id"];
+            var userid = (string)Session["user_au_id"];
+
+            var ConName = "TransferOrder";
+            var ActionName = "Index";
+
+            if (string.IsNullOrEmpty(roleid) && string.IsNullOrEmpty(userid))
+            {
+                Response.Redirect("/Login/Index");
+            }
+            var permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            if (!permission)
+                Response.Redirect("/Error/Index");
+            return View();
+        }
+
+        public ActionResult Add()
+        {
+            var roleid = (string)Session["user_role_id"];
+            var userid = (string)Session["user_au_id"];
+
+            var ConName = "TransferOrder";
+            var ActionName = "Add";
+
+            if (string.IsNullOrEmpty(roleid) && string.IsNullOrEmpty(userid))
+            {
+                Response.Redirect("/Login/Index");
+            }
+            var permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            if (!permission)
+                Response.Redirect("/Error/Index");
+            return View();
+        }
+
+        public ActionResult Edit(int transfer_order_master_id)
+        {
+            ViewBag.transferOrderMasterId = transfer_order_master_id;
+            return View();
+        }
+        public ActionResult DeliverableTransferOrder()
+        {
+            var roleid = (string)Session["user_role_id"];
+            var userid = (string)Session["user_au_id"];
+
+            var ConName = "TransferOrder";
+            var ActionName = "DeliverableTransferOrder";
+
+            if (string.IsNullOrEmpty(roleid) && string.IsNullOrEmpty(userid))
+            {
+                Response.Redirect("/Login/Index");
+            }
+            var permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            if (!permission)
+                Response.Redirect("/Error/Index");
+            return View();
+        }
+
+        public ActionResult ToRfd()
+        {
+            return View();
+        }
+
+        public ActionResult ToRfdTransfer(int to_delivery_master_id)
+        {
+            ViewBag.toDeliveryMasterId = to_delivery_master_id;
+            return View();
+        }
+
+        public ActionResult TransferOrderDelivery(int transfer_order_master_id)
+        {
+            ViewBag.transferOrderMasterId = transfer_order_master_id;
+            return View();
+        }
+
+        public void GetTransferOrderReport(int transfer_order_master_id)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "TransferOrder/GetTransferOrderReportById?transfer_order_master_id=" + transfer_order_master_id;
+            string apidata = wbClient.DownloadString(downloadString);
+            List<ToReportModel> oDeliAndDis = JsonConvert.DeserializeObject<List<ToReportModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/ToReport.rpt"));
+                reportDocument.SetDataSource(oDeliAndDis);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+    }
+}

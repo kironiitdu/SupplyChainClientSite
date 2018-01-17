@@ -1,0 +1,132 @@
+﻿@*Author:Kiron
+    Date:08/08/2016*@
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Sales Designation</div>
+    <div class="panel-body">     
+        <div id="grid"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#context').addClass('animated rollIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllSalesDesignation", "SalesDesignation")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("PUT", "SalesDesignation")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "SalesDesignation")",
+                    type: "DELETE"
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        //KendoWindowFunction(e.msg, "error", "");
+                        // this.cancelChanges();
+                    }
+
+                },
+
+                model: {
+                    id: "sales_designation_id",
+                    fields: {
+                        sales_designation_id: { editable: false, nullable: true },
+                        designation_name: { type: "string" },
+                        has_target: { type: "boolean" },
+                        company_id: { type: "number" },
+                        company_name: { type: "string" },
+                        branch_id: { type: "number" }
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            scrollable: true,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+
+            toolbar: [{ name: "create", text: "Add Sales Designation" }],
+            columns: [
+                { field: "designation_name", title: "Sales Designation", id: "sales_designation_id", width: "150px" },
+                { field: "has_target", title: "Has Target", width: "150px" },
+                { field: "company_id", title: "Company", editor: CompanyDropDownEditor, template: "#= company_name #", width: "150px" },
+                { field: "branch_id", title: "Branch", editor: BranchDropDownEditor, template: "#= branch_name #", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+
+        function CompanyDropDownEditor(container, options) {
+            jQuery('<input required data-text-field="company_name" data-value-field="company_id" data-bind="value:' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: true,
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "@UrlConfig.Action("GetAllCompanies", "Company")",
+                                    type: "GET"
+                                }
+                            }
+
+                        },
+                        optionLabel: "--Select Company-- "
+                    });
+        }
+
+
+        function BranchDropDownEditor(container, options) {
+            jQuery('<input required data-text-field="branch_name" data-value-field="company_id" data-bind="value:' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: true,
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "@UrlConfig.Action("GetAllBranches", "Branch")",
+                                    type: "GET"
+                                }
+                            }
+
+                        },
+                        optionLabel: "--Select Branch-- "
+                    });
+        }
+
+
+    });
+</script>

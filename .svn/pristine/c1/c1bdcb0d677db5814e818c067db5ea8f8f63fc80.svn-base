@@ -1,0 +1,230 @@
+﻿@*@*Author: Kiron
+Date:26/09/2016*@
+@{
+    ViewBag.Title = "InventoryStock";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+
+    
+
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Inventory Stock</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                @*<div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="from_date">From Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="from_date" name="from_date" placeholder="Please Enter Date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_date">To Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_date" name="to_date" placeholder="Please Enter Date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>*@
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="warehouse_id">Warehouse/Party/MD/BS/TBIS</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="warehouse_id" name="warehouse_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="product_id">Product</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="product_id" name="product_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-12">
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="color_id">Product Color</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="color_id" name="color_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnInventoryReport" name="btnInventoryReport" value="Inventory Stock Report" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        //var currentDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+        //$("#to_date").val(currentDate);
+
+        $('#context').addClass('animated rollIn');
+
+        $("#warehouse_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+
+                        url: "@UrlConfig.Action("GetAllWarehouses", "Warehouse")"
+                }
+            }
+        }
+
+        });
+        $("#product_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductList", "Product")"
+                }
+            }
+        }
+
+        });
+        $("#color_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Color ---",
+            dataTextField: "color_name",
+            dataValueField: "color_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllColors", "Color")"
+                }
+            }
+        }
+
+        });
+        $("#from_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+
+        });
+        $("#to_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+        $("#btnInventoryReport").click(function () {
+            Loading(false);
+
+            //var from_date = $("#from_date").val();
+            //var to_date = $("#to_date").val();
+            var warehouse_id = $("#warehouse_id").val();
+            var product_id = $("#product_id").val();
+            var color_id = $("#color_id").val();
+
+            if (warehouse_id=="") {
+                warehouse_id = 0;
+            }
+            if (product_id == "") {
+                product_id = 0;
+            }
+            if (color_id == "") {
+                color_id = 0;
+            }
+            
+
+            var user_id = '@userId';
+            var Inventory = {
+                warehouse_id:warehouse_id,
+                product_id:product_id,
+                color_id:color_id,
+                user_id:user_id
+            };
+            //if (warehouse_id == "") {
+            //    sweetAlert("Sorry...","Please Select Warehouse", "warning");
+            //    return false;
+            //}
+            //else if (product_id == "") {
+            //    sweetAlert("Sorry...", "Please Select Product Name", "warning");
+            //    return false;
+            //}
+            //else if (color_id == "") {
+            //    sweetAlert("Sorry...", "Please Select Color", "warning");
+            //    return false;
+            //}
+            //else {
+            {
+                var url = "/Inventory/GetInventoryStockReport?warehouse_id=" + warehouse_id + "&product_id=" + product_id + "&color_id=" + color_id + "&user_id=" + user_id;
+                window.open(url, '_blank');
+            }
+
+
+
+        });
+    });
+
+
+
+
+
+</script>*@
+
+
+
+

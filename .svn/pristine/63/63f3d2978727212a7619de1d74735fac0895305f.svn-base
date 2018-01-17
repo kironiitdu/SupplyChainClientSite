@@ -1,0 +1,108 @@
+﻿@*/*
+    Author: Meraj
+    Date: 24/07/2016
+    */*@
+
+@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+<div id="grid"></div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var dataSource = new kendo.data.DataSource({
+            pageSize:20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllProductCategories", "ProductCategory")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "ProductCategory")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "ProductCategory")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "ProductCategory")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        sweetAlert("Sorry...", e.msg, "error");
+                       this.cancelChanges();
+                   }
+                },
+
+                model: {
+                    id: "product_category_id",
+                    fields: {
+                        product_category_id: { editable: false, nullable: true },
+                        product_category_name: { type: "string", validation: { required: true } },
+                        product_category_code: { type: "string"}
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Product Category" }],
+            columns: [
+                { field: "product_category_name", title: "Category Name", id: "product_category_id", width: "150px" },
+                { field: "product_category_code", title: "Category Code", id: "product_category_id", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+
+
+
+
+    });
+
+
+</script>
+
+
+
+<div id="kWindow"></div>
+

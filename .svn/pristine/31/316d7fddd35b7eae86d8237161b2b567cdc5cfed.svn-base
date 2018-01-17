@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">MRR List</div>
+        <div class="panel-body">          
+            <script id="Report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Mrr/GetMrrReport?mrr_master_id=#= mrr_master_id#" target="_blank" class="k-button k-grid-even">MRR Report</a>
+            </script>
+            <div class="k-grid  k-secondary" data-role="grid">
+                <div class="k-toolbar k-grid-toolbar">
+                    <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","Mrr")">
+                        <span class="k-icon k-add"></span>
+                        Create New MRR
+                    </a>
+                </div>
+            </div>
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllMrr", "Mrr")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("", "")",
+                            type: "DELETE"
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "mrr_master_id",
+                            fields: {
+                                mrr_master_id: { editable: false, nullable: true },
+                                mrr_no: { type: "string" },
+                                grn_no: { type: "string" },
+                                grn_date: { type: "string" },
+                                grn_quantity: { type: "number" },
+                                saleable_quantity: { type: "number" },
+                                total_received_quantity: { type: "number" },
+                                box_damage_quantity: { type: "number" },
+                                physical_damaged_quantity: { type: "number" },
+                                customs_lost_quantity: { type: "number" },
+                                created_date: { type: "string" },
+                                created_by: { type: "string" }
+
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50,100,500,1000,2000]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                                { field: "mrr_no", title: "MRR No", width: "150px" },
+                                { field: "created_date", title: "MRR Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(created_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #" },
+                                { field: "grn_no", title: "GRN No", width: "150px" },
+                                { field: "grn_date", title: "GRN Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(grn_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #" },
+                                { field: "grn_quantity", title: "GRN Quantity", width: "150px" },
+                                { field: "saleable_quantity", title: "Saleable Quantity", width: "150px" },
+                                { field: "total_received_quantity", title: "Total Received Quantity", width: "150px" },
+                                { field: "box_damage_quantity", title: "Box Damage Quantity", width: "150px" },
+                                { field: "physical_damaged_quantity", title: "Physical Damage Quantity", width: "150px" },
+                                { field: "customs_lost_quantity", title: "Customs Lost Quantity", width: "150px" },                            
+                                { field: "created_by", title: "Created By", width: "150px" },
+                                { title: "Action", width: "100px", template: kendo.template($("#Report-template").html())}
+                            
+                        
+                   ],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>
+
+
+
+

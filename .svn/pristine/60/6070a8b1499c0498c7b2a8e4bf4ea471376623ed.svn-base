@@ -1,0 +1,2257 @@
+﻿@{
+    ViewBag.Title = "Add Requisition";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+}
+
+<script type="text/javascript">
+    var userId = '@userId';
+    var partyTypeId = '@partyTypeId';
+    var partyId = '@partyId';
+</script>
+
+
+<div class="col-md-12 widget-body" id="context">
+    <div class="row">
+        @*<div class="col-md-9">*@
+        <div class="row">
+            <div class="panel panel-success">
+                <div class="panel-heading">Dealer Requisition</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="requisition_code">Requistion No</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="requisition_code" name="requisition_code" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="requisition_date">Requistion Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="requisition_date" name="requisition_date" style="width: 330px;" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="warehouse_from">From Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_from" name="warehouse_from" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="expected_receiving_date">Expected Receiving Date</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="expected_receiving_date" name="expected_receiving_date" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="party_type_id">Channel Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="party_type_id" name="party_type_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="party_id">Channel Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="party_id" name="party_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="region_id">Region&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="region_id" name="region_id" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="area_id">Area&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="area_id" name="area_id" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="territory_id">Territory&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="territory_id" name="territory_id" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="company_id">Company&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="dropdown" name="company_id" id="company_id">
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="address">Dealer Billing Address</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="address" name="address" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="credit_term">Credit Term(In Days)&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="credit_term" name="credit_term" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="contact_person_mobile">Contact Person Mobile&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="contact_person_mobile" name="contact_person_mobile" class="k-textbox" disabled="" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="remarks">Remarks</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="remarks" name="remarks" class="k-textbox" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="amount">Order Amount</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="amount" name="amount" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="opening_balance">Opening Balance</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="opening_balance" name="opening_balance" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="credit_limit">Credit Limit</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="credit_limit" name="credit_limit" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="available_credit_limit">Available Credit Limit</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="available_credit_limit" name="available_credit_limit" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row" style="visibility: hidden;">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <input id="txtpId" name="txtpId" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+
+                            </div>
+                            <div class="col-md-3">
+                                <input id="txtcId" name="txtcId" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-success">
+                <div class="panel-heading">Product List</div>
+                <div class="panel-body">
+                    <div id="RequisitionDetailsGrid"></div>
+
+                </div>
+            </div>
+        </div>
+        @*01.04.2014*@
+        <div class="row" id="promotion">
+            <div class="panel panel-success">
+                <div class="panel-heading">Promotion List</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="PromotionList"></div>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-success" id="promotionGift">
+            <div class="panel-heading">Promotion Gift List</div>
+            <div class="panel-body">
+                <div id="promotionGiftPanel">
+                    <div class="row">
+                        <div id="PromotionGiftGrid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3" style="visibility: hidden">
+            <div class="panel panel-success">
+                <div class="panel-heading">Available Promotions</div>
+                <div class="panel-body" id="available_promotions">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnSaveRequisition" name="btnSaveRequisition" value="Save Requisition" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<p>&nbsp;</p>
+<script type="text/javascript">
+   
+    //date time picker
+    //requisition date
+    $(document).ready(function () {
+        var _giftList;
+        var pId;
+        var cId;
+        var pCatId;
+
+        $("#contact_person_mobile").keyup(function () {
+            this.value = this.value.replace(/[^0-9\.]/g, '');
+
+        });
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy/MM/dd');
+        $("#requisition_date").val(todayDate);
+
+        ///////////////////////////15.02.2017////////////////////////////////////
+        //get last date for cerdit terms
+        var today = new Date();
+        //var lastofpreviews = new Date( today.getUTCFullYear(), today.getUTCMonth()    , 0 );
+        var lastofthis = new Date(today.getUTCFullYear(), today.getUTCMonth() + 1, 1);
+        $("#credit_term").val(lastofthis.toISOString().substring(0, 10));
+
+        ///////////////////////////15.02.2017////////////////////////////////////
+
+        $("#requisition_date").kendoDateTimePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            value: new Date(),
+            format: "yyyy/MM/dd hh:mm tt"
+            //format: "yyyy/MM/dd"
+        });
+        if (partyTypeId != 1) {
+            $('#requisition_date').data('kendoDateTimePicker').enable(false);
+        }
+        //expected receiving date
+        $("#expected_receiving_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            //value:new Date(),
+            //format: "yyyy/MM/dd hh:mm tt"
+            format: "yyyy/MM/dd"
+        });
+
+        //credit_term
+        $("#credit_term").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+        //warehouse list
+        $("#warehouse_from").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAdaWarehouse", "Warehouse")"
+                    }
+                }
+            }
+
+        });
+        //Company
+        $("#company_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Company ---",
+            dataTextField: "company_name",
+            dataValueField: "company_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCompany", "Company")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        $("#warehouse_from").data("kendoComboBox").value(1);
+        $("#company_id").data("kendoComboBox").value(1);
+
+        //load party type
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPartyType", "PartyType")"
+                    }
+                }
+            }
+        });
+        var PTypeId = $("#party_type_id").val();
+
+        $("#party_type_id").data("kendoComboBox").value(4);
+        $("#party_type_id").data("kendoComboBox").enable(false);
+
+        $("#party_id").kendoComboBox({
+            filter: "startswith",
+            autoBind: true,
+            placeholder: "--- Select Channel Name ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        serverFiltering: true,
+                        url: "@UrlConfig.Action("GetPartyTypewisePartyForDropdown", "Party")",
+                        data: { party_type_id: 4 }
+                    }
+                }
+            }
+        });
+        //GetPartyTypewisePartyForDropdown
+        //$("#party_id").data("kendoComboBox").enable(false);
+
+        //region dropdown
+        $("#region_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        });
+
+        //area dropdown
+        $("#area_id").kendoComboBox({
+            autoBind: false,
+            //cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        });
+        //load territory
+        $("#territory_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        });
+
+
+
+        function getopeningBalance(partId) {
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyOpeningBalance", "PartyJournal")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    $("#opening_balance").val(data);
+                    if (data > 0) {
+                        $("#available_credit_limit").val(data);
+                    } else {
+                        var openingBalance = parseFloat(data);
+                        var credit_limit = $("#credit_limit").val();
+                        var currentLimit = parseFloat(credit_limit) - parseFloat(openingBalance);
+                        $("#available_credit_limit").val(currentLimit);
+                    }
+                }
+            });
+
+        }
+
+
+        $('#party_id').change(function () {
+            var partId = $('#party_id').val();
+            //$("#territory_id").data("kendoComboBox").enable(true),
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyCreditLimit", "Party")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+
+                    $("#credit_limit").val(data);
+                    getopeningBalance(partId);
+                }
+            });
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("PartyBillingAddress", "Party")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    $("#address").val(data);
+                }
+            });
+            //territory
+            $.ajax({
+
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyWiseTerritory", "Territory")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    var rrr = data.region_id;
+                    var aaa = data.area_id;
+                    var ttt = data.territory_id;
+
+                    $("#region_id").data("kendoComboBox").value(rrr);
+                    $("#area_id").data("kendoComboBox").value(aaa);
+                    $("#territory_id").data("kendoComboBox").value(ttt);
+                    $("#contact_person_mobile").val(data.mobile);
+
+                    //$("#region_id").kendoComboBox({enable: false});
+                    //$("#area_id").kendoComboBox({enable: false});
+                    //$("#territory_id").kendoComboBox({enable: false});
+                }
+            });
+
+        });
+
+        /////////////28.01.2017////////////////
+
+        //if (partyTypeId != 1) {
+        //    $("#party_type_id").data("kendoComboBox").value(partyTypeId);
+        //    $("#party_id").data("kendoComboBox").value(partyId);
+        //    $("#party_type_id").kendoComboBox({enable: false});
+        //    $("#party_id").kendoComboBox({enable: false});
+
+        //    $("#warehouse_from").kendoComboBox({enable: false});
+        //}
+
+        //productList Grid---------------------
+        var sampleData = [];
+        var sampleDataNextID = sampleData.length + 1;
+
+        function getIndexById(id) {
+            var idx,
+                l = sampleData.length;
+
+            for (var j = 0; j < l; j++) {
+                if (sampleData[j].requisition_details_id == id) {
+                    return j;
+                }
+            }
+            return null;
+        }
+
+        // custom logic end
+
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: function (e) {
+                    e.success(sampleData);
+                },
+                create: function (e) {
+
+                    // assign an ID to the new item
+                    e.data.requisition_details_id = sampleDataNextID++;
+                    // save data item to the original datasource
+
+                    var gridData = sampleData;
+                    var totalNumber = gridData.length;
+                    var count = 0;
+
+                    for (var i = 0; i < totalNumber; i++) {
+                        var productId = gridData[i].product_id;
+                        var colorId = gridData[i].color_id;
+                        var productVersionId = gridData[i].product_version_id;
+                        if (e.data.product_id === productId && e.data.color_id === colorId && e.data.product_version_id === productVersionId) {
+                            count++;
+                        }
+                    }
+
+                    ////////////////13.02.2017/////////////////////////////
+                    if (e.data.price == 0) {
+                        sweetAlert("Sorry...", "selected version not available !!!", "warning");
+                        return false;
+                    }
+                    //var priceCheck = e.data.price;
+                    var mmm = e.data.quantity;
+                    var checkNumeric = $.isNumeric(mmm);
+                    if (checkNumeric == false) {
+                        sweetAlert("Sorry...", "not valid requisition quantity !!!", "warning");
+                        return false;
+                    }
+                    if (mmm % 1 != 0) {
+                        sweetAlert("Sorry...", "requisition quantity decimal not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == 0) {
+
+                        sweetAlert("Sorry...", "requisition quantity zero not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == null) {
+                        sweetAlert("Sorry...", "requisition quantity is required !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity < 0) {
+                        sweetAlert("Sorry...", "negative requisition quantity not allowed !!!", "warning");
+                        return false;
+                    }
+                    //27.04.2017 start
+                    if (e.data.color_name == null || e.data.color_name == "undefined") {
+                        e.data.color_name = "N/A";
+                    }
+                    if (e.data.product_version_name == null || e.data.product_version_name == "undefined") {
+                        e.data.product_version_name = "N/A";
+                    }
+                    //27.04.2017 end
+                    ////////////07.03.2017
+                    //var checkNumericPrice= $.isNumeric(priceCheck);
+                    //if (checkNumericPrice == false ) {
+                    //    sweetAlert("Sorry...", "not valid price !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price == null) {
+                    //    sweetAlert("Sorry...", "price is required !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price < 0) {
+                    //    sweetAlert("Sorry...", "negative price not allowed !!!", "warning");
+                    //    return false;
+                    //}
+                    //////////07.03.2017
+                    if ($("#requisition_date").data("kendoDateTimePicker").value() == null) {
+                        alert("please select requisition date");
+                        return false;
+                    }
+
+                    if ($("#party_type_id").data("kendoComboBox").value() == "") {
+                        alert("please select party type");
+                        return false;
+                    }
+                    if ($("#party_id").data("kendoComboBox").value() == "") {
+                        alert("please select party");
+                        return false;
+                    }
+                    if ($("#warehouse_from").data("kendoComboBox").value() == "") {
+                        alert("please select warehouse");
+                        return false;
+                    }
+
+                    //////////////13.02.2017 end///////////////////////////
+
+                    if (count > 0) {
+                        sweetAlert("Sorry...", "Selected Product is Duplicate !!!", "warning");
+                        //e.preventDefault();
+                        return false;
+                    } else {
+                        if (e.data.product_category_id != 3 && (e.data.color_id == null || e.data.product_version_id == null)) {
+                            sweetAlert("Sorry...", "Color and Version is Mandatory for " + e.data.product_category_name + "", "warning");
+                            return false;
+                        }
+                        sampleData.push(e.data);
+                        e.success(e.data);
+                        //console.log(sampleData);
+                        // getRebateAndGiftInfo();
+                        gridOfPromotion(e.data.has_serial);
+                        return true;
+                    }
+
+
+                },
+                update: function (e) {
+                    // locate item in original datasource and update it
+                    //sampleData[getIndexById(e.data.requisition_details_id)] = e.data;
+                    //e.success();
+                    ///////////////////////13.02.2017//////////////////////////
+                    if (e.data.price == 0) {
+                        sweetAlert("Sorry...", "selected version not available and price is not mapped !!!", "warning");
+                        return false;
+                    }
+                    //var priceCheck = e.data.price;
+                    var mmm = e.data.quantity;
+                    var checkNumeric = $.isNumeric(mmm);
+
+                    if (checkNumeric == false) {
+                        sweetAlert("Sorry...", "not valid requisition quantity !!!", "warning");
+                        return false;
+                    }
+
+                    if (mmm % 1 != 0) {
+                        sweetAlert("Sorry...", "requisition quantity decimal not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == 0) {
+                        sweetAlert("Sorry...", "requisition quantity zero not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == null) {
+                        sweetAlert("Sorry...", "requisition quantity is required !!!", "warning");
+                        return false;
+                    }
+
+                    if (e.data.quantity < 0) {
+                        sweetAlert("Sorry...", "negative requisition quantity not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.color_name == null || e.data.color_name == "undefined") {
+                        e.data.color_name = "N/A";
+                    }
+                    if (e.data.product_version_name == null || e.data.product_version_name == "undefined") {
+                        e.data.product_version_name = "N/A";
+                    }
+                    ////////////07.03.2017
+                    //var checkNumericPrice= $.isNumeric(priceCheck);
+                    //if (checkNumericPrice == false ) {
+                    //    sweetAlert("Sorry...", "not valid price !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price == null) {
+                    //    sweetAlert("Sorry...", "price is required !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price < 0) {
+                    //    sweetAlert("Sorry...", "negative price not allowed !!!", "warning");
+                    //    return false;
+                    //}
+                    //////////07.03.2017
+                    if ($("#requisition_date").data("kendoDateTimePicker").value() == null) {
+                        //alert("please select requisition date");
+                        return false;
+                    }
+
+                    if ($("#party_id").data("kendoComboBox").value() == "") {
+                        //alert("please select party");
+                        return false;
+                    }
+                    else {
+                        if (e.data.product_category_id != 3 && (e.data.color_id == null || e.data.product_version_id == null)) {
+                            sweetAlert("Sorry...", "Color and Version is Mandatory for " + e.data.product_category_name + "", "warning");
+                            return false;
+                        }
+                        sampleData[getIndexById(e.data.requisition_details_id)] = e.data;
+                        e.success();
+                        gridOfPromotion(e.data.has_serial);
+                    }
+
+                },
+                destroy: function (e) {
+                    // locate item in original datasource and remove it
+                    sampleData.splice(getIndexById(e.data.requisition_details_id), 1);
+                    // on success
+                    e.success();
+                    var entityGrid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                    var gridData = entityGrid.dataSource.data();
+                    //getRebateAndGiftInfo();
+                    var totalNumber = gridData.length;
+
+
+                }
+            },
+            error: function (e) {
+                // handle data operation error
+                alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+            },
+            pageSize: 10,
+            batch: false,
+            schema: {
+                model: {
+                    id: "requisition_details_id",
+                    fields: {
+                        requisition_details_id: { editable: false, nullable: true },
+                        product_id: { field: "product_id", type: "integer" },
+                        product_name: { type: "string" },
+                        product_category_id: { field: "product_category_id", type: "integer" },
+                        product_category_name: { type: "string", editable: false },
+                        unit_id: { field: "unit_id", type: "integer" },
+                        unit_name: { type: "string" },
+                        brand_id: { field: "brand_id", type: "integer" },
+                        brand_name: { type: "string", editable: false },
+                        quantity: { type: "string" },
+                        color_id: { field: "color_id", type: "integer" },
+                        color_name: { type: "string" },
+                        product_version_id: { field: "product_version_id", type: "integer" },
+                        product_version_name: { type: "string" },
+                        price_ori: { type: "number" },
+                        price: { type: "number" },
+                        line_total: { type: "string" },
+                        has_serial: { type: "boolean" },
+                        promotion_master_id: { field: "promotion_master_id", type: "integer" },
+                        promotion_name: { type: "string" },
+                        promotion_type: { type: "string" },
+
+                        discount_amount: { type: "string" },
+                        discount: { type: "number" },
+                        flag_no: { type: "number" },
+                        dis_amt: { type: "string" }
+                    }
+                }
+            }
+        });
+
+        $("#RequisitionDetailsGrid").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            toolbar: ["create"],
+            selectable: true,
+            save: function (data) {
+
+                var amount = 0;
+                var price_tag = 0;
+                var tempAmount = 0;
+                //var tempAmount = +data.model.quantity * +data.model.price;
+                data.model.set("price", data.model.price);
+                tempAmount = data.model.quantity * data.model.price;
+                price_tag = data.model.price;
+
+                if (data.model.has_serial == true && (data.model.color_id == null || data.model.product_version_id == null)) {
+                    sweetAlert("Sorry...", "Color and Version is Mandatory for " + data.model.product_name + "", "warning");
+                    return false;
+                }
+
+                //data.model.set("price", data.model.price);
+                //alert(data.model.price);
+                //tempAmount = data.model.quantity * data.model.price;
+                //}
+                //data.model.set("line_total", tempAmount);//comments on 03.04.2017
+
+                ///////////////////03.04.2017///////////////
+                var discountAmount = 0;
+
+                if (data.model.flag_no == 1) {
+                    //alert("dis" + data.model.discount);
+                    var discount = data.model.discount;
+                    var priceAmount = price_tag;
+                    var qty = data.model.quantity;
+
+                    var liftPrice = priceAmount * (discount / 100);
+                    var actual_price = priceAmount - liftPrice;
+
+                    var totalAmount_final = qty * actual_price;
+                    data.model.set("discount_amount", liftPrice * qty);
+
+                    data.model.set("line_total", totalAmount_final);
+
+                    data.model.set("amount", totalAmount_final);
+                }
+                else if (data.model.flag_no == 2) {
+                    var discount = data.model.discount;
+                    var discountAmount = discount * data.model.quantity;
+
+                    var totalAmount_final = tempAmount - discountAmount;
+                    data.model.set("discount_amount", discountAmount);
+
+                    data.model.set("line_total", totalAmount_final);
+
+                    data.model.set("amount", totalAmount_final);
+                } else {
+                    data.model.set("amount", tempAmount);
+                    data.model.set("line_total", tempAmount);
+                }
+
+                data.model.set("dis_amt", discountAmount);
+                ////////////////////end///////////////////////
+
+                var entityGrid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                var gridData = entityGrid.dataSource.data();
+                var totalNumber = gridData.length;
+
+                for (var i = 0; i < totalNumber; i++) {
+                    amount += +parseFloat(gridData[i].line_total).toFixed(2);
+                }
+
+                $("#amount").val(amount);
+            },
+
+            edit: function (e) {
+
+                $('input[name="price"]').attr('readonly', 'readonly');
+                $('input[name="discount_amount"]').attr('readonly','readonly');
+            },
+
+            cancel: function (data) {
+                var tempAmount = +data.model.quantity * +data.model.price;
+                data.model.set("line_total", tempAmount);
+
+                var gridData = sampleData;
+                var totalNumber = gridData.length;
+                console.log(sampleData);
+
+            },
+
+            columns: [
+                { field: "product_category_id", title: "Product Category", template: "#= product_category_name #", editor: productCategoryDropDownEditor, width: "100px" },
+                { field: "product_id", title: "Product", template: "#= product_name #", editor: productDropDownEditor, width: "100px" },
+                { field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditor, width: "50px" },
+                { field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionDropDownEditor, width: "90px" },
+                { field: "quantity", title: "Quantity", width: "50px" },
+                //01.04.2017
+                { field: "promotion_master_id", title: "Promotion", template: "#= promotion_name #", editor: promotionDropDownEditor, width: "100px" },
+
+                //{ field: "is_live_dummy", title: "Live Dummy?", width: "50px" },
+                { field: "price", title: "DP", width: "50px" },
+                { field: "discount_amount", title: "Incentive Amt", width: "70px" },
+                { field: "line_total", title: "Total Amt", width: "70px" },
+                { command: ["edit", "destroy"], title: "&nbsp;", width: "115px" }
+            ],
+            editable: "inline"
+        });
+
+        function adjustDropDownWidth(e) {
+            var listContainer = e.sender.list.closest(".k-list-container");
+            listContainer.width(listContainer.width() + kendo.support.scrollbar());
+        }
+        //template for product category comboBox
+        function productCategoryDropDownEditor(container, options) {
+            jQuery('<input id="productCategoryId"  data-text-field="product_category_name" data-value-field="product_category_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: false,
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllProductCategories", "ProductCategory")",
+                                type: "GET"
+                            }
+                        }
+
+                    },
+                    dataBound: adjustDropDownWidth,
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        //pCatId = dataItem.product_category_id;
+
+                        //console.log("MOHIUDDIN");
+                        //console.log(pCatId);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+                        gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                        gridData[sel_idx].product_category_name = dataItem.product_category_name;
+
+                    }
+                });
+        }
+       
+        //template for product comboBox
+        function productDropDownEditor(container, options) {
+            jQuery('<input id="productId"  data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    filter: "startswith",
+                    autoBind: false,
+                    cascadeFrom: "productCategoryId",
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                @*url: "@UrlConfig.Action("GetAllProducts", "Product")",*@
+                                //27.04.2017 start
+                                serverFiltering: true,
+                                url: "@UrlConfig.Action("GetProductCategorywiseProduct", "Product")",
+                                //data: { product_category_id: pCatId },
+                                //27.04.2017 start
+                                type: "GET"
+                            }
+                        }
+
+                    },
+                    dataBound: adjustDropDownWidth,
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        pId = dataItem.product_id;
+
+                        console.log(dataItem.product_name);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+
+                        gridData[sel_idx].product_id = dataItem.product_id,
+                        gridData[sel_idx].product_name = dataItem.product_name;
+                        gridData[sel_idx].unit_id = dataItem.unit_id;
+                        gridData[sel_idx].unit_name = dataItem.unit_name;
+                        gridData[sel_idx].brand_id = dataItem.brand_id;
+                        gridData[sel_idx].brand_name = dataItem.brand_name;
+                        gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                        gridData[sel_idx].product_category_name = dataItem.product_category_name;
+                        gridData[sel_idx].has_serial = dataItem.has_serial;
+
+                        ////////////////////////////15.02.2017////////////////////////////
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetProductsWiseFirstColorVersion", "Product")",
+                            data: {
+                                product_id: pId
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                console.log(data);
+                                gridData[sel_idx].color_id = data.color_id;
+                                $("#colorId").data("kendoComboBox").value(gridData[sel_idx].color_id);
+                                gridData[sel_idx].color_name = data.color_name;
+                                gridData[sel_idx].product_version_id = data.product_version_id;
+                                gridData[sel_idx].product_version_name = data.product_version_name;
+                                $("#productversionId").data("kendoComboBox").value(gridData[sel_idx].product_version_id);
+                                gridData[sel_idx].price = data.dealer_cost;
+                            }
+                        });
+
+                        //01.04.2017
+                        //Load Promotion
+                        var cId = $("#party_type_id").val();
+                        $("#promotionId").kendoComboBox({
+                            autoBind: true,
+                            placeholder: "--- Select Promotion ---",
+                            dataTextField: "promotion_name",
+                            dataValueField: "promotion_master_id",
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetPromotionInfoDropdown", "Promotion")",
+                                        data: { product_id: pId, channel_id: cId }
+                                    }
+                                }
+                            },
+                            change: function (e) {
+
+                                var dataItem = this.dataItem(e.item);
+
+                                //console.log(dataItem.product_name);
+                                var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].promotion_master_id = dataItem.promotion_master_id,
+                                    gridData[sel_idx].promotion_name = dataItem.promotion_name;
+                                //alert(dataItem.promotion_name);
+                                $.ajax({
+                                    type: "GET",
+                                    url: "@UrlConfig.Action("GetPromotinByPromotionId", "Promotion")",
+                                    data: {
+                                        promotion_master_id: dataItem.promotion_master_id
+                                    },
+                                    dataType: "json",
+                                    contentType: "application/json",
+                                    success: function (data) {
+                                        //console.log(data);
+                                        gridData[sel_idx].promotion_type = data.promotion_type;
+                                    }
+                                });
+
+                            }
+                        });
+
+                        //End
+                        ////////////////////////15.02.2017/////////////////////////////////
+
+                    }
+                });
+        }
+
+        //template for color comboBox
+        function colorDropDownEditor(container, options) {
+            jQuery('<input id="colorId" data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    cascadeFrom: "productId",
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetProductwiseColor", "ProductPriceing")",
+                                type: "GET"
+                            }
+                        }
+
+                    },
+
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        cId = dataItem.color_id;
+
+                        console.log(dataItem.product_name);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+
+                        var vId = gridData[sel_idx].product_version_id;
+                        gridData[sel_idx].color_id = dataItem.color_id,
+                            gridData[sel_idx].color_name = dataItem.color_name;
+                        /////////////////15.02.2017////////////////////
+                        var pid = $("#party_type_id").val();
+                        //alert(vId);
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",
+                            data: {
+                                party_type_id: pid,
+                                product_id: pId,
+                                color_id: cId,
+                                product_version_id: vId
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                gridData[sel_idx].price = data;
+                                gridData[sel_idx].price_ori = data;
+                            }
+                        });
+                        //////////////15.02.2017/////////////////////
+                        //load version dropdown by product && color wise
+                        $("#productversionId").kendoComboBox({
+                            autoBind: true,
+                            placeholder: "--- Select Version ---",
+                            dataTextField: "product_version_name",
+                            dataValueField: "product_version_id",
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetProductColorwiseVersion", "ProductPriceing")",
+                                        data: { aa: pId, bb: cId }
+                                    }
+                                }
+                            },
+                            change: function (e) {
+
+                                var dataItem = this.dataItem(e.item);
+
+                                //////////////////////23.01.2017 start//////////////////////
+                                //to get party type, product, color and version wise price
+                                var partyTypeId = ($("#party_type_id").val());
+                                $.ajax({
+                                    type: "GET",
+                                    url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",
+                                    data: {
+                                        party_type_id: partyTypeId,
+                                        product_id: pId,
+                                        color_id: cId,
+                                        product_version_id: dataItem.product_version_id
+                                    },
+                                    dataType: "json",
+                                    contentType: "application/json",
+                                    success: function (data) {
+                                        gridData[sel_idx].price = data;
+                                        //gridData[sel_idx].price_ori =data;
+                                    }
+                                });
+
+                                var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                    gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+                            }
+                        });
+                    }
+                });
+        }
+
+        //load all version
+        function productVersionDropDownEditor(container, options) {
+
+            jQuery('<input id="productversionId" data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllProductVersionForDropDown", "ProductVersion")",
+
+                                type: "GET"
+                            }
+                        }
+
+                    },
+
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+                        gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                            gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+                        //////////////////////19.02.2017 start//////////////////////
+                        //to get party type, product, color and version wise price
+                        var cId = gridData[sel_idx].color_id;
+                        var partyTypeId = ($("#party_type_id").val());
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",
+                            data: {
+                                party_type_id: partyTypeId,
+                                product_id: pId,
+                                color_id: cId,
+                                product_version_id: dataItem.product_version_id
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                gridData[sel_idx].price = data;
+                                //gridData[sel_idx].price_ori =data;
+                            }
+                        });
+                        //////////////////////19.02.2017 end//////////////////////
+
+
+                    }
+                });
+        }
+
+        //01.04.2017
+        //Add Promotion Dropdown
+        var chId = $("#party_type_id").val();
+
+        function promotionDropDownEditor(container, options) {
+
+            jQuery('<input id="promotionId" data-text-field="promotion_name" data-value-field="promotion_master_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    placeholder: "-Select-",
+                    cascadeFrom: "productId",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetPromotinByChannelId", "Promotion")?channelId=" + $("#party_type_id").val(),
+                                type: "GET"
+                            }
+                        }
+
+
+                    },
+
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+
+                        var qty = gridData[sel_idx].quantity;
+                        gridData[sel_idx].promotion_master_id = dataItem.promotion_master_id,
+                            gridData[sel_idx].promotion_name = dataItem.promotion_name;
+                        //alert("asdas"+qty);
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetPromotinByPromotionId", "Promotion")",
+                            data: {
+                                promotion_master_id: dataItem.promotion_master_id
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                //alert(data.lifting_quantity_for_promotion);
+                                if (qty == "") {
+                                    swal("Warning", "Please enter quantity  ", "warning");
+                                    return false;
+                                }
+                                if (qty >= data.lifting_quantity_for_promotion) {
+                                    gridData[sel_idx].promotion_type = data.promotion_type;
+                                    //alert(data.promotion_type);
+                                    if (data.promotion_type == "Incentive") {
+                                        //alert(data.promotion_type + "1");
+                                        //alert(data.is_discount_percent);
+                                        if (data.is_discount_percent == true) {
+                                            //alert(data.promotion_type + "2");
+                                            gridData[sel_idx].flag_no = 1;
+                                            gridData[sel_idx].discount = parseInt(data.promotion_discount);
+
+                                        } else {
+
+                                            gridData[sel_idx].flag_no = 2;
+                                            gridData[sel_idx].discount = parseInt(data.promotion_discount);
+                                        }
+                                    }
+                                } else {
+                                    swal("Warning", "Please enter quantity minimum " + data.lifting_quantity_for_promotion + " for this promotion", "warning");
+                                    return false;
+                                }
+                                //gridData[sel_idx].promotion_type = data.promotion_type;
+                            }
+                        });
+                    }
+
+                });
+        }
+
+
+        // promotion gift grid portion---------------(Start)------------------
+
+        var samplePromotionGiftData = [];
+        var samplePromotionGiftDataNextID = samplePromotionGiftData.length + 1;
+
+        function getIndexById(id) {
+            var l = samplePromotionGiftData.length;
+
+            for (var j = 0; j < l; j++) {
+                if (samplePromotionGiftData[j].promotion_details_id == id) {
+                    return j;
+                }
+            }
+            return null;
+        }
+
+
+
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: function (e) {
+                    e.success(samplePromotionGiftData);
+                },
+                create: function (e) {
+
+                    // assign an ID to the new item
+                    e.data.promotion_details_id = samplePromotionGiftDataNextID++;
+                    // save data item to the original datasource
+
+                    var gridData = samplePromotionGiftData;
+                    var totalNumber = samplePromotionGiftData.length;
+                    var count = 0;
+
+                    for (var i = 0; i < totalNumber; i++) {
+                        var productId = gridData[i].product_id;
+                        var colorId = gridData[i].color_id;
+                        var productVersionId = gridData[i].product_version_id;
+                        if (e.data.product_id === productId && e.data.color_id === colorId && e.data.product_version_id === productVersionId) {
+                            count++;
+                        }
+                    }
+                    // Check Requisition Validation
+                    var mmm = e.data.quantity;
+                    var checkNumeric = $.isNumeric(mmm);
+                    if (checkNumeric == false) {
+                        sweetAlert("Sorry...", "not valid requisition quantity !!!", "warning");
+                        return false;
+                    }
+                    if (mmm % 1 != 0) {
+                        sweetAlert("Sorry...", "requisition quantity decimal not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == 0) {
+
+                        sweetAlert("Sorry...", "requisition quantity zero not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == null) {
+                        sweetAlert("Sorry...", "requisition quantity is required !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity < 0) {
+                        sweetAlert("Sorry...", "negative requisition quantity not allowed !!!", "warning");
+                        return false;
+                    }
+                    //27.04.2017 start
+                    if (e.data.color_name == null || e.data.color_name == "undefined") {
+                        e.data.color_name = "N/A";
+                    }
+                    if (e.data.product_version_name == null || e.data.product_version_name == "undefined") {
+                        e.data.product_version_name = "N/A";
+                    }
+                    //27.04.2017 end
+                    if (count > 0) {
+                        sweetAlert("Sorry...", "Selected Product is Duplicate !!!", "warning");
+
+                        return false;
+                    } else {
+
+
+                        var promotionGiftProductId = e.data.product_id;
+                        var promotionGiftQuantity = parseInt(e.data.quantity);
+                        var promotionQuantity = 0;
+
+                        if (samplePromotionGiftData.length > 0) {
+                            $.each(samplePromotionGiftData, function (key, value) {
+                                if (value.product_id == promotionGiftProductId) {
+                                    promotionGiftQuantity += parseInt(value.quantity);
+                                }
+                            });
+                        }
+
+                        var promotionListGrid = $("#PromotionList").data("kendoGrid")._data;
+
+
+                        if (promotionListGrid.length > 0) {
+                            $.each(promotionListGrid, function (key, value) {
+                                if (value.product_id == promotionGiftProductId) {
+                                    promotionQuantity += parseInt(value.gift_quantity);
+                                }
+                            });
+                        }
+
+                        if (promotionGiftQuantity > promotionQuantity) {
+                            sweetAlert("Sorry...", "You can not exceed promoted quantity !!!", "warning");
+                            return false;
+                        } else {
+                            samplePromotionGiftData.push(e.data);
+                            e.success(e.data);
+                            return true;
+                        }
+
+                    }
+
+
+                },
+                update: function (e) {
+
+                    var mmm = e.data.quantity;
+                    var checkNumeric = $.isNumeric(mmm);
+                    if (checkNumeric == false) {
+                        sweetAlert("Sorry...", "not valid requisition quantity !!!", "warning");
+                        return false;
+                    }
+
+                    if (mmm % 1 != 0) {
+                        sweetAlert("Sorry...", "requisition quantity decimal not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == 0) {
+                        sweetAlert("Sorry...", "requisition quantity zero not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == null) {
+                        sweetAlert("Sorry...", "requisition quantity is required !!!", "warning");
+                        return false;
+                    }
+
+                    if (e.data.quantity < 0) {
+                        sweetAlert("Sorry...", "negative requisition quantity not allowed !!!", "warning");
+                        return false;
+                    }
+                    //27.04.2017 start
+                    if (e.data.color_name == null || e.data.color_name == "undefined") {
+                        e.data.color_name = "N/A";
+                    }
+                    if (e.data.product_version_name == null || e.data.product_version_name == "undefined") {
+                        e.data.product_version_name = "N/A";
+                    }
+                    //27.04.2017 end
+
+                    else {
+
+
+
+                        var promotionGiftProductId = e.data.product_id;
+                        var promotionGiftQuantity = parseInt(e.data.quantity);
+                        var promotionQuantity = 0;
+
+                        var promotionGiftGrid = $("#PromotionGiftGrid").data("kendoGrid")._data;
+
+                        if (promotionGiftGrid.length > 0) {
+                            $.each(promotionGiftGrid, function (key, value) {
+                                if (value.product_id == promotionGiftProductId) {
+                                    promotionGiftQuantity += parseInt(value.quantity);
+                                }
+                            });
+                        }
+
+                        var promotionListGrid = $("#PromotionList").data("kendoGrid")._data;
+
+                        if (promotionListGrid.length > 0) {
+                            $.each(promotionListGrid, function (key, value) {
+                                if (value.product_id == promotionGiftProductId) {
+                                    promotionQuantity += parseInt(value.gift_quantity);
+                                }
+                            });
+                        }
+
+                        promotionGiftQuantity -= parseInt(e.data.quantity);
+                        if (promotionGiftQuantity > promotionQuantity) {
+                            sweetAlert("Sorry...", "You can not exceed promoted quantity !!!", "warning");
+                            return false;
+                        } else {
+                            samplePromotionGiftData[getIndexById(e.data.promotion_details_id)] = e.data;
+                            e.success();
+                        }
+
+                    }
+
+
+                },
+                destroy: function (e) {
+                    // locate item in original datasource and remove it
+                    samplePromotionGiftData.splice(getIndexById(e.data.promotion_details_id), 1);
+                    // on success
+                    e.success();
+                    var entityGrid = $("#PromotionGiftGrid").data("kendoGrid");
+                    var gridData = entityGrid.dataSource.data();
+                    var totalNumber = gridData.length;
+                    var amount = 0;
+
+                    for (var i = 0; i < totalNumber; i++) {
+                        amount += +parseFloat(gridData[i].line_total).toFixed(2);
+                    }
+
+                    //$("#total_invoice_amount").val(amount);
+
+                    //gridOfPromotion(e.data.has_serial);
+
+
+                }
+            },
+            error: function (e) {
+                // handle data operation error
+                alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+            },
+            pageSize: 10,
+            batch: false,
+            schema: {
+                model: {
+                    id: "promotion_details_id",
+                    fields: {
+                        promotion_details_id: { editable: false, nullable: true },
+                        product_id: { field: "product_id", type: "integer" },
+                        product_name: { type: "string" },
+                        product_category_id: { field: "product_category_id", type: "integer" },
+                        product_category_name: { type: "string", editable: false },
+                        unit_id: { field: "unit_id", type: "integer" },
+                        unit_name: { type: "string" },
+                        brand_id: { field: "brand_id", type: "integer" },
+                        brand_name: { type: "string", editable: false },
+                        quantity: { type: "string" },
+                        color_id: { field: "color_id", type: "integer" },
+                        color_name: { type: "string" },
+                        product_version_id: { field: "product_version_id", type: "integer" },
+                        product_version_name: { type: "string" },
+                        price_ori: { type: "number" },
+                        price: { type: "number" },
+                        mrp_cost: { type: "number" },
+                        dealer_cost: { type: "number" },
+                        b2b_cost: { type: "number" },
+                        retailer_cost: { type: "number" },
+                        internal_cost: { type: "number" },
+                        discount_amount: { type: "string" },
+                        amount: { type: "string" },
+                        discount: { type: "number" },
+                        dis_amt: { type: "string" },
+                        line_total: { type: "string" },
+                        promotion_master_id: { field: "promotion_master_id", type: "integer" },
+                        promotion_name: { type: "string" },
+                        has_serial: { type: "boolean" },
+                        flag_no: { type: "number" }
+                    }
+                }
+            }
+        });
+
+        //Requisition Grid
+        $("#PromotionGiftGrid").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            toolbar: ["create"],
+            selectable: true,
+            save: function (data) {
+
+            },
+
+            cancel: function (data) {
+
+
+            },
+            columns: [
+                { field: "product_id", title: "Product", template: "#= product_name #", editor: productGiftDropDownEditor, width: "130px" },
+                { field: "color_id", title: "Color", template: "#= color_name #", editor: colorGiftDropDownEditor, width: "100px" },
+                { field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionGiftDropDownEditor, width: "100px" },
+                { field: "quantity", title: "Quantity", width: "50px" },
+                //{ field: "promotion_master_id", title: "Promotion", template: "#= promotion_name #", editor: promotionDropDownEditor, width: "100px" },
+                //{ field: "price", title: "Price", width: "50px" },
+                //{ field: "discount_amount", title: "Incentive Amount", width: "50px" },
+                //{ field: "amount", title: "Amount", width: "50px" },
+                { command: ["edit", "destroy"], title: "&nbsp;", width: "110px" }
+            ],
+            editable: "inline"
+        });
+
+
+        //template for product comboBox
+        function productGiftDropDownEditor(container, options) {
+            var uomDataGrid = $("#PromotionList").data("kendoGrid")._data;
+            var models = $.unique(uomDataGrid.map(function (d) { return d; }));
+
+            var events = uomDataGrid;
+
+            var result = events.reduce(function (memo, e1) {
+                var matches = memo.filter(function (e2) {
+                    return e1.product_id == e2.product_id
+                })
+                if (matches.length == 0)
+                    memo.push(e1)
+                return memo;
+            }, [])
+
+            console.log(result);
+
+            console.log(models);
+            jQuery('<input id="productId" required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: false,
+                    placeholder: "-Select-",
+                    dataSource: result,
+
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        pId = dataItem.product_id;
+
+                        console.log(dataItem.product_name);
+                        var grid = $("#PromotionGiftGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+                        gridData[sel_idx].product_id = dataItem.product_id,
+                            gridData[sel_idx].product_name = dataItem.product_name;
+                        gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                        gridData[sel_idx].unit_id = dataItem.unit_id;
+                        gridData[sel_idx].brand_id = dataItem.brand_id;
+
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetProductsWiseFirstColorVersion", "Product")",
+                            data: {
+                                product_id: pId
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                gridData[sel_idx].color_id = data.color_id;
+                                $("#colorId").data("kendoComboBox").value(gridData[sel_idx].color_id);
+                                gridData[sel_idx].color_name = data.color_name;
+                                gridData[sel_idx].product_version_id = data.product_version_id;
+                                gridData[sel_idx].product_version_name = data.product_version_name;
+                                $("#productversionId").data("kendoComboBox").value(gridData[sel_idx].product_version_id);
+                                gridData[sel_idx].mrp_cost = data.mrp_cost;
+                                gridData[sel_idx].dealer_cost = data.dealer_cost;
+                                gridData[sel_idx].b2b_cost = data.b2b_cost;
+                                gridData[sel_idx].retailer_cost = data.retailer_cost;
+                                gridData[sel_idx].internal_cost = data.internal_cost;
+
+                                gridData[sel_idx].has_serial = data.has_serial;
+
+                            }
+                        });
+
+                        //Load Promotion
+
+                        var cId = 11;
+
+                        $("#promotionId").kendoComboBox({
+                            autoBind: true,
+                            placeholder: "--- Select Promotion ---",
+                            dataTextField: "promotion_name",
+                            dataValueField: "promotion_master_id",
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetPromotionInfoDropdown", "Promotion")",
+                                        data: { product_id: pId, channel_id: cId }
+                                    }
+                                }
+                            },
+                            change: function (e) {
+
+                                var dataItem = this.dataItem(e.item);
+
+                                //console.log(dataItem.product_name);
+                                var grid = $("#PromotionGiftGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].promotion_master_id = dataItem.promotion_master_id,
+                                    gridData[sel_idx].promotion_name = dataItem.promotion_name;
+                                $.ajax({
+                                    type: "GET",
+                                    url: "@UrlConfig.Action("GetPromotinByPromotionId", "Promotion")",
+                                    data: {
+                                        promotion_master_id: dataItem.promotion_master_id,
+                                    },
+                                    dataType: "json",
+                                    contentType: "application/json",
+                                    success: function (data) {
+                                        gridData[sel_idx].promotion_type = data.promotion_type;
+                                    }
+                                });
+
+                            }
+                        });
+
+                    }
+                });
+        }
+
+
+        //template for color comboBox
+        function colorGiftDropDownEditor(container, options) {
+            jQuery('<input id="colorId" data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    cascadeFrom: "productId",
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetProductwiseColor", "ProductPriceing")",
+                                type: "GET"
+                            }
+                        }
+
+                    },
+
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        cId = dataItem.color_id;
+
+                        console.log(dataItem.product_name);
+                        var grid = $("#PromotionGiftGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+                        var vId = gridData[sel_idx].product_version_id;
+
+                        gridData[sel_idx].color_id = dataItem.color_id,
+                            gridData[sel_idx].color_name = dataItem.color_name;
+
+                        var pid = 8;
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",
+                            data: {
+                                party_type_id: pid,
+                                product_id: pId,
+                                color_id: cId,
+                                product_version_id: vId
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+
+                                gridData[sel_idx].mrp_cost = data.mrp_cost;
+                                gridData[sel_idx].dealer_cost = data.dealer_cost;
+                                gridData[sel_idx].b2b_cost = data.b2b_cost;
+                                gridData[sel_idx].retailer_cost = data.retailer_cost;
+                                gridData[sel_idx].internal_cost = data.internal_cost;
+
+
+                            }
+                        });
+
+                        //load version dropdown by product && color wise
+                        $("#productversionId").kendoComboBox({
+                            autoBind: true,
+                            placeholder: "--- Select Version ---",
+                            dataTextField: "product_version_name",
+                            dataValueField: "product_version_id",
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetProductColorwiseVersion", "ProductPriceing")",
+                                        data: { aa: pId, bb: cId }
+                                    }
+                                }
+                            },
+                            change: function (e) {
+
+                                var dataItem = this.dataItem(e.item);
+
+                                //////////////////////23.01.2017 start//////////////////////
+                                //to get party type, product, color and version wise price
+                                var partyTypeId = 8;
+                                $.ajax({
+                                    type: "GET",
+                                    url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",
+                                    data: {
+                                        party_type_id: partyTypeId,
+                                        product_id: pId,
+                                        color_id: cId,
+                                        product_version_id: dataItem.product_version_id
+                                    },
+                                    dataType: "json",
+                                    contentType: "application/json",
+                                    success: function (data) {
+                                        gridData[sel_idx].mrp_cost = data.mrp_cost;
+                                        gridData[sel_idx].dealer_cost = data.dealer_cost;
+                                        gridData[sel_idx].b2b_cost = data.b2b_cost;
+                                        gridData[sel_idx].retailer_cost = data.retailer_cost;
+                                        gridData[sel_idx].internal_cost = data.internal_cost;
+                                    }
+                                });
+                                //////////////////////23.01.2017 end//////////////////////
+
+                                var grid = $("#PromotionGiftGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                    gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+                            }
+                        });
+                    }
+                });
+        }
+
+        //load all version
+        function productVersionGiftDropDownEditor(container, options) {
+
+            jQuery('<input id="productversionId" data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllProductVersionForDropDown", "ProductVersion")",
+
+                                type: "GET"
+                            }
+                        }
+
+                    },
+
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        var grid = $("#PromotionGiftGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+                        gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                            gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+
+                    }
+                });
+        }
+
+        // promotion gift grid portion-----------------(End)--------------------
+
+
+
+
+
+
+
+        //start--03.04.2017
+        function gridOfPromotion(serial) {
+
+            var promotionArray = [];
+
+            var grido = $("#RequisitionDetailsGrid").data("kendoGrid")._data;
+
+            if (grido.length == 0) {
+                $('#PromotionList').data("kendoGrid").dataSource.data([]);
+                $('#PromotionList').data('kendoGrid').refresh();
+
+            }
+            for (var r = 0; r < grido.length; r++) {
+                var xyz = grido[r].quantity;
+                var amount = grido[r].amount;
+                var flag_no = false;
+                var disAmt = 0;
+                var finalAmt = 0;
+
+                if (grido[r].promotion_master_id != undefined) {
+
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("GetPromotionInformation", "Promotion")",
+                        data: {
+                            product_id: grido[r].product_id,
+                            promotion_master_id: grido[r].promotion_master_id,
+                            quantity: grido[r].quantity
+                        },
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (data) {
+
+                            if (data.promotion_type == "Incentive") {
+
+                                if (data.is_discount_percent == true) {
+                                } else {
+                                    disAmt = parseInt(data.promotion_discount);
+                                    var yyy = parseInt(xyz);
+                                    finalAmt = disAmt * yyy;
+
+                                    flag_no = true;
+
+                                }
+
+                            } else {
+                                var ccc = true;
+                                //for product----------------------
+                                for (var t = 0; t < data.length; t++) {
+
+                                    var productSummary = {
+                                        product_name: data[t].product_name,
+                                        product_id: data[t].product_id,
+                                        promotion_details_id: data[t].promotion_details_id,
+                                        promotion_master_id: data[t].promotion_master_id,
+                                        gift_quantity: data[t].gift_quantity,
+                                        price: 0,
+                                        line_total: 0,
+                                        product_category_id: data[t].product_category_id,
+                                        product_category_name: data[t].product_category_name,
+                                        color_id: data[t].color_id,//19.04.2017
+                                        color_name: '',
+                                        product_version_id: data[t].product_version_id,//19.04.2017
+                                        product_version_name: '',
+                                        has_serial: data[t].has_serial,
+
+                                        //04.04.2017
+                                        brand_id: data[t].brand_id,
+                                        brand_name: data[t].brand_name,
+                                        unit_id: data[t].unit_id,
+                                        unit_name: data[t].unit_name
+                                    };
+
+
+                                    promotionArray.push(productSummary);
+
+                                }
+                                //for product----------------------
+
+                                var dataSource3 = new kendo.data.DataSource({
+                                    transport: {
+                                        read: function (e) {
+                                            e.success(promotionArray);
+                                        },
+                                        update: function (e) {
+                                            e.success();
+                                        },
+                                    },
+                                    pageSize: 10,
+                                    batch: false,
+                                    schema: {
+                                        model: {
+                                            id: "promotion_details_id",
+                                            fields: {
+                                                promotion_details_id: { editable: false, nullable: true },
+                                                product_id: { field: "product_id", type: "integer", editable: false },
+                                                product_name: { type: "string", editable: false },
+                                                product_category_id: { field: "product_category_id", type: "integer" },
+                                                product_category_name: { type: "string", editable: false },
+                                                unit_id: { field: "unit_id", type: "integer" },
+                                                unit_name: { type: "string" },
+                                                promotion_master_id: { type: "integer" },
+                                                brand_id: { type: "integer" },
+                                                brand_name: { type: "string", editable: false },
+                                                gift_quantity: { type: "string", editable: false },
+                                                color_id: { field: "color_id", type: "integer" },
+                                                color_name: { type: "string" },
+                                                product_version_id: { field: "product_version_id", type: "integer" },
+                                                product_version_name: { type: "string" },
+                                                price: { type: "number", editable: false },
+                                                line_total: { type: "string", editable: false },
+                                                has_serial: { type: "boolean" }
+                                            }
+                                        }
+                                    }
+                                });
+
+                                $("#PromotionList").kendoGrid({
+                                    dataSource: dataSource3,
+                                    pageable: true,
+                                    selectable: true,
+
+                                    columns: [
+                                        { field: "product_name", title: "Product", width: "100px" },
+                                        //{ field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditorForPromotion, width: "100px" },
+                                        //{ field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionDropDownEditorForPromotion, width: "100px" },
+                                        { field: "gift_quantity", title: "Quantity", width: "100px" },
+                                        //{ field: "price", title: "Price", width: "50px" },
+                                        //{ field: "line_total", title: "Total Amount", width: "70px" },
+                                        //{ command: ["edit"], title: "&nbsp;", width: "110px" }
+                                    ],
+                                    editable: "inline"
+                                });
+
+                                function colorDropDownEditorForPromotion(container, options) {
+                                    jQuery('<input id="colorIdPromotion" required data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                                        .appendTo(container)
+                                        .kendoComboBox({
+                                            autoBind: true,
+                                            placeholder: "-Select-",
+                                            dataSource: {
+                                                transport: {
+                                                    read: {
+                                                        url: "@UrlConfig.Action("GetAllColors", "Color")",
+                                                        type: "GET"
+                                                    }
+                                                }
+
+                                            },
+
+                                            change: function (e) {
+                                                var dataItem = this.dataItem(e.item);
+                                                var cId = dataItem.color_id;
+
+                                                console.log(dataItem.product_name);
+                                                var grid = $("#PromotionList").data("kendoGrid");
+                                                var sel = grid.select();
+                                                var sel_idx = sel.index();
+                                                var gridData = grid.dataSource.data();
+                                                var vId = gridData[sel_idx].product_version_id;
+                                                gridData[sel_idx].color_id = dataItem.color_id,
+                                                    gridData[sel_idx].color_name = dataItem.color_name;
+
+                                                var pId = gridData[sel_idx].product_id;
+
+                                                //load version dropdown by product && color wise
+                                                $("#productversionIdPromotion").kendoComboBox({
+                                                    autoBind: true,
+                                                    placeholder: "--- Select Version ---",
+                                                    dataTextField: "product_version_name",
+                                                    dataValueField: "product_version_id",
+                                                    dataSource: {
+                                                        type: "json",
+                                                        transport: {
+                                                            read: {
+                                                                url: "@UrlConfig.Action("GetProductColorwiseVersion", "ProductPriceing")",
+                                                                data: { aa: pId, bb: cId }
+                                                            }
+                                                        }
+                                                    },
+                                                    change: function (e) {
+
+                                                        var dataItem = this.dataItem(e.item);
+                                                        //////////////////////23.01.2017 end//////////////////////
+
+                                                        var grid = $("#PromotionList").data("kendoGrid");
+                                                        var sel = grid.select();
+                                                        var sel_idx = sel.index();
+                                                        var gridData = grid.dataSource.data();
+                                                        gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                                            gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+                                                    }
+                                                });
+                                            }
+                                        });
+                                }
+
+                                //load all version
+                                function productVersionDropDownEditorForPromotion(container, options) {
+
+                                    jQuery('<input id="productversionIdPromotion" required data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                                        .appendTo(container)
+                                        .kendoComboBox({
+                                            autoBind: true,
+                                            placeholder: "-Select-",
+                                            dataSource: {
+                                                transport: {
+                                                    read: {
+                                                        url: "@UrlConfig.Action("GetAllProductVersionForDropDown", "ProductVersion")",
+
+                                                        type: "GET"
+                                                    }
+                                                }
+
+                                            },
+
+                                            change: function (e) {
+                                                var dataItem = this.dataItem(e.item);
+                                                var grid = $("#PromotionList").data("kendoGrid");
+                                                var sel = grid.select();
+                                                var sel_idx = sel.index();
+                                                var gridData = grid.dataSource.data();
+                                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                                    gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+
+                                            }
+                                        });
+                                }
+
+
+                            }
+
+
+                        },
+                        async: false
+
+
+                    });
+
+                }
+
+            }
+
+        }
+        //end
+
+        //productList Grid---------------------
+
+        $("#btnSaveRequisition").click(function () {
+            Loading(false);
+
+            var ProductDetailsGrid = $("#RequisitionDetailsGrid").data("kendoGrid").dataSource.data();
+            var giftDetailsGrid = [];
+            for (var p = 0; p < ProductDetailsGrid.length; p++) {
+                //alert(ProductDetailsGrid[p].promotion_master_id);
+                //alert(ProductDetailsGrid[p].promotion_type);
+                if (ProductDetailsGrid[p].promotion_master_id != null && ProductDetailsGrid[p].promotion_type == "Product") {
+                    //gridPromotion = $("#PromotionList").data("kendoGrid")._data;
+                    giftDetailsGrid = $("#PromotionGiftGrid").data("kendoGrid").dataSource.data();
+                }
+            }
+
+            var requisition_code = $('#requisition_code').val();
+            var requisition_date = $('#requisition_date').val();
+            var warehouse_from = $('#warehouse_from').val();
+            var expected_receiving_date = $('#expected_receiving_date').val();
+            var company_id = $('#company_id').val();
+            var party_type_id = $('#party_type_id').val();
+            var party_id = $('#party_id').val();
+            var amount = $('#amount').val();
+            var remarks = $('#remarks').val();
+            var region_id = $('#region_id').val();
+            var area_id = $('#area_id').val();
+            var credit_limit = $('#credit_limit').val();
+            var credit_term = $('#credit_term').val();
+            var contact_person_mobile = $('#contact_person_mobile').val();
+            var address = $('#address').val();//Billing address
+            var territory_id = $('#territory_id').val();
+
+            var RequisitionMasterData = {
+                party_type_id: party_type_id,
+                party_id: party_id,
+                requisition_code: requisition_code,
+                requisition_date: requisition_date,
+                warehouse_from: warehouse_from,
+                expected_receiving_date: expected_receiving_date,
+                amount: amount,
+                remarks: remarks,
+                region_id: region_id,
+                company_id: company_id,
+                area_id: area_id,
+                credit_limit: credit_limit,
+                credit_term: credit_term,
+                contact_person_mobile: contact_person_mobile,
+                address: address,
+                territory_id: territory_id,
+                requisition_type: 'Dealer Requisition',
+                created_by: userId,
+                updated_by: userId
+            };
+
+            var ProductDetailsList = [];
+
+            for (var i = 0; i < ProductDetailsGrid.length; i++) {
+                var productDetails = {
+                    product_id: ProductDetailsGrid[i].product_id,
+                    unit_id: ProductDetailsGrid[i].unit_id,
+                    brand_id: ProductDetailsGrid[i].brand_id,
+                    product_category_id: ProductDetailsGrid[i].product_category_id,
+                    price: ProductDetailsGrid[i].price,
+                    quantity: ProductDetailsGrid[i].quantity,
+                    color_id: ProductDetailsGrid[i].color_id,
+                    //is_live_dummy: ProductDetailsGrid[i].is_live_dummy, //28.Nov.2016
+                    line_total: ProductDetailsGrid[i].line_total,
+                    product_version_id: ProductDetailsGrid[i].product_version_id,
+                    is_gift: false,
+                    gift_type: "",
+                    discount_amount: ProductDetailsGrid[i].discount_amount,//incentive
+                    promotion_master_id: ProductDetailsGrid[i].promotion_master_id
+                };
+                ProductDetailsList.push(productDetails);
+            }
+            // promotional gift details
+
+            for (var j = 0; j < giftDetailsGrid.length; j++) {
+                var giftProductDetails = {
+                    product_id: giftDetailsGrid[j].product_id,
+                    unit_id: giftDetailsGrid[j].unit_id,
+                    brand_id: giftDetailsGrid[j].brand_id,
+                    product_category_id: giftDetailsGrid[j].product_category_id,
+                    price: 0, //_giftList[i].price,
+                    quantity: giftDetailsGrid[j].quantity,
+                    color_id: giftDetailsGrid[j].color_id,
+                    line_total: 0, //_giftList[i].line_total,
+                    product_version_id: giftDetailsGrid[j].product_version_id,
+                    is_gift: true,
+                    gift_type: 'Promotional Gift',
+                    discount_amount: 0,
+                    promotion_master_id: 0
+                };
+                ProductDetailsList.push(giftProductDetails);
+            }
+
+            var RequisitionModel = {
+                RequisitionMasterData: RequisitionMasterData,
+                RequisitionDetailsList: ProductDetailsList
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Requisition")",
+                data: JSON.stringify(RequisitionModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(ProductDetailsGrid);
+                    if (data.output === "success") {
+
+                        swal("Success", data.msg, "success");
+                        var party_type_id = $('#party_type_id').val();
+                        var party_id = $('#party_id').val();
+                        window.location.href = '/PaymentRequest/PaymentRequestForSingleDealer?party_type_id=' + party_type_id + '&party_id=' + party_id;
+                        //  window.location.href = '/paymentrequest/add';
+                        return false;
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+    });
+
+
+</script>

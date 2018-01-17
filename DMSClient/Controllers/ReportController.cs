@@ -1,0 +1,160 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using DMSClient.Models;
+using DMSClient.Reports.crystal_models;
+using Newtonsoft.Json;
+
+namespace DMSClient.Controllers
+{
+    public class ReportController : Controller
+    {
+        
+        public ActionResult AccountDueAdvanceReport()
+        {
+            return View();
+        }
+        public ActionResult DailySalesReport()
+        {
+            return View();
+        }
+        public ActionResult InvoiceWiseImeiReport()
+        {
+            return View();
+        }
+        public ActionResult DailyPaymentReport()
+        {
+            return View();
+        }
+        public void DailyPaymentReportPDF(string fromDate, string toDate, long partyTypeId, long partyId)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Report/DailyPaymentReport?fromDate=" + fromDate + "&toDate=" + toDate + "&partyTypeId=" + partyTypeId + "&partyId=" + partyId + "";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<DailyPaymentReportModel> objDailyPaymentReportModel = JsonConvert.DeserializeObject<List<DailyPaymentReportModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/DailyPaymentReport.rpt"));
+
+                reportDocument.SetDataSource(objDailyPaymentReportModel);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+        public void GetDailySalesReportPDF(string fromDate, string toDate, long productCategoryId, long productId)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Report/GetDailySalesReportPDF?fromDate=" + fromDate + "&toDate=" + toDate + "&productCategoryId=" + productCategoryId + "&productId=" + productId + "";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<DailySalesReportModel> objDailySalesTransaction = JsonConvert.DeserializeObject<List<DailySalesReportModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/DailySalesReport.rpt"));
+
+                reportDocument.SetDataSource(objDailySalesTransaction);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+
+        public ActionResult GetProductHistoryReport()
+        {
+            return View();
+        }
+
+        public void GetProductHistoryPdfReport(string fromDate, string toDate, long productCategoryId,
+            long productId, long colorId)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Report/GetProductHistoryPdfReport?fromDate=" + fromDate + "&toDate=" + toDate + "&productCategoryId=" + productCategoryId + "&productId=" + productId + "&colorId=" + colorId + "";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<ProductHistoryReportModel> objProductHistory = JsonConvert.DeserializeObject<List<ProductHistoryReportModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/ProductHistoryReport.rpt"));
+
+                reportDocument.SetDataSource(objProductHistory);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+        //invoice wise imei
+        public void GetInvoiceWiseImeiReportPDF(long InvoiceMasterId)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Report/GetInvoiceWiseImeiReportPDF?InvoiceMasterId=" + InvoiceMasterId + " ";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<InvoiceWiseImeiModel> objDailySalesTransaction = JsonConvert.DeserializeObject<List<InvoiceWiseImeiModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/InvoiceWiseImei.rpt"));
+
+                reportDocument.SetDataSource(objDailySalesTransaction);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+
+        public ActionResult GetSalableQuantity()
+        {
+            return View();
+        }
+        public void GetSalableAndNonSalableStock()
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Report/GetSalableAndNonSalableStock";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<SalableAndNonSalableStockModel> objSalableQuantity = JsonConvert.DeserializeObject<List<SalableAndNonSalableStockModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/SalableNonSalableQuantity.rpt"));
+
+                reportDocument.SetDataSource(objSalableQuantity);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+        public ActionResult AccountsReport()
+        {
+            return View();
+        }
+        public void AccountsReportPDF(string fromDate, string toDate, long partyTypeId, long partyId, string receivedInvoiceNo)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Report/GetAccountsReport?fromDate=" + fromDate + "&toDate=" + toDate + "&partyTypeId=" + partyTypeId + "&partyId=" + partyId + "&receivedInvoiceNo=" + receivedInvoiceNo + "";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<AccountsReportModel> objAccountsReportModel = JsonConvert.DeserializeObject<List<AccountsReportModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/AccountsReport.rpt"));
+
+                reportDocument.SetDataSource(objAccountsReportModel);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+	}
+}

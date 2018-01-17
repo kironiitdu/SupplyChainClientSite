@@ -1,0 +1,364 @@
+﻿@*
+    Page: Branch Add Form
+    Author: Farzana Islam
+
+*@
+
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+}
+<div class="row">
+    @*<div class="widget">*@
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Add Branch</h5></div>
+        <div class="panel-body">
+            <form id="BranchAdd">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="company_id">Company</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text"  class="dropdown" readonly="readonly" name="company_id" id="company_id" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_code">Branch Code</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="branch_code" id="branch_code" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Branch Name</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="branch_name" id="branch_name" style="width:80%;">
+                        </div>
+                    </div>
+
+
+                    @*<div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="branch_location">Location</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" name="branch_location" id="branch_location" class="k-textbox" style="width:80%">
+                            </div>
+                        </div>*@
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Branch Incharge</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="emp_id" id="emp_id" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Country:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="country_id" id="country_id" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">City:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="city_id" id="city_id" class="dropdown" style="width:80%;">
+                        </div>
+                    </div>
+
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Address 1:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="address_1" id="address_1" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Address 2:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="address_2" id="address_2" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Zip Code:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="zip_code" id="zip_code" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Fax:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="fax" id="fax" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Mobile:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="mobile" id="mobile" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Phone:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="phone" id="phone" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Email:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="email" id="email" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Web:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="web" id="web" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="is_active">Is Active</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="checkbox" name="is_active" id="is_active" style="margin-left:6px;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+
+
+                </div>
+                <div class="clearfix"></div>
+                <br/>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="BranchAddSubmit" value="Save Information" />
+                        <input type="hidden" class="k-textbox" name="company_id" id="company_id" value="@companyId" style="width: 100%;">
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*Add Branch Information*@
+<script type="text/javascript">
+
+ @*//Company Dropdown*@
+    var company_id = '@companyId';
+    $(document).ready(function () {
+
+        var countrys = $("#country_id").kendoComboBox({
+            placeholder: "Select Country...",
+            dataTextField: "country_name",
+            dataValueField: "country_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCountries", "Country")",
+                    type: "GET"
+                }
+            }
+
+        },
+            optionLabel: "Select Country"
+
+    }).data("kendoComboBox");
+
+    var products = $("#city_id").kendoComboBox({
+        autoBind: false,
+        cascadeFrom: "country_id",
+        placeholder: "Select City..",
+        dataTextField: "city_name",
+        dataValueField: "city_id",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCities", "City")",
+                type: "GET"
+            }
+        }
+
+    },
+        optionLabel: "Select City"
+    }).data("kendoComboBox");
+
+       $("#company_id").val(company_id);
+       $("#company_id").kendoComboBox({
+        autoBind:true,
+        placeholder: "Select Company...",
+        dataTextField: "company_name",
+        dataValueField: "company_id",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCompanies", "Company")?company_id=" + company_id,
+                type: "GET"
+            }
+        },
+
+    }
+    }).data("kendoComboBox");
+
+
+
+
+        @*//incharge dropdown*@
+
+
+        var departments = $("#emp_id").kendoComboBox({
+            placeholder: "Select Incharge...",
+            dataTextField: "emp_firstname",
+            dataValueField: "emp_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllEmployees", "Employee")?company_id=" + company_id,
+                    type: "GET"
+                }
+            },
+
+        }
+        }).data("kendoComboBox");
+    });
+
+
+    $(document).ready(function () {
+        $("#BranchAddSubmit").click(function () {
+            Loading(true);
+            var branch_code = $("#branch_code").val();
+            var branch_name = $("#branch_name").val();
+            var branch_location = $("#branch_location").val();
+            var branch_incharge = $("#emp_id").val();
+            var country_id = $("#country_id").val();
+            var city_id = $("#city_id").val();
+            var address_1 = $("#address_1").val();
+            var address_2 = $("#address_2").val();
+            var zip_code = $("#zip_code").val();
+            var fax = $("#fax").val();
+            var mobile = $("#mobile").val();
+            var phone = $("#phone").val();
+            var email = $("#email").val();
+            var web = $("#web").val();
+
+            var company_id = $("#company_id").val();
+            //var c_is_active = $("#is_active").val();
+            var is_active = false;
+
+            if ($("#is_active").is(":checked")) {
+                is_active = true;
+            }
+            var oBranch = {
+                branch_code: branch_code,
+                branch_name: branch_name,
+                branch_location: branch_location,
+                branch_incharge: branch_incharge,
+                company_id: company_id,
+                is_active: is_active,
+                country_id: country_id,
+                city_id: city_id,
+                address_1: address_1,
+                address_2: address_2,
+                zip_code: zip_code,
+                fax: fax,
+                mobile: mobile,
+                phone: phone,
+                email: email,
+                web: web
+
+            };
+            //var formData = $("#BranchAdd").serializeArray();
+
+            //var oBranch = {};
+
+            //$.each(formData, function (key, val) {
+            //    oBranch[val.name] = val.value;
+            //});
+            ////oBranch["branch_inchanrge"] = oBranch["emp_id"];
+            // console.log(oBranch);
+
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Branch")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oBranch),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        NotificationMessageWithRefresh(data);
+                        //KendoWindowFunction(data.msg, "success", "");
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                       // KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+
+        });
+    });
+</script>

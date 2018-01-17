@@ -1,0 +1,21 @@
+﻿
+@helper Action(string method, string controller)
+{
+    string apiPath = Session["apiPath"].ToString();
+    string connection_domain = apiPath + controller + "/" + method;  // maruf:04-Oct-2016
+    @connection_domain;
+}
+
+@helper HttpRouteUrl()
+{
+   //const string apiPath = "http://45.64.135.140:7100/";
+   //const string apiPath = "http://45.64.135.149:7100/";//current ip
+   //const string apiPath = "http://59.152.97.62:9010/";//dev
+   //const string apiPath = "http://localhost:7100/";   
+   //const string apiPath = "http://wescm.we.net.bd:7100/";//live
+   //const string apiPath = "http://45.64.135.249:7100/";//live
+
+    string apiPath = Session["apiPath"].ToString();
+
+    @apiPath;
+}

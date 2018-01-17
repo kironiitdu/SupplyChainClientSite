@@ -1,0 +1,266 @@
+﻿
+@{
+    ViewBag.Title = "PaymentHistory";
+    var userId = "";
+    var partyTypeId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+    }
+}
+
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+
+</script>
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Payment History</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="from_date">From Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3" style="margin-left: -4px;">
+                        <input id="from_date" name="from_date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_date">To Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_date" name="To Date" />
+                    </div>
+                </div>
+            </div>
+            @*<script id="excel-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Receive/GetPaymentHistory?receive_id=#= receive_id #" class="k-button k-grid excel">Excel</a>
+            </script>
+            <script id="pdf-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Receive/GetPaymentHistory?receive_id=#= receive_id #" class="k-button k-grid pdf">PDF</a>
+            </script>*@
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="button" class="k-button" id="btnPaymentHistory" name="btnPaymentHistory" value="View Payment History " />
+                    </div>
+                </div>
+            </div>
+            <div class="group-box" id="groupBox">
+             
+                <div class="row">
+                    <input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel" />
+                    &nbsp;&nbsp;
+                    <input type="button" class="k-button " id="btnpdf" name="btnpdf" value="Export PDF" />
+                  
+                </div>
+            </div>
+            <div id="grid"></div>
+            
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#context').addClass('animated zoomIn');
+                $("#btnExportExcel").hide();
+                $("#btnpdf").hide();
+                $("#groupBox").hide();
+                var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+                $("#from_date").val(todayDate);
+                $("#to_date").val(todayDate);
+                //date time picker
+                $("#from_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "dd/MM/yyyy"
+                });
+
+                //date time picker
+                $("#to_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "dd/MM/yyyy"
+                });
+
+                $("#btnExportExcel").click(function() {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+                $("#btnpdf").click(function() {
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+                  
+       
+
+                    if (from_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select From Date", "warning");
+                        return false;
+                    }
+                    else if (to_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                        return false;
+                    }
+                    var paymentHistory = {                       
+                        from_date: from_date,
+                        to_date: to_date,
+                
+                    };
+                    var url = "/Receive/GetPaymentHistoryReport?from_date=" + from_date + "&to_date=" + to_date;
+                    window.open(url, '_blank');
+                });
+
+
+                $("#btnPaymentHistory").click(function() {
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+                    if (from_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select From Date", "warning");
+                       
+                    } else if (to_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                       
+                    } else {
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetPaymentHistory", "Receive")?from_date=" + from_date + "&to_date=" + to_date + "",
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function(data) {
+                                Loading(false);
+                                var sampleData = [];
+
+                                if (data != "") {
+
+                                    for (var i = 0; i < data.length; i++) {
+                                        //Object For Grid
+                                        var paymentHistoryData = {
+                                            party_name:data[i].party_name,
+                                            date: data[i].date,
+                                            amount: data[i].amount,
+                                            payment_mode: data[i].payment_mode,
+                                            deposite_to: data[i].deposite_to,
+                                            cheque_no: data[i].cheque_no,
+                                            invoice_no: data[i].invoice_no,
+                                            invoice_date: data[i].invoice_date,
+                                            invoice_amount: data[i].invoice_amount,
+                                            invoice_qty: data[i].invoice_qty,
+                                            receive_id: data[i].receive_id,
+                                            invoice_master_id: data[i].invoice_master_id,
+                                            requisition_master_id: data[i].requisition_master_id
+
+                                        };
+
+                                        sampleData.push(paymentHistoryData);
+                                    }
+
+                                    var dataSource = new kendo.data.DataSource({
+                                        transport: {
+                                            read: function(e) {
+                                                // on success
+                                                e.success(sampleData);
+                                            }
+                                        },
+                                        error: function(e) {
+                                            // handle data operation error
+                                            alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                                        },
+
+                                        batch: false,
+                                        schema: {
+                                            model: {
+                                                fields: {
+                                                    receive_id: { type: "number", nullable: true },
+                                                    party_name: { type: "string", nullable: true },
+                                                    date: { type: "string", nullable: true },
+                                                    amount: { type: "number", nullable: true },
+                                                    payment_mode: { type: "string", nullable: true },
+                                                    deposite_to: { type: "string", nullable: true },
+                                                    cheque_no: { type: "string", nullable: true },
+                                                    invoice_no: { type: "string", nullable: true },
+                                                    invoice_date: { type: "string", nullable: true },
+                                                    invoice_amount: { type: "number", nullable: true },
+                                                    invoice_qty: { type: "number", nullable: true },
+                                                    invoice_master_id: { type: "number", nullable: true },
+                                                    requisition_master_id: { type: "number", nullable: true },
+                                                    requisition_details_id: { type: "number", nullable: true }
+
+                                                }
+
+                                            }
+                                        }
+                                    });
+                                    //Datasource Finsish
+                                    $("#grid").kendoGrid({
+                                        dataSource: dataSource,
+                                        selectable: true,
+                                        scrollable: true,
+                                        filterable: true,
+                                        pageable: {
+                                            refresh: true,
+                                            input: true,
+                                            pageSize: 20,
+                                            numeric: false,
+                                            pageSizes: [10, 20, 50]
+                                        },
+
+                                        sortable: true,
+                                        groupable: true,
+                                        resizable: true,
+                                        columns: [
+                                            { field: "date", title: "Date", width: "100px" },
+                                            { field: "party_name", title: "Customer Name", width: "100px" },
+                                            { field: "amount", title: "Amount", width: "100px" },
+                                            { field: "payment_mode", title: "Payment Mode", width: "100px" },
+                                            { field: "deposite_to", title: "Deposite To", width: "100px" },
+                                            { field: "cheque_no", title: "Cheque No", width: "100px" },
+                                            { field: "invoice_no", title: "Invoice No", width: "100px" },
+                                            { field: "invoice_date", title: "Invoice Date", width: "100px" },
+                                            { field: "invoice_amount", title: "Invoice Amount", width: "100px" },
+                                            { field: "invoice_qty", title: "Invoice Qty", width: "100px" }
+                                            //{ title: "Action", width: "100px", template: kendo.template($("#excel-template").html()) },
+                                            //{ title: "Action", width: "100px", template: kendo.template($("#pdf-template").html())  }
+                                        ]
+                                    });
+                                    $("#btnExportExcel").show();
+                                    $("#btnpdf").show();
+                                    $("#groupBox").show();
+                                } else {
+                                    swal("Opps!", "No Data Found!!", "warning");
+                                    $("#btnExportExcel").hide();
+                                    $("#groupBox").hide();
+                                    $("#btnpdf").hide();
+                                    $("#grid").data("kendoGrid").dataSource.data([]);
+
+                                    return false;
+                                }
+
+                            }
+                        });
+                    }
+            });
+            });
+        </script>
+    </div>
+</div>

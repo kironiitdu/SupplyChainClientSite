@@ -1,0 +1,104 @@
+﻿
+@*
+    Page: Currency Form
+    Author: Farzana Islam
+
+*@
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+<div id="grid"></div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCurrency", "Currency")?company_id=" + '@companyId',
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Currency")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Currency")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "Currency")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "currency_id",
+                    fields: {
+                        currency_id: { editable: false, nullable: true },
+                        currency_name: { type: "string", validation: { required: true } },
+                        currency_symbol: { type: "string", validation: { required: true } },
+                        is_active: { type: "boolean" },
+                        is_default: { type: "boolean" },
+                        company_id: { defaultValue: '@companyId' },
+                        created_by: { defaultValue: '@userId' }
+                    }
+                }
+            }
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Currency" }],
+            columns: [
+                { field: "currency_name", title: "Currency Name", width: "150px" },
+                { field: "currency_symbol", title: "Currency Symbol", width: "150px" },
+                { field: "is_default", title: "Is Default?", width: "150px" },
+                { field: "is_active", title: "Is Active?", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+    });
+</script>
+<div id="kWindow"></div>

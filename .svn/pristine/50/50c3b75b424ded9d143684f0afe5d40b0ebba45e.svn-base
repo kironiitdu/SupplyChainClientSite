@@ -1,0 +1,227 @@
+﻿
+@{
+    ViewBag.Title = "InternalDeliveryList";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+}
+
+<div id="context">
+    <div class="panel panel-success">
+    <div class="panel-heading"><h5>Internal Delivery List</h5></div>
+        <div class="panel-body">
+           
+            <script id="Invoice-Report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/InternalRequisition/GetInternalInvoiceReport?internal_requisition_master_id=#= internal_requisition_master_id#&user_id=#=userId#" target="_blank" class="k-button k-grid-even">Invoice PDF</a>
+            </script>
+            <script id="Report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/InternalRequisition/GetInternalDeliveryReport?delivery_master_id=#= delivery_master_id#&user_id=#=userId#" target="_blank" class="k-button k-grid-even">Challan PDF</a>
+            </script>
+         
+
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            var userId = '@userId';
+            var partyTypeId = '@partyTypeId';
+            var partyId = '@partyId';
+
+
+            // Update Delivery Master and Receive Serial Number Details
+            function DeliveryFunction(data) {
+                var userId=@userId;
+                var delivery_master_id = data;
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("ConfirmDelivery", "InternalRequisition")",
+                    data: {
+                        delivery_master_id: delivery_master_id,
+                        user_id: userId
+                    },
+                    success: function(data) {
+                        if (data.output === "success") {
+                            sweetAlert("Yes...", data.msg, data.output);
+                        } else {
+                            sweetAlert("Sorry...", data.msg, data.output);
+                        }
+                        $('#grid').data('kendoGrid').dataSource.read();
+                        $('#grid').data('kendoGrid').refresh();
+
+                    }
+                });
+            }
+
+            $(document).ready(function() {
+
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetAllInternalDeliveryList", "InternalRequisition")",
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function(data) {
+                        Loading(false);
+                        console.log(data);
+
+                        var sampleData = [];
+
+                        if (data != '') {
+
+                            for (var i = 0; i < data.length; i++) {
+                              
+                                var rfdDetails = {
+                                    delivery_master_id: data[i].delivery_master_id,
+                                    delivery_no: data[i].delivery_no,
+                                    requisition_code: data[i].requisition_code,
+                                    internal_requisition_master_id:data[i].internal_requisition_master_id,
+                                    created_date: data[i].created_date,
+                                    delivery_date: data[i].delivery_date,
+                                    party_id: data[i].party_id,
+                                    party_name: data[i].party_name,
+                                    total_amount: data[i].total_amount,
+                                    status: data[i].status,
+                                    receive_date: data[i].receive_date,
+                                    current_warehouse: data[i].current_warehouse
+
+                                };
+
+                                sampleData.push(rfdDetails);
+                            }
+
+                            //grn Grid---------------------
+                            var dataSource = new kendo.data.DataSource({
+                                pageSize: 20,
+                                transport: {
+                                    read: function(e) {
+                                        // on success
+                                        e.success(sampleData);
+                                    }
+                                },
+                                //    code: "Ok",
+                                autoSync: false,
+                                schema: {
+                                    errors: function(e) {
+                                        console.log(e.errors);
+                                        //alert(e.error);
+                                        if (e.output === "error") {
+                                            console.log(e.output);
+                                            //KendoWindowFunction(e.msg, "error", "");
+                                            // this.cancelChanges();
+                                        }
+
+                                    },
+
+                                    model: {
+                                        id: "delivery_master_id",
+                                        fields: {
+                                            delivery_master_id: { editable: false, nullable: true },
+                                            delivery_no: { type: "string" },
+                                            requisition_code: { type: "string" },
+                                            internal_requisition_master_id: { type: "number" },
+                                            created_date: { type: "string" },
+                                            delivery_date: { type: "string" },
+                                            party_id: { type: "string" },
+                                            party_name: { type: "string" },
+                                            total_amount: { type: "string" },
+                                            status: { type: "string" },
+                                            receive_date: { type: "string" },
+                                            current_warehouse: { type: "string" }
+                                        }
+
+                                    }
+                                }
+
+                            });
+
+                            jQuery("#grid").kendoGrid({
+                                dataSource: dataSource,
+                                scrollable: true,
+                                filterable: true,
+                                overflow: true,
+                                pageable: {
+                                    refresh: true,
+                                    input: true,
+                                    pageSize: 20,
+                                    numeric: false,
+                                    pageSizes: [10, 20, 50, 100]
+                                },
+
+                                sortable: true,
+                                //groupable: true,
+                                resizable: true,
+
+
+                                columns: [
+
+                                    { field: "delivery_no", title: "Delivery No", id: "delivery_master_id", width: "150px" },
+                                    { field: "party_name", title: "Party", width: "150px" },
+                                    { field: "requisition_code", title: "Requisition No", width: "150px" },
+                                    { field: "created_date", title: "Requisition Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(created_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"  },
+                                    { field: "status", title: "Status", width: "100px" },
+                                   // { field: "current_warehouse", title: "Current Warehouse", width: "150px" },
+                                    { field: "receive_date",  title: "Receive Date",width: "150px",template: "#= kendo.toString(kendo.parseDate(receive_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                                    { title: "Invoice",   width: "120px",  template: kendo.template($("#Invoice-Report-template").html())},
+                                    { title: "Challan",   width: "120px",  template: kendo.template($("#Report-template").html())}
+                                   
+
+
+                                ],
+                                dataBound: function(e) {
+                                    var grid = $("#grid").data("kendoGrid");
+                                    var gridData = grid.dataSource.view();
+
+                                    for (var i = 0; i < gridData.length; i++) {
+                                        var currentUid = gridData[i].uid;
+                                        var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+
+                                        var btnConfirmDelivery = $(currenRow).find(".confirmDelivery");
+                                        var btnCancelDelivery = $(currenRow).find(".cancelDelivery");
+
+                                        //  console.log(xxx);
+                                        if (gridData[i].status === "Delivered") {
+
+                                            btnConfirmDelivery.hide();
+                                            btnCancelDelivery.hide();
+
+
+                                        }
+                                        if (gridData[i].status === "Cancel") {
+                                            btnCancelDelivery.hide();
+                                        }
+                                        else {
+                                            //editButtonReport.hide();
+                                        }
+
+                                        // MD-DBIS-Retailer Won't see Courier Update Added By Kiron : 16-11-16
+                                        if (partyTypeId == 8 || partyTypeId == 2 || partyTypeId == 3) {
+                                            courierUpdate.hide();
+                                        } else {
+                                            courierUpdate.show();
+                                        }
+
+                                    }
+                                },
+
+                                editable: "inline"
+                            });
+
+                        } else {
+                            swal("Exception", "Data Not Available !!", "error");
+                            $("#grid").data("kendoGrid").dataSource.data([]);
+
+                            return false;
+                        }
+                    }
+                });
+            });
+
+        </script>
+
+
+    </div>
+</div>

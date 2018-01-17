@@ -1,0 +1,223 @@
+﻿
+@{
+    ViewBag.Title = "TopTenDealerChart";
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Top Ten Dealer Chart</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="to_date" name="To Date" />
+                </div>
+                <div class="col-md-1"></div>
+
+                <div class="col-md-1">
+                    <input type="button" class="k-button " id="btnSearch" name="btnSearch" value="Search" style="margin-top: 6px" />
+                </div>
+            </div>
+        </div>
+        <input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Print Excel" />
+        <input type="button" class="k-button " id="btnExportPdf" name="btnExportPdf" value="Print PDF" />
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                $("#btnExportExcel").hide();
+                $("#btnExportPdf").hide();
+
+                var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy/MM/dd');
+                $("#from_date").val(todayDate);
+                $("#to_date").val(todayDate);
+
+                $("#btnExportExcel").click(function () {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+
+
+                $("#btnExportPdf").click(function () {
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+
+                    var url = '/Chart/GetTopTenDealerReport?from_date=' + from_date + '&to_date=' + to_date;
+                    window.open(url, '_blank');
+                });
+
+
+                //date time picker
+                $("#from_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                //date time picker
+                $("#to_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                //Excel Export---------
+                $("#btnSearch").click(function () {
+                    Loading(true);
+
+                    var fromDate = $("#from_date").val();
+                    var toDate = $("#to_date").val();
+
+
+                    if (fromDate == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select From Date", "warning");
+                    }
+                    else if (toDate == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                    } else {
+
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("TopTenDealerChart", "Dashboard")?fromDate=" + fromDate + "&toDate=" + toDate + "",
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                Loading(false);
+                                console.log(data);
+
+                                var sampleData = [];
+
+                                if (data != '') {
+
+                                    for (var i = 0; i < data.length; i++) {
+
+                                        var productDetails = {
+                                            party_id: data[i].party_id,
+                                            party_name: data[i].party_name,
+                                            area_name: data[i].area_name,
+                                            region_name: data[i].region_name,
+                                            territory_name: data[i].territory_name,
+                                            invoice_total: data[i].invoice_total
+                                        };
+                                        sampleData.push(productDetails);
+                                    }
+
+                                    //grn Grid---------------------
+                                    var dataSource = new kendo.data.DataSource({
+                                        pageSize: 20,
+                                        transport: {
+                                            read: function (e) {
+                                                // on success
+                                                e.success(sampleData);
+                                            }
+                                        },
+                                        //    code: "Ok",
+                                        autoSync: false,
+                                        schema: {
+                                            errors: function (e) {
+                                                console.log(e.errors);
+                                                //alert(e.error);
+                                                if (e.output === "error") {
+                                                    console.log(e.output);
+                                                    //KendoWindowFunction(e.msg, "error", "");
+                                                    // this.cancelChanges();
+                                                }
+
+                                            },
+
+                                            model: {
+                                                id: "party_id",
+                                                fields: {
+                                                    party_id: { editable: false, nullable: true },
+                                                    party_name: { type: "string" },
+                                                    area_name: { type: 'string' },
+                                                    region_name: { type: "string" },
+                                                    territory_name: { type: "string" },
+                                                    invoice_total: { type: "string" }
+                                                }
+
+                                            }
+                                        }
+
+                                    });
+
+                                    var d = new Date();
+                                    var dateTime = d.toJSON();
+
+                                    jQuery("#grid").kendoGrid({
+                                        excel: {
+                                            fileName: "Top_Ten_Dealer_Chart_Report_" + dateTime + ".xlsx",
+                                            allPages: true
+                                        },
+                                        dataSource: dataSource,
+                                        scrollable: true,
+                                        filterable: true,
+                                        pageable: {
+                                            refresh: true,
+                                            input: true,
+                                            pageSize: 20,
+                                            numeric: false,
+                                            pageSizes: [10, 20, 50]
+                                        },
+
+                                        sortable: true,
+                                        groupable: true,
+                                        resizable: true,
+
+
+                                        columns: [
+                                            { field: "party_name", title: "Dealer", width: "100px"},
+                                            { field: "area_name", title: "Area", width: "100px" },
+                                            { field: "region_name", title: "Region", width: "100px" },
+                                            { field: "territory_name", title: "Territory", width: "100px" },
+                                            { field: "invoice_total", title: "Invoice Amount", width: "100px" }
+                                        ],
+
+                                        editable: "inline"
+                                    });
+                                    $("#btnExportExcel").show();
+                                    $("#btnExportPdf").show();
+
+                                } else {
+                                    swal("Exception", "Data Not Available !!", "error");
+                                    $("#grid").data("kendoGrid").dataSource.data([]);
+                                    $("#btnExportExcel").hide();
+                                    $("#btnExportPdf").hide();
+                                    return false;
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

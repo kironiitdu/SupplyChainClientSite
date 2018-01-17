@@ -1,0 +1,840 @@
+﻿@{
+    ViewBag.Title = "Edit PO";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+<div id="C">
+    <div class="panel panel-success">
+        <div class="panel-heading">Purchase Order Master</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="order_no">Order No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="order_no" name="order_no" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="order_date">Order Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="order_date" name="order_date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="supplier_id">Supplier&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="supplier_id" name="supplier_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="shipping_term">Shipping Term</label>
+                    </div>
+                    <div class="col-md-3">
+                        @*<input id="shipping_term" name="shipping_term" class="k-textbox" />*@
+
+                        <select id="shipping_term" style="width: 80%;" name="gender">
+                            <option value="">--- Select ---</option>
+
+                            <option value="FOB">FOB</option>
+                            <option value="FOC">FOC</option>
+                        </select>
+
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="expected_shipment_date">Expected Shipment Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="expected_shipment_date" name="expected_shipment_date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="shipping_method">Shipping Method</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="shipping_method" style="width: 80%;" name="shipping_method">
+                            <option value="">--- Select ---</option>
+
+                            <option value="By Air">By Air</option>
+                            <option value="By Ship">By Ship</option>
+                            <option value="By Truck">By Truck</option>
+                            <option value="By Train">By Train</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="terms_n_condition">Terms N Conditions</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="terms_n_condition" name="terms_n_condition" class="k-textbox"/>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="noc_number">NOC No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="noc_number" name="noc_number" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="remarks">Remarks</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="remarks" name="remarks" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="currency_id">Currency&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="currency_id" name="currency_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-success">
+        <div class="panel-heading">Product List</div>
+        <div class="panel-body">
+            <div id="poDetailsGrid"></div>
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2"><label for="vat_total">Vat Total</label></div>
+                        <div class="col-md-3"><input id="vat_total" name="vat_total" class="k-textbox" disabled /></div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2"><label for="tax_total">Tax Total</label></div>
+                        <div class="col-md-3"><input id="tax_total" name="tax_total" class="k-textbox" disabled /></div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2"><label for="total_amount_without_vattax">Total Amount</label></div>
+                        <div class="col-md-3"><input id="total_amount_without_vattax" name="total_amount_without_vattax" class="k-textbox" disabled /></div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2"><label for="total_amount_including_vattax">Total Amount (+ Vat & Tax)</label></div>
+                        <div class="col-md-3"><input id="total_amount_including_vattax" name="total_amount_including_vattax" class="k-textbox" disabled /></div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2"><label for="status">Status</label></div>
+                        <div class="col-md-3"><input id="status" name="status" class="k-textbox" disabled /></div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <div class="col-md-3">
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnSaveUser" name="btnSaveUser" value="Update Order" />
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+        $("#shipping_method").kendoComboBox();
+        $("#shipping_term").kendoComboBox();
+       
+        var sampleData = [];
+        //get master and details information----------------
+        var purchase_order_master_id = '@ViewBag.purchaseOrderMasterId';
+        Loading(true);
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("GetPurchaseOrderById", "PurchaseOrder")",
+            data: {
+                purchase_order_master_id: purchase_order_master_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                //console.log(data.PoMasterData);
+                //console.log(data.PoDetailsList);
+
+                $("#order_no").val(data.PoMasterData.order_no);
+                $("#order_date").val(kendo.toString(kendo.parseDate(data.PoMasterData.order_date, "yyyy-MM-dd"), "yyyy/MM/dd"));
+                $("#noc_number").val(data.PoMasterData.noc_number);
+                $("#expected_shipment_date").val(kendo.toString(kendo.parseDate(data.PoMasterData.expected_shipment_date, "yyyy-MM-dd"), "yyyy/MM/dd"));
+              
+                $('#supplier_id').data("kendoComboBox").value(data.PoMasterData.supplier_id);
+                $('#currency_id').data("kendoComboBox").value(data.PoMasterData.currency_id);
+
+                $("#shipping_term").data('kendoComboBox').value(data.PoMasterData.shipping_term);
+                $("#shipping_method").data('kendoComboBox').value(data.PoMasterData.shipping_method);
+
+                $("#terms_n_condition").val(data.PoMasterData.terms_n_condition);
+                $("#remarks").val(data.PoMasterData.remarks);
+
+                $("#vat_total").val(data.PoMasterData.vat_total);
+                $("#tax_total").val(data.PoMasterData.tax_total);
+                $("#total_amount_without_vattax").val(data.PoMasterData.total_amount_without_vattax);
+                $("#total_amount_including_vattax").val(data.PoMasterData.total_amount_including_vattax);
+                $("#status").val(data.PoMasterData.status);
+
+                for (var i = 0; i < data.PoDetailsList.length; i++) {
+                    var poDetails = {
+                        //order_no: poDetailsList[i].order_no,
+                        purchase_order_details_id:data.PoDetailsList[i].purchase_order_details_id,
+                        product_id: data.PoDetailsList[i].product_id,
+                        product_name: data.PoDetailsList[i].product_name,
+                        purchase_order_master_id:data.PoDetailsList[i].purchase_order_master_id,
+                        unit_id: data.PoDetailsList[i].unit_id,
+                        unit_name: data.PoDetailsList[i].unit_name,
+                        unit_price: data.PoDetailsList[i].unit_price,
+                        quantity: data.PoDetailsList[i].quantity,
+                        amount: data.PoDetailsList[i].amount,
+                        brand_id: data.PoDetailsList[i].brand_id,
+                        product_version_id:data.PoDetailsList[i].product_version_id,
+                        product_version_name:data.PoDetailsList[i].product_version_name,
+                        brand_name: data.PoDetailsList[i].brand_name,
+                        color_id: data.PoDetailsList[i].color_id,
+                        color_name: data.PoDetailsList[i].color_name,
+                        vat_amount: data.PoDetailsList[i].vat_amount,
+                        tax_amount: data.PoDetailsList[i].tax_amount,
+                        line_total: data.PoDetailsList[i].line_total,
+                        size_id: data.PoDetailsList[i].size_id,
+                        size_name: data.PoDetailsList[i].size_name,
+                        status: data.PoDetailsList[i].status,
+                        vat_pcnt: data.PoDetailsList[i].vat_pcnt,
+                        tax_pcnt: data.PoDetailsList[i].tax_pcnt,
+                        product_category_id: data.PoDetailsList[i].product_category_id
+
+                    };
+                    sampleData.push(poDetails);
+                }
+                console.log(sampleData);
+
+                //productList Grid---------------------
+
+                // custom logic start
+
+                var sampleDataNextID = sampleData.length + 1;
+
+                function getIndexById(id) {
+                    var idx,
+                        l = sampleData.length;
+
+                    for (var j = 0; j < l; j++) {
+                        if (sampleData[j].purchase_order_details_id == id) {
+                            return j;
+                        }
+                    }
+                    return null;
+                }
+
+                // custom logic end
+
+                var dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: function (e) {
+                            // on success
+                            e.success(sampleData);
+                            //console.log(sampleData);
+                            // on failure
+                            //e.error("XHR response", "status code", "error message");
+                        },
+                        create: function (e) {
+                            // assign an ID to the new item
+                            e.data.purchase_order_details_id = sampleDataNextID++;
+                            // save data item to the original datasource
+
+                            var gridData = sampleData;
+                            var totalNumber = gridData.length;
+                            var count = 0;
+
+                            for (var i = 0; i < totalNumber; i++) {
+                                var productId = gridData[i].product_id;
+                                var colorId = gridData[i].color_id;
+                                var productVersionId= gridData[i].product_version_id;
+                                if (e.data.product_id === productId && e.data.color_id === colorId ) {
+                                    count++;
+                                }
+                            }
+                            if (count > 0) {
+                                sweetAlert("Sorry...", "Selected Product is Duplicate !!!", "warning");
+                                e.preventDefault();
+                                return false;
+                            } else {
+                                sampleData.push(e.data);
+                                e.success(e.data);
+                                console.log(sampleData);
+                                return true;
+                            }
+
+
+                            // on success
+
+                            // on failure
+                            //e.error("XHR response", "status code", "error message");
+                        },
+                        update: function (e) {
+                            // locate item in original datasource and update it
+                            sampleData[getIndexById(e.data.purchase_order_details_id)] = e.data;
+                            e.success();
+                            // on success
+                            //var gridData = sampleData;
+                            //var totalNumber = gridData.length;
+                            //var count = 0;
+
+                            //for (var i = 0; i < totalNumber; i++) {
+                            //    var productId = gridData[i].product_id;
+                            //    var colorId = gridData[i].color_id;
+                            //    if (e.data.product_id === productId && e.data.color_id === colorId) {
+                            //        count++;
+                            //    }
+                            //}
+                            //if (count > 0) {
+
+                            //    sweetAlert("Sorry...", "Selected Product is Duplicate !!!", "warning");
+                            //    //e.preventDefault();
+                            //    return false;
+                            //} else {
+                            //    // sampleData.push(e.data);
+                            //    sampleData[getIndexById(e.data.purchase_order_details_id)] = e.data;
+                            //    e.success();
+                            //    return true;
+                            //}
+
+                            // on failure
+                            //e.error("XHR response", "status code", "error message");
+                        },
+                        destroy: function (e) {
+                            // locate item in original datasource and remove it
+                            sampleData.splice(getIndexById(e.data.purchase_order_details_id), 1);
+
+
+
+                            // on success
+                            e.success();
+                            var entityGrid = $("#poDetailsGrid").data("kendoGrid");
+                            var gridData = entityGrid.dataSource.data();
+                            var totalNumber = gridData.length;
+
+                            var vatTotal = 0;
+                            var taxTotal = 0;
+                            var totalAmount = 0;
+                            var totalAmountIncVatTax = 0;
+
+                            for (var i = 0; i < totalNumber; i++) {
+                                vatTotal += +parseFloat(gridData[i].vat_amount).toFixed(2);
+                                taxTotal += +parseFloat(gridData[i].tax_amount).toFixed(2);
+                                totalAmount += +parseFloat(gridData[i].amount).toFixed(2);
+                                totalAmountIncVatTax += +parseFloat(gridData[i].line_total).toFixed(2);
+                            }
+
+                            $("#vat_total").val(vatTotal);
+                            $("#tax_total").val(taxTotal);
+                            $("#total_amount_without_vattax").val(totalAmount);
+                            $("#total_amount_including_vattax").val(totalAmountIncVatTax);
+
+
+                            $.ajax({
+                                type: "DELETE",
+                                url: "@UrlConfig.Action("DeletePurchaseOrderDetailsById", "PurchaseOrder")?purchase_order_details_id="+e.data.purchase_order_details_id,
+                                dataType: "json",
+                                contentType: "application/json",
+                                success: function (data) {
+                                    Loading(false);
+                                    console.log(data);
+
+                                }
+                            });
+                            // on failure
+                            //e.error("XHR response", "status code", "error message");
+                        }
+                    },
+                    error: function (e) {
+                        // handle data operation error
+                        alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                    },
+                    pageSize: 10,
+                    batch: false,
+                    schema: {
+                        model: {
+                            id: "purchase_order_details_id",
+                            fields: {
+                                purchase_order_details_id: { editable: false, nullable: true },
+                                purchase_order_master_id:{ field: "purchase_order_master_id", type: "integer" },
+                                product_id: { field: "product_id", type: "integer" },
+                                product_name: { type: "string" },
+                                product_category_id: { field: "product_category_id" },
+                                product_category_name: { type: "string", editable: false },
+                                brand_id: { field: "brand_id", type: "integer" },
+                                brand_name: { type: "string", editable: false },
+                                unit_id: { field: "unit_id", type: "integer" },
+                                unit_name: { type: "string", editable: false },
+                                color_id: { field: "color_id", type: "integer" },
+                                color_name: { type: "string" },
+                                product_version_id: { field: "product_version_id", type: "integer" },
+                                product_version_name: { type: "string" },
+                                quantity: { type: "number" },
+                                unit_price: { type: "number" },
+                                amount: { type: "string", editable: true },
+                                vat_pcnt: { type: "number" },
+                                vat_amount: { type: "string", editable: true },
+                                tax_pcnt: { type: "number" },
+                                tax_amount: { type: "string", editable: true },
+                                line_total: { type: "string", editable: true }
+
+                            }
+                        }
+                    }
+                });
+
+
+
+                $("#poDetailsGrid").kendoGrid({
+                    dataSource: dataSource,
+                    pageable: true,
+                    toolbar: ["create"],
+                    selectable: true,
+                    save: function (data) {
+
+                        var tempAmount = +data.model.quantity * +data.model.unit_price;
+                        data.model.set("amount", tempAmount);
+
+                        var tempVatAmount = (+data.model.amount * +data.model.vat_pcnt) / 100;
+                        data.model.set("vat_amount", tempVatAmount);
+
+                        var tempTaxAmount = (+data.model.amount * +data.model.tax_pcnt) / 100;
+                        data.model.set("tax_amount", tempTaxAmount);
+
+                        var lineTotal = +data.model.amount + +data.model.vat_amount + +data.model.tax_amount;
+                        data.model.set("line_total", lineTotal);
+
+                        var entityGrid = $("#poDetailsGrid").data("kendoGrid");
+                        var gridData = entityGrid.dataSource.data();
+                        var totalNumber = gridData.length;
+
+                        var vatTotal = 0;
+                        var taxTotal = 0;
+                        var totalAmount = 0;
+                        var totalAmountIncVatTax = 0;
+
+                        for (var i = 0; i < totalNumber; i++) {
+                            vatTotal += +parseFloat(gridData[i].vat_amount).toFixed(2);
+                            taxTotal += +parseFloat(gridData[i].tax_amount).toFixed(2);
+                            totalAmount += +parseFloat(gridData[i].amount).toFixed(2);
+                            totalAmountIncVatTax += +parseFloat(gridData[i].line_total).toFixed(2);
+                        }
+
+                        $("#vat_total").val(vatTotal);
+                        $("#tax_total").val(taxTotal);
+                        $("#total_amount_without_vattax").val(totalAmount);
+                        $("#total_amount_including_vattax").val(totalAmountIncVatTax);
+
+
+                    },
+                    edit: function (e) {
+
+                        $('input[name="amount"]').attr('readonly', 'readonly');
+                        $('input[name="vat_amount"]').attr('readonly', 'readonly');
+                        $('input[name="tax_amount"]').attr('readonly', 'readonly');
+                        $('input[name="line_total"]').attr('readonly', 'readonly');
+
+                    },
+                    cancel: function(data) {
+
+                        var tempAmount = +data.model.quantity * +data.model.unit_price;
+                        data.model.set("amount", tempAmount);
+
+                        var tempVatAmount = (+data.model.amount * +data.model.vat_pcnt) / 100;
+                        data.model.set("vat_amount", tempVatAmount);
+
+                        var tempTaxAmount = (+data.model.amount * +data.model.tax_pcnt) / 100;
+                        data.model.set("tax_amount", tempTaxAmount);
+
+                        var lineTotal = +data.model.amount + +data.model.vat_amount + +data.model.tax_amount;
+                        data.model.set("line_total", lineTotal);
+
+
+
+                        var gridData = sampleData;
+                        var totalNumber = gridData.length;
+
+                        var vatTotal = 0;
+                        var taxTotal = 0;
+                        var totalAmount = 0;
+                        var totalAmountIncVatTax = 0;
+
+                        for (var i = 0; i < totalNumber; i++) {
+                            vatTotal += +parseFloat(gridData[i].vat_amount).toFixed(2);
+                            taxTotal += +parseFloat(gridData[i].tax_amount).toFixed(2);
+                            totalAmount += +parseFloat(gridData[i].amount).toFixed(2);
+                            totalAmountIncVatTax += +parseFloat(gridData[i].line_total).toFixed(2);
+                        }
+
+                        $("#vat_total").val(vatTotal);
+                        $("#tax_total").val(taxTotal);
+                        $("#total_amount_without_vattax").val(totalAmount);
+                        $("#total_amount_including_vattax").val(totalAmountIncVatTax);
+
+                        console.log(sampleData);
+
+                    },
+                    columns: [
+                        { field: "product_id", title: "Product", template: "#= product_name #", editor: productDropDownEditor, width: "50px" },
+                        { field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditor, width: "50px" },
+                        { field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionDropDownEditor, width: "50px" },
+                        { field: "quantity", title: "PO Quantity", width: "50px" },
+                        { field: "unit_price", title: "Price", width: "50px" },
+                        { field: "amount", title: "Amount", width: "50px" },
+                        { field: "vat_pcnt", title: "VAT %", width: "50px" },
+                        { field: "vat_amount", title: "VAT Amount", width: "50px" },
+                        { field: "tax_pcnt", title: "TAX %", width: "50px" },
+                        { field: "tax_amount", title: "TAX Amount", width: "50px" },
+                        { field: "line_total", title: "Line Total", width: "50px" },
+                        { command: [{ name: "edit",text: { edit: "Edit",   update: "Save", cancel: "Cancel changes"  }}, {name: "destroy" } ], title: "&nbsp;", width: "110px" }
+                    ],
+                    editable: "inline"
+                });
+
+
+                //template for product comboBox
+                function productDropDownEditor(container, options) {
+                    jQuery('<input id="productId" required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+
+                        .kendoComboBox({
+                            autoBind: true,
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_id = dataItem.product_id,
+                                gridData[sel_idx].product_name = dataItem.product_name;
+                                gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                                gridData[sel_idx].product_category_name = dataItem.product_category_name;
+                                gridData[sel_idx].brand_id = dataItem.brand_id;
+                                gridData[sel_idx].brand_name = dataItem.brand_name;
+                                gridData[sel_idx].unit_id = dataItem.unit_id;
+                                gridData[sel_idx].unit_name = dataItem.unit_name;
+
+                            }
+                        });
+                }
+
+
+                //template for color comboBox
+                function colorDropDownEditor(container, options) {
+                    jQuery('<input required data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+
+                        .kendoComboBox({
+                            autoBind: true,
+                            cascadeFrom: "productId",
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllColorMapping", "ProductColorMapping")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].color_id = dataItem.color_id,
+                                    gridData[sel_idx].color_name = dataItem.color_name;
+
+
+                            }
+                        });
+                }
+
+                //template for product version comboBox
+                function productVersionDropDownEditor(container, options) {
+                    jQuery('<input required data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+
+                        .kendoComboBox({
+                            autoBind: true,
+                            cascadeFrom: "productId",
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetProductwiseVersion", "ProductVersionMapping")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                    gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+
+                            }
+                        });
+                }
+                //productList Grid---------------------
+
+
+            }
+        });
+        //get master and details information----------------
+
+
+
+        $("#order_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+        //supplier list
+        $("#supplier_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Supplier ---",
+            dataTextField: "supplier_name",
+            dataValueField: "supplier_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllSuppliers", "Supplier")"
+                    }
+                }
+            }
+
+        });
+
+        //currency list
+        $("#currency_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Currency ---",
+            dataTextField: "currency_name",
+            dataValueField: "currency_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllcurrency", "Currency")"
+                }
+            }
+        }
+
+        });
+
+        $("#expected_shipment_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+
+
+        $("#btnSaveUser").click(function () {
+            Loading(true);
+
+            var order_no = $('#order_no').val();
+            var order_date = $('#order_date').val();
+            var supplier_id = $('#supplier_id').val();
+            var currency_id = $('#currency_id').val();
+            var shipping_term = $('#shipping_term').val();
+            var noc_number = $('#noc_number').val();
+            var shipping_method = $('#shipping_method').val();
+            var expected_shipment_date = $('#expected_shipment_date').val();
+
+            var terms_n_condition = $('#terms_n_condition').val();
+            var remarks = $('#remarks').val();
+            var vat_total = $('#vat_total').val();
+            var tax_total = $('#tax_total').val();
+            var total_amount_without_vattax = $('#total_amount_without_vattax').val();
+            var total_amount_including_vattax = $('#total_amount_including_vattax').val();
+            var status = $('#status').val();
+
+
+            var poMasterData = {
+                purchase_order_master_id :'@ViewBag.purchaseOrderMasterId',
+                order_no: order_no,
+                noc_number:noc_number,
+                order_date: order_date,
+                supplier_id: supplier_id,
+                currency_id:currency_id,
+                shipping_term: shipping_term,
+                shipping_method: shipping_method,
+                expected_shipment_date: expected_shipment_date,
+                terms_n_condition: terms_n_condition,
+                remarks: remarks,
+                vat_total: vat_total,
+                tax_total: tax_total,
+                total_amount_without_vattax: total_amount_without_vattax,
+                total_amount_including_vattax: total_amount_including_vattax,
+                status: status,
+                created_by: userId,
+                updated_by: userId
+            };
+
+            var poDetailsList = [];
+            var poDetailsGrid = $("#poDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < poDetailsList.length; i++) {
+                var poDetails = {
+                    //order_no: poDetailsList[i].order_no,
+                    product_id: poDetailsList[i].product_id,
+                    purchase_order_master_id: '@ViewBag.purchaseOrderMasterId',
+                    purchase_order_details_id: poDetailsList[i].purchase_order_details_id,
+                    unit_id: poDetailsList[i].unit_id,
+                    unit_price: poDetailsList[i].unit_price,
+                    quantity: poDetailsList[i].quantity,
+                    amount: poDetailsList[i].amount,
+                    brand_id: poDetailsList[i].brand_id,
+                    color_id: poDetailsList[i].color_id,
+                    vat_amount: poDetailsList[i].vat_amount,
+                    tax_amount: poDetailsList[i].tax_amount,
+                    line_total: poDetailsList[i].line_total,
+                    size_id: poDetailsList[i].size_id,
+                    status: poDetailsList[i].status,
+                    vat_pcnt: poDetailsList[i].vat_pcnt,
+                    tax_pcnt: poDetailsList[i].tax_pcnt,
+                    product_category_id: poDetailsList[i].product_category_id
+
+                };
+                poDetailsList.push(poDetails);
+            }
+
+            var purchaseOrderModel = {
+                PoMasterData: poMasterData,
+                PoDetailsList: poDetailsGrid
+            };
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("Put", "PurchaseOrder")",
+                data: JSON.stringify(purchaseOrderModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+
+                        //$("#poDetailsGrid").data("kendoGrid").dataSource.data([]);
+                        //sampleData = [];
+                        //$('#poDetailsGrid').data('kendoGrid').refresh();
+                        ////$('#poDetailsGrid').kendoGrid('destroy').empty();
+                        ////clear all text box below --------------------------------------
+                        //$("#order_date").val("");
+                        //$("#shipping_term").val("");
+                        //$("#terms_n_condition").val("");
+                        //$("#remarks").val("");
+                        //$("#vat_total").val("");
+                        //$("#tax_total").val("");
+                        //$("#total_amount_without_vattax").val("");
+                        //$("#total_amount_including_vattax").val("");
+
+                        ////clear all combobox below --------------------------------------
+                        //var supplierId = $("#supplier_id").data("kendoComboBox");
+                        //supplierId.dataSource.data([]);
+                        //supplierId.text("");
+
+                        swal("Success", data.msg, "success");
+                        return false;
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+    });
+
+
+</script>

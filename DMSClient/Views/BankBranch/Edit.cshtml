@@ -1,0 +1,221 @@
+﻿@*Author: farzana islam
+    Date: 23/08/2016*@
+@{
+    ViewBag.Title = "Edit";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<div class="row" id="context">
+    @*<div class="widget">*@
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Edit Bank Branch Info</h5></div>
+        <div class="panel-body">
+            <form id="BankBranchAdd">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="company_id">Bank Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="bank_name" id="bank_name" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_code">Bank Branch Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="bank_branch_name_pro" id="bank_branch_name_pro" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="row"><br /></div>
+                    <div class="row">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">Account Number List</div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div id="account"></div>
+                                    </div>
+                                </div>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                </div>
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="BankBranchAddSubmit" value="Save Information" />
+                        <input type="hidden" class="textbox" name="bank_branch_id" id="bank_branch_id" style="width:80%;">
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var bank_branch_id = '@ViewBag.bank_branch_id';
+        var userId = @userId;
+        var accountNumberList = [];
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetByBankBranchModelId", "BankBranch")?bank_branch_id=" + bank_branch_id,
+
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(data);
+                $("#bank_branch_name_pro").val(data.oBranch.bank_branch_name);
+                $('#bank_name').data("kendoComboBox").value(data.oBranch.bank_id);
+
+                for (var i = 0; i < data.oAccountList.length; i++) {
+                    var ppp = {
+                        bank_account_id: data.oAccountList[i].bank_account_id,
+                        bank_account_name: data.oAccountList[i].bank_account_name
+                    };
+                    accountNumberList.push(ppp);
+                }
+
+            }
+        });
+
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAccount", "BankBranch")?bank_branch_id="+ bank_branch_id,
+                    type: "GET"
+                },
+                create: {
+                    url: "@UrlConfig.Action("InsertAccount", "BankBranch")?branchId=" + bank_branch_id + "&createBy=" + userId,
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#account").data("kendoGrid").dataSource.read();
+                    }
+                },
+                update: {
+                    url: "@UrlConfig.Action("editAccount", "BankBranch")?createBy=" + userId,
+                    type: "PUT",
+                    complete: function(e) {
+                        jQuery("#account").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("deleteAccount", "BankBranch")",
+                    type: "DELETE",
+                    complete: function (e) {
+                        console.log(e);
+                        jQuery("#account").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            pageSize: 10,
+            batch: false,
+            schema: {
+                model: {
+                    id: "bank_account_id",
+                    fields: {
+                        bank_account_id: { editable: false, nullable: true },
+                        bank_account_name: { type: "string", editable: true }
+                    }
+                }
+            }
+        });
+
+        jQuery("#account").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            selectable: true,
+            toolbar: ["create"],
+            update: true,
+            destroy: true,
+
+            columns: [
+                { field: "bank_account_name", title: "Account No.",id: "bank_account_id", width: "100px" },
+                { command: ["edit", "destroy"], title: "&nbsp;", width: "110px" }
+            ],
+            editable: "inline"
+        });
+
+        //Bank Branch Combobox
+
+        $("#bank_name").kendoComboBox({
+            autoBind: true,
+            placeholder: "Select Bank Branch...",
+            dataTextField: "bank_name",
+            dataValueField: "bank_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBank", "Bank")",
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+
+        $("#BankBranchAddSubmit").click(function () {
+            Loading(false);
+
+            var bank_id = $("#bank_name").val();
+            var bank_branch_name = $("#bank_branch_name_pro").val();
+
+            var oBank = {
+                bank_branch_id: bank_branch_id,
+                bank_id: bank_id,
+                bank_branch_name: bank_branch_name,
+                updated_by: userId,
+                //swift_code: swift_code,
+
+            };
+
+            $.ajax({
+                type: "Put",
+                url: "@UrlConfig.Action("UpdateBankBranch", "BankBranch")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oBank),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data === true) {
+                        NotificationMessage(data);
+                        //alert("asdasd");
+                        //KendoWindowFunction(data.msg, "success", "");
+                        setTimeout(function () {
+                            window.location.href = '/BankBranch/index';
+                        }, 1000);
+
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        // KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+</script>

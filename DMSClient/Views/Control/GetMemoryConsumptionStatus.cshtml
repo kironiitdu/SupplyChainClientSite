@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewBag.Title = "GetMemoryConsumptionStatus";
+}
+
+<div>
+
+</div>
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"> <h4>System Memory Consumption Status</h4><h4><label id="totalMemory"></label></h4>
+    </div>
+    
+    <div class="panel-body">
+
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        //On Load Get total count
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetTotalSystemMemoryConsumptionStatus", "Dashboard")",
+            dataType: "json",
+        success: function (data) {
+            Loading(false);
+            $('#totalMemory').html("Tatal " + data[0].totalSizeinKB + " KB");
+        }
+        });
+
+        //Kendo Data Source
+        var dataSource = new kendo.data.DataSource({
+            pageSize:20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetSystemMemoryConsumptionStatus", "Dashboard")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("", "")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Region")",
+                    type: ""
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "Region")",
+                    type: "",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        sweetAlert("Sorry...", e.msg, "error");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "tableId",
+                    fields: {
+                        tableId: { editable: false, nullable: true },
+                        tableName: { type: "string", validation: { required: true } },
+                        numberOfRows: { type: "number", validation: { required: true } },
+                        sizeinKB: { type: "number" }
+
+
+                                }
+
+                            }
+
+                    }
+
+                });
+
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+            update: true,
+            destroy: true,
+
+           // toolbar: [{ name: "create", text: "Add Region" }],
+            columns: [
+                { field: "tableName", title: "Table Name", id: "tableId", width: "150px" },
+                { field: "numberOfRows", title: "Total Row", width: "150px" },
+                { field: "sizeinKB", title: "Memory Consumption in KB", width: "150px" },
+                //{ command: ["edit", "destroy"], title: "Action", width: "230px" }
+            ],
+            editable: "inline"
+        });
+       
+
+    });
+
+
+</script>
+
+
+
+<div id="kWindow"></div>
+
+
+

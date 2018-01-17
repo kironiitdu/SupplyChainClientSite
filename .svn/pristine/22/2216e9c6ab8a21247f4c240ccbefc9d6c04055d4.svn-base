@@ -1,0 +1,512 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Eshop Return Product";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+<div class="col-md-12 widget-body" id="context">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">E-Shop Requisition Master</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="requisition_code">Requistion No</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="requisition_code" name="requisition_code" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="requisition_date">Requistion Date</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="requisition_date" name="requisition_date" style="width: 245px;" />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="delivery_no">Delivery No</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="delivery_no" name="delivery_no" class="k-textbox" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="customer_po">Customer PO</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="customer_po" name="customer_po" class="k-textbox" />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="customer_name">Customer Name</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="customer_name" name="customer_name" class="k-textbox" />
+                                </div>
+                            </div>
+                            <input type="hidden" id="reqId" />
+                            <input type="hidden" id="delId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Requisition List</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="RequisitionDetailsGrid"></div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row" id="daynamicPanel">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="imei_scan">Return IMEI Scan</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="imei_scan" name="imei_scan" class="k-textbox" />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            &nbsp;
+                        </div>
+                        <div class="col-md-12">
+                            <div id="imeiGrid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        @*<div class="col-md-3" style="visibility: hidden">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Available Promotions</div>
+                    <div class="panel-body" id="available_promotions">
+
+                    </div>
+                </div>
+            </div>*@
+    </div>
+
+
+    <div class="row" style="height: 100px;" id="btn">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnSaveRequisition" name="btnSaveRequisition" value="Save Information" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if (@ViewBag.delivery_master_id == 0 || @ViewBag.delivery_master_id == "") {
+            window.location.href = '/EShopRequisition/ConfirmList';
+        } else {
+            //Load All DropDown
+
+            $("#requisition_date").kendoDateTimePicker({
+                animation: {
+                    close: {
+                        effects: "fadeOut zoom:out",
+                        duration: 300
+                    },
+                    open: {
+                        effects: "fadeIn zoom:in",
+                        duration: 300
+                    }
+                },
+                value: new Date(),
+                format: "yyyy/MM/dd hh:mm tt"
+            });
+            //End
+
+            //Load Requisition
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetEshopReadyForDelivery", "EshopRequisition")",
+                data: { delivery_master_id: @ViewBag.delivery_master_id },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    $("#requisition_code").val(data.requisition_code);
+                    $("#delivery_no").val(data.delivery_no);
+                    $("#customer_po").val(data.reference_no);
+                    $("#customer_name").val(data.customer_name);
+                    $("#reqId").val(data.requisition_master_id);
+                    $("#delId").val(data.delivery_master_id);
+                    $("#status").val(data.status);
+                    grid(data.delivery_master_id);
+                    $("#requisition_date").val(data.requisition_date.toISOString().substring(0, 10));
+
+                }
+            });
+
+            //End
+
+            function grid(delivery_master_id) {
+                var dataSource2 = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetProductForReturn", "EshopRequisition")?delivery_master_id="+delivery_master_id,
+                            type: "GET"
+                        }
+                    },
+
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "delivery_details_id",
+                            fields: {
+                                delivery_details_id: { editable: false, nullable: true },
+                                product_name: { type: "string" },
+                                color_name: { type: "string" },
+                                product_version_name: { type: "string" },
+                                return_quantity: { type: "number" },
+                                delivered_quantity: { type: "string" },
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#RequisitionDetailsGrid").kendoGrid({
+                    dataSource: dataSource2,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    resizable: true,
+
+
+                    columns: [
+                       { field: "product_name", title: "Product", width: "130px" },
+                        { field: "color_name", title: "Color", width: "100px" },
+                        { field: "product_version_name", title: "Version", width: "100px" },
+                        { field: "delivered_quantity", title: "Quantity", width: "50px" },
+                        //{ field: "is_live_dummy", title: "Live Dummy?", width: "50px" },
+                        { field: "return_quantity", title: "Return Quantity", width: "70px" }
+                    ],
+                    editable: "inline"
+                });
+            }
+
+            //Imei grid
+
+            var imeiDataForImeiGrid = [];
+
+            function duplicate(list, imei) {
+                if (!list) {
+                    return false;
+                } else {
+                    for (var i = 0; i < list.length; i++) {
+                        if (list[i].imei == imei || list[i].imei2 == imei) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+
+
+            function imeiList(list) {
+                var dataSource2 = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: function (f) {
+                            f.success(list);
+                        }
+                    },
+
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "receive_serial_no_details_id",
+                            fields: {
+                                receive_serial_no_details_id: { editable: false, nullable: true },
+                                product_id: { type: "number" },
+                                color_id: { type: "number" },
+                                product_version_id: { type: "number" },
+                                product_name: { type: "string" },
+                                color_name: { type: 'string' },
+                                version: { type: "string" },
+                                imei: { type: "string" },
+                                imei2: { type: "string" },
+                                requisition_master_id: { type: "number" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#imeiGrid").kendoGrid({
+                    dataSource: dataSource2,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    resizable: true,
+
+                    columns: [
+                        { field: "product_name", title: "Product", width: "50px" },
+                        { field: "color_name", title: "Color", width: "50px" },
+                        { field: "version", title: "Version", width: "50px" },
+                        { field: "imei", title: "IMEI 1", width: "50px" },
+                        { field: "imei2", title: "IMEI 2", width: "50px" }
+                    ],
+                    editable: "inline"
+                });
+            }
+
+            $('#daynamicPanel :input').live('keyup', function (e) {
+
+                if (e.keyCode === 13) {
+                    $(this).trigger("enterKey");
+                    var id = this.id;
+                    Loading(false);
+
+                    var grid1 = $("#RequisitionDetailsGrid").data("kendoGrid")._data;
+                    var imei = $("#imei_scan").val();
+
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("GetIMEIForReturn", "EshopRequisition")?imei=" + imei,
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function(data) {
+
+                            if (data != null) {
+                                var count = 0;
+                                for (var i = 0; i < grid1.length; i++) {
+
+
+                                    var gReqId = grid1[i].requisition_master_id;
+                                    var gQuant = grid1[i].delivered_quantity;
+                                    var gReturnQty = grid1[i].return_quantity;
+
+                                    if (data.requisition_master_id == gReqId) {
+
+                                        //for imei grid
+                                        alert(gQuant);
+                                        alert(gReturnQty);
+                                        if (gQuant == gReturnQty) {
+                                            swal("Exception", "You are already scan panding return quantity !!", "warning");
+                                            return false;
+                                        } else {
+                                            var productImei = {
+                                                receive_serial_no_details_id: data.receive_serial_no_details_id,
+                                                product_name: data.product_name,
+                                                color_name: data.color_name,
+                                                version: data.product_version_name,
+                                                product_id: data.product_id,
+                                                color_id: data.color_id,
+                                                product_version_id: data.product_version_id,
+                                                imei: data.imei_no,
+                                                imei2: data.imei_no2,
+                                                requisition_master_id: data.requisition_master_id
+                                            };
+
+                                            var checkDuplicate = duplicate(imeiDataForImeiGrid, imei);
+                                            if (checkDuplicate) {
+                                                swal("Exception", "IMEI already exist in list !!", "warning");
+                                                return false;
+                                            } else {
+                                                imeiDataForImeiGrid.push(productImei);
+                                                imeiList(imeiDataForImeiGrid);
+
+                                                var firstItem = $('#RequisitionDetailsGrid').data().kendoGrid.dataSource.data()[i];
+                                                firstItem.set('return_quantity', grid1[i].return_quantity + 1);
+                                            }
+
+                                            count = 1;
+                                        }
+                                    }
+
+                                }
+                                //alert(count);
+                                if (count == 0) {
+                                    swal("Exception", "Wrong Imei Scan !!", "warning");
+                                    return false;
+                                }
+                            } else {
+                                swal("Exception", "IMEI not exist in list !!", "warning");
+                                return false;
+                            }
+
+                        }
+                    });
+
+
+                    $("#" + id + "").val("");
+                }
+            });
+
+            //end
+
+            function checkQty(data) {
+                var check = false;
+                var count = 0;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].return_quantity == 0) {
+                        count += 1;
+                    }
+                }
+                if (count == data.length) {
+                    check = false;
+                } else {
+                    check = true;
+                }
+                return check;
+            }
+
+            $("#btnSaveRequisition").click(function() {
+
+                Loading(false);
+
+                var gridData = $("#RequisitionDetailsGrid").data("kendoGrid").dataSource.data();
+
+                if (checkQty(gridData)) {
+
+                    var deliverd_master_id = $("#delId").val();
+                    var status = $("#status").val();
+                    var userId = '@userId';
+                    var requisition_master_id = $("#reqId").val();
+
+                    //alert(party_id);
+                    var EshopReturn = {
+                        created_by: '@userId',
+                        invoice_master_id: requisition_master_id
+
+                    };
+
+                    var EshopReturnDetails = [];
+
+                    var ProductDetailsGrid = $("#imeiGrid").data("kendoGrid").dataSource.data();
+
+                    for (var o = 0; o < ProductDetailsGrid.length; o++) {
+                        var productDetails = {
+                            product_id: ProductDetailsGrid[o].product_id,
+                            color_id: ProductDetailsGrid[o].color_id,
+                            product_version_id: ProductDetailsGrid[o].product_version_id,
+                            imei_no: ProductDetailsGrid[o].imei
+                        };
+                        EshopReturnDetails.push(productDetails);
+                    }
+
+                    var eshopReturnModel = {
+                        EshopReturn: EshopReturn,
+                        EshopReturnDetails: EshopReturnDetails
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@UrlConfig.Action("EshopReturnInsert", "EshopRequisition")",
+                        data: JSON.stringify(eshopReturnModel),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function(data) {
+                            Loading(false);
+                            console.log(data);
+
+                            if (data == true) {
+                                swal("Success", "Product Return Successful", "success");
+                                window.location.href = '/EshopRequisition/ConfirmList';
+                                return false;
+                            } else {
+                                swal("Error", "Product Return not Successful", "error");
+                                return false;
+                            }
+
+                        }
+                    });
+                } else {
+                    swal("Error", "Please Scan IMEI For Return", "error");
+                    return false;
+                }
+
+            });
+
+        }
+
+    });
+
+</script>

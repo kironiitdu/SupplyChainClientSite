@@ -1,0 +1,113 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+
+    //Added By Kiron:04-03-2017
+}
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>All Dealer Type</h4></div>
+    <div class="panel-body">
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var dataSource = new kendo.data.DataSource({
+            pageSize:20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllDealerType", "DealerType")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "DealerType")?updated_by=" + userId,
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "DealerType")?updated_by=" + userId,
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "DealerType")?created_by=" + userId,
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        sweetAlert("Sorry...", e.msg, "error");
+                       this.cancelChanges();
+                   }
+                },
+
+                model: {
+                    id: "dealer_type_id",
+                    fields: {
+                        dealer_type_id: { editable: false, nullable: true },
+                        dealer_type_name: { type: "string", validation: { required: true } },
+                        dealer_type_prefix: { type: "string", validation: { required: true } },
+                        credit_limit: { type: "number", validation: { required: true } }
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add New Dealer Type" }],
+            columns: [
+                { field: "dealer_type_name", title: "Dealer Type Name", id: "dealer_type_id", width: "150px" },
+                { field: "dealer_type_prefix", title: "Dealer Type Prefix", id: "dealer_type_prefix", width: "150px" },
+                { field: "credit_limit", title: "Credit Limit",width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+
+
+
+
+    });
+
+
+</script>
+
+
+
+<div id="kWindow"></div>
+
+

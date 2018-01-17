@@ -1,0 +1,382 @@
+﻿@{
+    ViewBag.Title = "MD_wise Transaction Summary";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script id="excel-template" type="text/x-kendo-template">
+
+    <a style="font-size:11px; text-decoration: none;" href="/Inventory/GetAdaProductInventoryDetailsExcel?product_id=#= product_id#&color_id=#= color_id#&warehouse_id=#= warehouse_id#" class="k-button k-grid-even">Excel</a>
+
+</script>
+<div class="panel panel-success">
+    <div class="panel-heading"><h4> MD & DBIS_wise Lifting Qty & Incentive Report</h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="to_date" name="to_date"/>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="incentive1">Incentive(%)</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="incentive1" class="k-textbox" />
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="from_date2">From Date</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="from_date2" name="from_date2"/>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="to_date2">To Date</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="to_date2" name="to_date2"/>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="incentive2">Incentive(%)</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="incentive2" class="k-textbox"/>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="party_type_id">Party Type</label>
+                </div>
+                <div class="col-md-2">
+                    <select id="party_type_id"></select>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                   
+                </div>
+                <div class="col-md-2">
+                    
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                   
+                </div>
+                <div class="col-md-2">
+                   
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        @*<div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="party_id">Party Name</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="party_id" name="party_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>*@
+
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnmddbiswiseliftingIncentive" name="btnmddbiswiseliftingIncentive" value="MD & DBIS_wise LIfting Qty & Incentive" />
+        </div>
+    </div>
+</div>
+<div class="panel-body">
+    <input type="button" class="k-button" id="exportExcel" name="exportExcel" value="Export to Excel" />
+    <br />
+    <div id="grid"></div>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#exportExcel").hide();
+        $("#btnmddbiswiseliftingIncentive").click(function () {
+            $("#exportExcel").show();
+            var party_type_id = $("#party_type_id").val();
+            var from_date = $("#from_date").val();
+            var to_date = $("#to_date").val();
+            var from_date2 = $("#from_date2").val();
+            var to_date2 = $("#to_date2").val();
+            var incentive1 = $("#incentive1").val();
+            var incentive2 = $("#incentive2").val();
+
+            if (!party_type_id) {
+                //party_type_id = 0;
+                alert("Please select party type");
+                return false;
+            }
+            if (!incentive1) {
+                alert("Please provide first criteria");
+                return false;
+            }
+            if (!incentive2) {
+                alert("Please provide second criteria");
+                return false;
+            }
+            if (!from_date) {
+                alert("Please select from date");
+                return false;
+            }
+            if (!to_date) {
+                alert("Please select to date");
+                return false;
+            }
+
+            if (!from_date2) {
+                alert("Please select from date");
+                return false;
+            }
+            if (!to_date2) {
+                alert("Please select to date");
+                return false;
+            }
+
+            $("#exportExcel").click(function () {
+                var grid = $("#grid").data("kendoGrid");
+                grid.saveAsExcel();
+            });
+            var dataSource = new kendo.data.DataSource({
+                pageSize: 20,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetLiftingIncentive", "LiftingIncentive")",
+                        type: "GET",
+                        data: {
+                            party_type_id: party_type_id,
+                            from_date: from_date,
+                            to_date: to_date,
+                            from_date2: from_date2,
+                            to_date2: to_date2,
+                            incentive1: incentive1,
+                            incentive2: incentive2
+                        }
+                    },
+
+                    autoSync: false,
+                    schema: {
+                        model: {
+                            id: "party_id",
+                            fields: {
+                                party_id: { editable: false, nullable: true },
+                                party_name: { type: "string" },
+                                party_prefix: { type: "string" },
+                                party_code: { type: "string" },
+                                zone_name: { type: "string" },
+                                area_name: { type: "string" },
+                                target_quantity: { type: "number", editable: false, nullable: true },
+                                first_incentive_lifting: { type: "number", editable: false, nullable: true },
+                                second_incentive_lifting: { type: "number", editable: false, nullable: true },
+                                first_target_fillup: { type: "number", editable: false, nullable: true },
+                                second_target_fillup: { type: "number", editable: false, nullable: true },
+                                lifting_amount: { type: "number", editable: false, nullable: true },
+                                incentive_for_first_criteria: { type: "number", editable: false, nullable: true },
+                                incentive_for_second_criteria: { type: "number", editable: false, nullable: true }
+                                //incentive_1_prct: { type: "number", editable: false, nullable: true },
+                                //incentive_2_prct: { type: "number", editable: false, nullable: true }
+                            }
+                        }
+                    }
+                }
+            });
+            var d = new Date();
+            var dateTime = d.toJSON();
+            jQuery("#grid").kendoGrid({
+                excel: {
+                    fileName: "incentive" + dateTime + ".xlsx"
+                },
+                dataSource: dataSource,
+                scrollable: true,
+                filterable: true,
+                pageable: {
+                    refresh: true,
+                    input: true,
+                    numeric: false
+                },
+                sortable: true,
+                groupable: true,
+                resizable: true,
+                columns: [
+                    { field: "party_name", title: "Customer Name", width: "150px" },
+                    { field: "party_prefix", title: "Cust. Type", width: "90px" },
+                    { field: "party_code", title: "Cust. ID", width: "90px" },
+                    { field: "zone_name", title: "Zone", width: "90px" },
+                    { field: "area_name", title: "Area", width: "90px" },
+                    { field: "target_quantity", title: "Target", width: "80px" },
+                    { field: "first_incentive_lifting", title: "Lifting(1st criteria)", width: "120px" },
+                    { field: "second_incentive_lifting", title: "Lifting(2nd criteria)", width: "120px" },
+                    { field: "first_target_fillup", title: "1st Target Fillup(%)", width: "120px" },
+                    { field: "second_target_fillup", title: "2st Target Fillup(%)", width: "120px" },
+                    { field: "lifting_amount", title: "2st Target Fillup(%)", width: "100px" },
+                    { field: "incentive_for_first_criteria", title: "Incentive For 1st Criteria", width: "130px" },
+                    { field: "incentive_for_second_criteria", title: "Incentive For 2st Criteria", width: "130px" }
+                    
+                    
+                    //{ title: "Action", width: "100px", template: kendo.template($("#excel-template").html()) }
+                ],
+                editable: "inline"
+            });
+        });
+        //////////////////////////////////////////////
+
+        var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+        var firstDay = new Date(y, m - 1, 1); //first day of previous month
+        var lastDay = new Date(y, m, 0); //last day of previous month
+        var fifteenthDay = new Date(y, m - 1, 15); //fifteenth day of previous month
+
+        $("#from_date").kendoDatePicker({
+            start: "year",
+            depth: "month",
+            format: "dd/MM/yyyy",
+            min: firstDay,
+            max: firstDay,
+            value: firstDay
+        });
+        $("#to_date").kendoDatePicker({
+            start: "year",
+            depth: "month",
+            format: "dd/MM/yyyy",
+            min: fifteenthDay,
+            max: fifteenthDay,
+            value: fifteenthDay
+        });
+        var d2 = new Date();
+        d2.setMonth(d2.getMonth() - 1);
+
+
+        $("#from_date2").kendoDatePicker({
+            start: "year",
+            depth: "year",
+            format: "dd/MM/yyyy",
+            min: firstDay,
+            max: firstDay,
+            value: firstDay
+        });
+
+        var d = new Date();
+        d.setMonth(d.getMonth() - 1);
+
+
+        $("#to_date2").kendoDatePicker({
+            start: "year",
+            depth: "year",
+            //format: "MMMM yyyy",
+            format: "dd/MM/yyyy",
+            //min: d,
+            //max: d,
+            //value: d
+            min: lastDay,
+            max: lastDay,
+            value: lastDay
+
+        });
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "Select Party Type",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetClientPartyTypes", "PartyType")"
+                }
+            }
+        }
+        });
+
+        @*$("#btnmddbiswiseliftingIncentive").click(function () {
+            Loading(true);
+            var from_date = $("#from_date").val();
+            var to_date = $("#to_date").val();
+            var from_date2 = $("#from_date2").val();
+            var to_date2 = $("#to_date2").val();
+            var incentive1 = $("#incentive1").val();
+            var incentive2 = $("#incentive2").val();
+
+            var liftingIncentive = {
+                from_date: from_date,
+                to_date: to_date,
+                from_date2: from_date2,
+                to_date2: to_date2,
+                incentive1: incentive1,
+                incentive2: incentive2
+            };
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("Put", "LiftingIncentive")",
+                data: JSON.stringify(liftingIncentive),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+
+                        //clear all text box below --------------------------------------
+                        //$("#warehouse_name").val("");
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+            // }
+
+
+
+        });*@
+    });
+    </script>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#product_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductList", "Product")"
+                    }
+                }
+            }
+
+        });
+
+    });
+</script>

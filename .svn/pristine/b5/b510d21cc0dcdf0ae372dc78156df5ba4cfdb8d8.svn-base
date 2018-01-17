@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Party User Add</div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="party_id">Party:MD/DBIS&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="login_name">Login Name</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="login_name" name="login_name" placeholder="Auto Generated Login Name" class="k-textbox" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                       
+                    </div>
+                    <div class="col-md-3">
+                        <input id="role_id" name="role_id" hidden />
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_name" name="party_name" hidden />
+                    </div>
+
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="password">Password&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="password" type="password" name="password" placeholder="Enter Your Login Password"  class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="confirm_password">Confirm Password&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="confirm_password" type="password" placeholder="Confirm Your Login Password" name="confirm_password" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnSaveUser" name="btnSaveUser" value="Save User" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+
+    //date time picker
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+        // employee list
+        $("#employee_id").kendoComboBox();
+        //branch list
+        $("#branch_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Branch ---",
+            dataTextField: "branch_name",
+            dataValueField: "branch_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBranches", "Branch")"
+                    }
+                }
+            }
+
+        });
+
+        //party list
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Party:MD/DBIS ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+
+        });
+
+        $('#party_id').change(function () {
+            var partyId = $('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyCodeById", "Party")?party_id=" + partyId + "",              
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    $('#login_name').val(data[0].party_code);
+                    $('#party_name').val(data[0].party_name);
+                    $('#role_id').val(data[0].role_id);
+                }
+            });
+        });
+
+      
+
+
+
+        $("#btnSaveUser").click(function () {
+            Loading(true);
+
+            // var full_name = $("#full_name").val();
+            var password = $("#password").val();
+            var confirm_password = $("#confirm_password").val();
+            var role_id = $("#role_id").val();
+            var login_name = $("#login_name").val();
+            var party_id = $("#party_id").val();
+            var party_name = $("#party_name").val();
+
+            if (password != confirm_password) {
+                Loading(false);
+                sweetAlert("Sorry...", "Password Doesn't Match!", "warning");
+            } else {
+                var user = {
+
+                    password: password,
+                    role_id: role_id,
+                    login_name: login_name,
+                    party_id: party_id,
+                    full_name:party_name
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "@UrlConfig.Action("Post", "User")",
+                    data: JSON.stringify(user),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        if (data.output === "success") {
+                            sweetAlert("Yes...", data.msg, "success");
+
+                            //clear all text box below --------------------------------------
+                            $("#full_name").val("");
+                            $("#password").val("");
+                            $("#confirm_password").val("");
+                            $("#login_name").val("");
+
+                            //clear all combobox below --------------------------------------
+
+                            var partyIdCombo = $("#party_id").data("kendoComboBox");
+                            partyIdCombo.dataSource.data([]);
+                            partyIdCombo.text("");
+
+                            var roleId = $("#role_id").data("kendoComboBox");
+                            roleId.dataSource.data([]);
+                            roleId.text("");
+
+                            var branchId = $("#branch_id").data("kendoComboBox");
+                            branchId.dataSource.data([]);
+                            branchId.text("");
+
+
+                            var empId = $("#employee_id").data("kendoComboBox");
+                            empId.dataSource.data([]);
+                            empId.text("");
+
+                            return false;
+                        } else {
+                            sweetAlert("Sorry...", data.msg, "error");
+                            return false;
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+</script>
+

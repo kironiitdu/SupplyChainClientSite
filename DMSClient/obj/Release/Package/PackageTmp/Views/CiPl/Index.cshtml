@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "CiPl List";
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">CiPl List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/CiPl/Edit?ci_pl_master_id=#= ci_pl_master_id #" class="k-button k-grid-even edit">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "CiPl")">
+                    <span class="k-icon k-add"></span>
+                    New
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllCiPl", "CiPl")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "ci_pl_master_id",
+                            fields: {
+                                ci_pl_master_id: { editable: false, nullable: true },
+                                ci_no: { type: "string" },
+                                ci_date: { type: 'date' },
+                                issue_date: { type: 'date' },
+                                purchase_order_master_id: { type: "string" },
+                                pi_number: { type: "string" },
+                                ref_no: { type: "string" },
+                                dc_no: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    columns: [
+                        { field: "ci_no", title: "CI No", id: "ci_pl_master_id", width: "50px" },
+                        { field: "ci_date", title: "CI Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        { field: "pi_number", title: "PI No", width: "50px" },
+                        { field: "ref_no", title: "Ref No", width: "50px" },
+                        { field: "dc_no", title: "DC No", width: "50px" },
+                        { field: "issue_date", title: "Issue Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        {
+                            title: "Action", width: "30px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                        {
+                            command: { name: "destroy" }, title: "Action", width: "30px"
+                        }],
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

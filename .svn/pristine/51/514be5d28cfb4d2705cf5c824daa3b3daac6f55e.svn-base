@@ -1,0 +1,392 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var party_id = '@ViewBag.party_id';
+        Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetPartyById", "Party")?party_id=" + party_id,
+
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                $("#party_id").val(party_id);
+                $("#party_name").val(data.party_name);
+                $("#proprietor_name").val(data.proprietor_name);
+                $("#address").val(data.address);
+                $("#phone").val(data.phone);
+                $("#mobile").val(data.mobile);
+                $("#email").val(data.email);
+                $("#party_type_id").data("kendoComboBox").value(data.party_type_id);
+
+                $("#country_id").data("kendoComboBox").value(data.country_id);
+                $("#province_id").data("kendoComboBox").value(data.province_id);
+                $("#city_id").data("kendoComboBox").value(data.city_id);
+                $("#start_date").val(data.start_date);
+
+
+
+                if (data.is_active == true) {
+                    $("#is_active").prop("checked", true);
+                } else {
+                    $("#is_active").prop("checked", false);
+                }
+            }
+        });
+    });
+</script>
+
+
+<div class="row" id="context">
+    @*<div class="widget">*@
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Add Party</h5></div>
+        <div class="panel-body">
+            <form id="PartyAdd">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="company_id">Retailer Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="party_name" id="party_name" disabled style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_code">Owner Name</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="proprietor_name" id="proprietor_name" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Retailer Address:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="address" id="address" style="width:80%;">
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="country_id">Country:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="country_id" id="country_id" class="dropdown" style="width: 80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="province_id">Province:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="province_id" id="province_id" class="dropdown" style="width: 80%;">
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="city_id">City:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="city_id" id="city_id" class="dropdown" style="width: 80%;">  
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Land Phone No:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="phone" id="phone" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Mobile No:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="mobile" id="mobile" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Email Address:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="email" id="email" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Party Type:(Retailer):&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="party_type_id" id="party_type_id" class="dropdown" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Start Date:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="" name="start_date" id="start_date" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="is_active">Is Active</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="checkbox" name="is_active" id="is_active" style="margin-left:6px;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+
+
+                </div>
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="PartyAddSubmit" value="Save Information" />
+                        <input type="hidden" class="textbox" name="party_id" id="party_id" style="width:80%;">
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $('#context').addClass('animated flipInX');
+
+        $("#start_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+        $("#country_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Country ---",
+            dataTextField: "country_name",
+            dataValueField: "country_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCountries", "Country")"
+                    }
+                }
+            }
+        });
+
+
+        $("#province_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "country_id",
+            placeholder: "--- Select Province ---",
+            dataTextField: "province_name",
+            dataValueField: "province_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProvince", "Province")"
+                    }
+                }
+            }
+        });
+
+        $("#city_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "province_id",
+            placeholder: "--- Select District/City ---",
+            dataTextField: "city_name",
+            dataValueField: "city_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCities", "City")"
+                    }
+                }
+            }
+        });
+
+        @*//Location Dropdown
+        var countrys = $("#location_id").kendoComboBox({
+            placeholder: "Select Country...",
+            dataTextField: "location_name",
+            dataValueField: "location_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllLocations", "Location")",
+                    type: "GET"
+                }
+            }
+
+        },
+            optionLabel: "Select Country"
+
+    }).data("kendoComboBox");*@
+        $("#location_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--Select Region--",
+            dataTextField: "location_name",
+            dataValueField: "location_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllLocations", "Location")",
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+    });
+
+
+    //Party Combobox
+
+    $("#party_type_id").kendoComboBox({
+        autoBind: true,
+        placeholder: "Select Party Type...",
+        dataTextField: "party_type_name",
+        dataValueField: "party_type_id",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllPartyType", "PartyType")",
+                    type: "GET"
+                }
+            },
+
+        }
+    }).data("kendoComboBox");
+    $("#party_type_id").data("kendoComboBox").enable(false);
+
+
+
+    //data Save
+    $(document).ready(function () {
+        $("#PartyAddSubmit").click(function () {
+            Loading(true);
+            var party_id = '@ViewBag.party_id';
+
+            var party_id = $("#party_id").val();
+            var party_name = $("#party_name").val();
+            var proprietor_name = $("#proprietor_name").val();
+            var address = $("#address").val();
+            var location_id = $("#location_id").val();
+            var phone = $("#phone").val();
+            var mobile = $("#mobile").val();
+            var email = $("#email").val();
+            var party_type_id = $("#party_type_id").val();
+            var start_date = $("#start_date").val();
+
+            var country_id = $("#country_id").val();
+            var province_id = $("#province_id").val();
+            var city_id = $("#city_id").val();
+
+            var userId = @userId;
+            var is_active = false;
+
+            if ($("#is_active").is(":checked")) {
+                is_active = true;
+            }
+            var oParty = {
+                party_id: party_id,
+                party_name: party_name,
+                proprietor_name: proprietor_name,
+                address: address,
+                location_id: location_id,
+                phone: phone,
+                mobile: mobile,
+                email: email,
+                party_type_id: party_type_id,
+                start_date: start_date,
+                is_active: is_active,
+                country_id: country_id,
+                province_id: province_id,
+                city_id: city_id,
+                modified_by:userId
+
+            };
+
+            $.ajax({
+                type: "Put",
+                url: "@UrlConfig.Action("Put", "Party")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oParty),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        NotificationMessage(data);
+                        //KendoWindowFunction(data.msg, "success", "");
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        // KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+
+        });
+    });
+
+
+</script>

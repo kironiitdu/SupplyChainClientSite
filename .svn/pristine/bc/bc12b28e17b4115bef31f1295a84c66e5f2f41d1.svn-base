@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "AutoComplete";
+}
+
+
+
+<div class="col-md-4">
+    <h4>Auto Complete</h4>
+    <input id="Controls" style="width: 100%;" />
+</div>
+<br />
+<br />
+<br /><br />
+<br />
+<br />
+
+    <div class="k-rtl">
+        <div id="grid"></div>
+    </div>
+<script type="text/javascript">
+
+
+
+
+
+    $(document).ready(function () {
+        var dataSet = [];
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetAllControls", "Control")",
+            dataType: 'json',
+            contentType: "application/json",
+            success: function (data) {
+                // console.log(data);
+                $.each(data, function (key, value) {
+                    dataSet.push(value.control_name);
+                });
+                //console.log(dataSet);
+                $("#Controls").kendoAutoComplete({
+                    dataSource: dataSet,
+                    filter: "startswith",
+                    placeholder: "Enter Your Search Key Words",
+                    separator: ", "
+                });
+
+            }
+        });
+    });
+
+</script>
+<script type="text/javascript">
+
+    jQuery(document).ready(function() {
+        $('#context').addClass('animated rollIn');
+        var grid = $('#grid');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllControls", "Control")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Control")",
+                    type: "PUT",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Control")",
+                    type: "DELETE"
+                }
+            },
+
+
+            model: {
+                id: "control_id",
+                fields: {
+                    control_id: { editable: false, nullable: true },
+                    control_name: { type: "string", validation: { required: true } },
+                    control_parent_id: { type: "number" },
+                    control_type_id: { type: "number" },
+                    control_sort: { type: "number" },
+                    control_alias: { type: "string" },
+                    control_controller: { type: "string" },
+                    control_action: { type: "string" },
+                    control_parent_name: { type: "string" },
+                    control_type_name: { type: "string" }
+
+                }
+
+            }
+        });
+
+
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+
+            pageable: {
+                toolbar: "<div><img id='imgExport' title='Export In Excel' onclick='ExportData(1)'/></div>'",
+               // toolbar: ["excel"],
+                refresh: true,
+                input: true,
+                pageSize: 50,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            columns: [
+
+                { field: "control_name", title: "Control Name", id: "control_id", width: "150px" },
+                { field: "control_parent_name", title: "Parent Name", width: "150px" },
+                { field: "control_type_name", title: "Control Type", width: "150px" },
+                { field: "control_sort", title: "Sort", width: "150px" },
+                { field: "control_alias", title: "Control Alias", width: "150px" },
+                { field: "control_controller", title: "Controller Name", width: "150px" },
+                { field: "control_action", title: "Control Action ", width: "150px" },
+
+                { command: ["destroy"], title: "Action", width: "230px" }
+            ],
+            editable: "inline",
+
+        });
+    });
+
+    function ExportData(Format) {
+        var targetGrid = $('#grid').data('kendoGrid');
+        var dataSource = targetGrid.dataSource;
+        var dataView = dataSource.view();
+
+        var result = '';
+        if (Format == 1) {
+            result = "data:application/vnd.ms-excel,";
+
+        }
+        result += "<table><tr><th>Control Name</th><th>Parent Name</th></tr>";
+        for (var i = 0; i < dataView.length; i++) {
+            result += "<tr><td>";
+            result += dataView[i].control_name;
+            result += "</td><td>";
+
+
+            result += dataView[i].control_parent_name;
+            result += "</td>";
+            result += "</tr>";
+        }
+        result += "</table>";
+        var aLink = document.createElement('a');
+        a.href = result;
+        if (format == 1) {
+            aLink.download = 'ExportedData.xls';
+        }
+        aLink.click();
+    }
+
+
+</script>
+
+<div>
+    <div id="grid"></div>
+    <div onclick="ExportData(1)">Excel</div>
+</div>

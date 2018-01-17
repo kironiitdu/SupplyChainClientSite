@@ -1,0 +1,274 @@
+﻿@{
+    ViewBag.Title = "MonthlyTransferReport";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Monthly Transfer Report</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="to_date" name="To Date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="from_warehouse_id">From Warehouse</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="from_warehouse_id" name="To Date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <input type="button" class="k-button " id="btnSearch" name="btnSearch" value="Search" style="margin-top: 6px" />
+                </div>
+            </div>
+        </div>
+        <input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel" />
+        <input type="button" class="k-button " id="btnExportPdf" name="btnExportPdf" value="Export PDF" />
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                $("#btnExportExcel").hide();
+                $("#btnExportPdf").hide();
+
+                var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy/MM/dd');
+                $("#from_date").val(todayDate);
+                $("#to_date").val(todayDate);
+
+                $("#btnExportExcel").click(function () {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+
+
+                $("#btnExportPdf").click(function () {
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+                    var from_warehouse_id = $("#from_warehouse_id").val();
+
+                    if (from_warehouse_id == '') {
+                        from_warehouse_id = "0";
+                    }
+                    var url = '/ToDelivery/GetMonthlyTransferReport?from_date=' + from_date + '&to_date=' + to_date + '&from_warehouse_id=' + from_warehouse_id;
+                    window.open(url, '_blank');
+                });
+
+
+                //date time picker
+                $("#from_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                //date time picker
+                $("#to_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                $("#from_warehouse_id").kendoComboBox({
+                    autoBind: false,
+                    placeholder: "Select Warehouse",
+                    dataTextField: "warehouse_name",
+                    dataValueField: "warehouse_id",
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+
+                                url: "@UrlConfig.Action("GetAllWarehouses", "Warehouse")"
+                            }
+                        }
+                    }
+                });
+
+                //Excel Export---------
+                $("#btnSearch").click(function () {
+                    Loading(true);
+
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+                    var from_warehouse_id = $("#from_warehouse_id").val();
+
+
+                    if (from_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select From Date", "warning");
+                    }
+                    else if (to_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                    } else if (to_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                    }
+                    else if (from_warehouse_id == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select From Warehouse", "warning");
+                    } else {
+
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetMonthlyTransferReport", "ToDelivery")?from_date=" + from_date + "&to_date=" + to_date + "&from_warehouse_id=" + from_warehouse_id + "",
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                Loading(false);
+                                console.log(data);
+
+                                var sampleData = [];
+
+                                if (data != '') {
+
+                                    for (var i = 0; i < data.length; i++) {
+
+                                        var productDetails = {
+                                            to_delivery_master_id: data[i].to_delivery_master_id,
+                                            to_delivery_no: data[i].to_delivery_no,
+                                            to_delivery_date: data[i].to_delivery_date,
+                                            from_warehouse_name: data[i].from_warehouse_name,
+                                            to_warehouse_name: data[i].to_warehouse_name,
+                                            product_name: data[i].product_name,
+                                            color_name: data[i].color_name,
+                                            product_version_name: data[i].product_version_name,
+                                            delivered_quantity: data[i].delivered_quantity,
+                                            full_name: data[i].full_name,
+                                            delivery_method: data[i].delivery_method,
+                                            to_logistics_delivered_by: data[i].to_logistics_delivered_by,
+                                            courier_name: data[i].courier_name
+                                        };
+                                        sampleData.push(productDetails);
+                                    }
+
+                                    //grn Grid---------------------
+                                    var dataSource = new kendo.data.DataSource({
+                                        pageSize: 20,
+                                        transport: {
+                                            read: function (e) {
+                                                // on success
+                                                e.success(sampleData);
+                                            }
+                                        },
+                                        //    code: "Ok",
+                                        autoSync: false,
+                                        schema: {
+                                            errors: function (e) {
+                                                console.log(e.errors);
+                                                //alert(e.error);
+                                                if (e.output === "error") {
+                                                    console.log(e.output);
+                                                    //KendoWindowFunction(e.msg, "error", "");
+                                                    // this.cancelChanges();
+                                                }
+
+                                            },
+
+                                            model: {
+                                                id: "to_delivery_master_id",
+                                                fields: {
+                                                    to_delivery_master_id: { editable: false, nullable: true },
+                                                    to_delivery_no: { type: "string" },
+                                                    to_delivery_date: { type: 'date' },
+                                                    to_warehouse_name: { type: "string" },
+                                                    product_name: { type: "string" },
+                                                    color_name: { type: "string" },
+                                                    product_version_name: { type: "string" },
+                                                    delivered_quantity: { type: "string" },
+                                                    full_name: { type: "string" },
+                                                    delivery_method: { type: "string" },
+                                                    to_logistics_delivered_by: { type: "string" },
+                                                    courier_name: { type: "string" }
+                                                }
+
+                                            }
+                                        }
+
+                                    });
+
+                                    var d = new Date();
+                                    var dateTime = d.toJSON();
+
+                                    jQuery("#grid").kendoGrid({
+                                        excel: {
+                                            fileName: "Monthly_Transfer_Report_" + dateTime + ".xlsx",
+                                            allPages: true
+                                        },
+                                        dataSource: dataSource,
+                                        scrollable: true,
+                                        filterable: true,
+                                        pageable: {
+                                            refresh: true,
+                                            input: true,
+                                            pageSize: 20,
+                                            numeric: false,
+                                            pageSizes: [10, 20, 50]
+                                        },
+
+                                        sortable: true,
+                                        groupable: true,
+                                        resizable: true,
+
+
+                                        columns: [
+                                            { field: "to_delivery_date", title: "Transfer Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                                            { field: "to_delivery_no", title: "TO Delivery No", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "to_warehouse_name", title: "Delivered To Warehouse", width: "50px" },
+                                            { field: "product_name", title: "MODEL", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "color_name", title: "COLOR", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "product_version_name", title: "VERSION", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "delivered_quantity", title: "Transferred Quantity", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "full_name", title: "Created By", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "delivery_method", title: "Delivery Method", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "to_logistics_delivered_by", title: "Delivered By", id: "to_delivery_master_id", width: "50px" },
+                                            { field: "courier_name", title: "Courier Name", id: "to_delivery_master_id", width: "50px" }
+                                        ],
+
+                                        editable: "inline"
+                                    });
+                                    $("#btnExportExcel").show();
+                                    $("#btnExportPdf").show();
+
+                                } else {
+                                    swal("Exception", "Data Not Available !!", "error");
+                                    $("#grid").data("kendoGrid").dataSource.data([]);
+                                    $("#btnExportExcel").hide();
+                                    $("#btnExportPdf").hide();
+                                    return false;
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

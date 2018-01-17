@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Promotion Activity List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/PromotionActivity/Edit?promotion_activity_id=#= promotion_activity_id #" class="k-button k-grid-even">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","PromotionActivity")">
+                    <span class="k-icon k-add"></span>
+                    Add Promotion Activity
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#context').addClass('animated rollIn');
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllPromotionActivitys", "PromotionActivity")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "PromotionActivity")",
+                            type: "DELETE"
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "promotion_activity_id",
+                            fields: {
+                                promotion_activity_id: { editable: false, nullable: true },
+                                promotion_name: { type: "string" },
+                                titel: { type: "string" },
+                                promotion_start_date: { type: "string" },
+                                promotion_end_date: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "promotion_name", title: "Promotion Name", id: "promotion_activity_id", width: "150px" },
+                        { field: "titel", title: "Titel", width: "80px" },
+                        { field: "promotion_start_date", title: "Start Date", width: "80px" },
+                        { field: "promotion_end_date", title: "End Date", width: "100px" },
+                        {
+                            title: "Action", width: "35px",
+                            template: kendo.template($("#edit-template").html())
+                        }],
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+
+                            var today = new Date();
+
+                            var dd = today.getDate();
+                            var mm = today.getMonth() + 1; //January is 0!
+                            var yyyy = today.getFullYear();
+                            var compareDate = mm + '/' + dd + '/' + yyyy;
+
+                            var startDate = gridData[i].promotion_start_date;
+                            var promotionStartDate = new Date(startDate);
+
+                            var endDate = gridData[i].promotion_end_date;
+                            var promotionEndDate = new Date(endDate);
+
+                            var xx = Date.parse(today) >= Date.parse(promotionEndDate);
+                            var yy = Date.parse(compareDate) === Date.parse(promotionEndDate);
+                            var zz = Date.parse(today) < Date.parse(promotionStartDate);
+
+                            console.log(yy);
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                            var editButton = $(currenRow).find("a");
+                            if (xx === true) {
+                                if (yy === true) {
+                                    currenRow.css("background-color", "#f6fdbe");
+                                }
+                                else {
+                                    currenRow.css("background-color", "#fbbfbf");
+                                    editButton.hide();
+                                }
+                            }
+                            else {
+                                if (zz === true) {
+                                    currenRow.css("background-color", "#fff");
+                                }
+                                else {
+                                    currenRow.css("background-color", "#dff0d8");
+                                }
+                                
+                            }
+                        }
+                    },
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

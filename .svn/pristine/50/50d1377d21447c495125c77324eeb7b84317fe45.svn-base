@@ -1,0 +1,179 @@
+﻿@{
+    ViewBag.Title = "PO Approve";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    var userId = @userId;
+
+    function ApproveFunction(data) {
+        var purchase_order_master_id = data;
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("ApprovePurchaseOrder", "PurchaseOrder")",
+            data: {
+                purchase_order_master_id:purchase_order_master_id,
+                user_id:userId
+            },
+            success: function(data) {
+                if (data.output === "success") {
+                    sweetAlert("Yes...", data.msg,data.output);
+                } else {
+                    sweetAlert("Sorry...", data.msg, data.output);
+                }
+                $('#grid').data('kendoGrid').dataSource.read();
+                $('#grid').data('kendoGrid').refresh();
+
+            }
+        });
+    }
+
+
+    function downloadfunction(data) {
+        var purchase_order_master_id = data;
+        var urlLink = "@UrlConfig.Action("GetPiAttachment", "PurchaseOrder")?purchase_order_master_id="+purchase_order_master_id;
+        $.ajax({
+            type: "GET",
+            url: urlLink,
+            success: function(data) {
+                if (data.output != "error") {
+                    window.open(urlLink, '_blank');
+                } else {
+                    sweetAlert("Sorry...", data.msg, data.output);
+                }
+            }
+        });
+
+
+    }
+</script>
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Verified Purchase Order List</div>
+    <div class="panel-body">
+
+        <script id="verify-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" onclick='javascript:ApproveFunction(#= purchase_order_master_id #);' class="k-button k-grid-even approved">Approve</a>
+        </script>
+        <script id="Report-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/PurchaseOrder/GetPurchaseOrderReport?purchase_order_master_id=#= purchase_order_master_id#" target="_blank" class="k-button k-grid-even">Report</a>
+        </script>
+        <script id="download-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="javascript:void(0);" onclick="javascript:downloadfunction(#= purchase_order_master_id#)" class="k-button k-grid-even download">Download Attachment</a>
+        </script>
+
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                $('#context').addClass('animated rollIn');
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllVerifiedPurchaseOrders", "PurchaseOrder")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function(e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "PurchaseOrder")",
+                            type: "DELETE",
+                            complete: function(e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function(e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "purchase_order_master_id",
+                            fields: {
+                                purchase_order_master_id: { editable: false, nullable: true },
+                                order_no: { type: "string" },
+                                order_date: { type: 'date' },
+                                supplier_id: { type: "string" },
+                                supplier_name: { type: "string" },
+                                verify_status: { type: "string" },
+                                approve_status: { type: "string" },
+                                vat_total: { type: "string" },
+                                tax_total: { type: "string" },
+                                total_amount_including_vattax: { type: "string" },
+                                total_amount_without_vattax: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "order_no", title: "Order No", id: "purchase_order_master_id", width: "50px" },
+                        { field: "order_date", title: "Order Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        { field: "supplier_name", title: "Supplier", width: "50px" },
+                        { field: "verify_status", title: "Verify Status", width: "50px" },
+                        { field: "approve_status", title: "Approve Status", width: "50px" },
+                        { field: "total_amount_without_vattax", title: "Total Amount", width: "50px" },
+                        { field: "total_amount_including_vattax", title: "Total Amount (+ Vat & Tax)", width: "50px" },
+                        { title: "&nbsp;", width: "30px", template: kendo.template($("#verify-template").html()) },
+                        { title: "&nbsp;", width: "50px",template: kendo.template($("#download-template").html())},
+                        {
+                            title: "&nbsp;",
+                            width: "30px",
+                            template: kendo.template($("#Report-template").html())
+                        },
+                        {
+                            command: { name: "destroy", text: "Cancel" },
+                            title: "&nbsp;",
+                            width: "30px"
+                        }
+                    ],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

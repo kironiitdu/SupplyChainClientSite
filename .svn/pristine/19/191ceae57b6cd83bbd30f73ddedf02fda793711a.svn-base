@@ -1,0 +1,348 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="ie lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>    <html class="ie lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>    <html class="ie lt-ie9"> <![endif]-->
+<!--[if gt IE 8]> <html> <![endif]-->
+<!--[if !IE]><!-->
+<html>
+<!-- <![endif]-->
+<head>
+    <title>@ViewBag.Title</title>
+
+    <!-- Meta -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+
+    <!--
+    **********************************************************
+    In development, use the LESS files and the less.js compiler
+    instead of the minified CSS loaded by default.
+    **********************************************************
+    <link rel="stylesheet/less" href="../assets/less/admin/module.admin.page.index.less"/>
+    -->
+    <!--[if lt IE 9]><link rel="stylesheet" href="../assets/components/library/bootstrap/css/bootstrap.min.css"/><![endif]-->
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/css/admin/module.admin.page.index.min.css")" />
+
+    <link href="@Url.Content("~/Content/kendo/styles/kendo.common.min.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/kendo/styles/kendo.default.min.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/kendo/styles/kendo.metro.min.css")" rel="stylesheet" />
+    <link href="~/Content/assets/components/modules/admin/notifications/gritter/assets/lib/css/jquery.gritter.css" rel="stylesheet" />
+    <link href="~/Content/CSS/CustomStyle/CustomStyle.css" rel="stylesheet" />
+    <link href="~/Content/dist/sweetalert.css" rel="stylesheet" />
+    <link href="~/Content/CSS/animate.min.css" rel="stylesheet" />
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="@Url.Content("~/Content/assets/components/library/jquery/jquery.min.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/library/jquery/jquery-migrate.min.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/library/modernizr/modernizr.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/kendo/js/kendo.web.min.js")"></script>
+    <script src="@Url.Content("~/Content/kendo/js/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo-custom.js")"></script>
+    <link href="@Url.Content("~/Content/loading/loading.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Content/loading/loading.js")"></script>
+    <script src="~/Content/dist/sweetalert.min.js"></script>
+    <script src="~/Scripts/Custom/Validation.js"></script>
+    <script src="~/Scripts/Custom/NotificationMessage.js"></script>
+    <script src="~/Scripts/Custom/GlobalVariable.js"></script>
+    <script type="text/javascript">
+
+    //////24.04.2017 start
+    function LogOutInfoEntry(user_id) {
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("LogOutInfoEntry", "LoginLog")",
+            data: { userId: user_id },//Passing parameter
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                alert("Test");
+            }
+        });
+
+    }
+    //////end
+    </script>
+    <style type="text/css">
+        .k-pager-input.k-label .k-textbox {
+            width: 50px !important;
+        }
+    </style>
+</head>
+@{
+
+    string roleid = "";
+    string role_name = "";
+    string username = "";
+    string companyName = "";
+    string comapnyCode = "";
+    string flagPath = "";
+    bool is_new_password = false;
+    //24.04.2017
+    string user_id = "";
+    if (Session["user_au_id"] != null)
+    {
+        user_id = (string)Session["user_au_id"];
+    }
+    //24.04.2017 end
+    
+    if (Session["role_name"] != null)
+    {
+        role_name = (string)Session["role_name"];
+    }
+    if (Session["user_role_id"] != null)
+    {
+        roleid = (string)Session["user_role_id"];
+    }
+    if (Session["full_name"] != null)
+    {
+        username = (string)Session["full_name"];
+    }
+    if (Session["company_name"] != null)
+    {
+        companyName = (string)Session["company_name"];
+    }
+    if (Session["company_code"] != null)
+    {
+        comapnyCode = (string)Session["company_code"];
+    }
+    if (Session["flag_path"] != null)
+    {
+        flagPath = (string)Session["flag_path"];
+    }
+    if (Session["is_new_password"] != null)
+    {
+        is_new_password = (bool)Session["is_new_password"];
+    }
+    //var FlagUrl = "http://localhost:55298/" + flagPath;
+
+    var controller = ViewContext.RouteData.GetRequiredString("controller");
+    var action = ViewContext.RouteData.GetRequiredString("action");
+
+}
+<body class="">
+
+    <div class="navbar navbar-fixed-top navbar-primary main" role="navigation">
+
+        <div class="navbar-header pull-left">
+            <div class="navbar-brand">
+                <div class="pull-left">
+                    <a href="" class="toggle-button toggle-sidebar btn-navbar"><i class="fa fa-bars"></i></a>
+                </div>
+                <a href="/Deshboard/Index" class="appbrand innerL">AAMRA SCM</a>
+            </div>
+        </div>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown" style="padding-top:7px;">
+                <img src="~/Content/images/we-logo.png" alt="" style="width:50px;height:30px; float:left" />
+                <span class="hidden-xs hidden-sm" style="float:left; color:white; margin-top:8px;"> &nbsp;</span>
+                <span class="clearfix"></span>
+            </li>
+            <li class="dropdown">
+                <a href="" class="dropdown-toggle user" data-toggle="dropdown">
+                    <img src="~/Content/images/noimage.png" alt=""
+                         class="img-circle" /><span class="hidden-xs hidden-sm"> @username </span> <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu list pull-right ">
+                        <li><a href="#">Your Profile</a></li>
+                        <li><a href='@Url.Action("changeownprofile", "user")'>Edit Account</a></li>
+                        @*<li><a href='@Url.Action("RedrictToLogin", "Login")'>Log out </a></li>*@
+                        <li ><a href='@Url.Action("RedrictToLogin", "Login")' onclick="return LogOutInfoEntry(userIDs)">Log out </a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        @{
+            if (is_new_password && controller == "user" && action == "changeownprofile") { }
+            else if (is_new_password && controller != "user" && action != "changeownprofile")
+            {
+                Response.Redirect("/user/changeownprofile");
+            }
+        }
+        <div id="menu" class="hidden-print hidden-xs">
+            <div class="sidebar sidebar-inverse">
+                @*<h3 style="color:white; text-align:center; font-size:20px !important">
+                        <img class="img-responsive" src="~/Content/images/we-logo.png" width="152" height="92" alt="" />
+                    </h3>*@
+                <div class="sidebarMenuWrapper" style="margin-top: 15px;">
+                    <ul class="list-unstyled">
+                        <!--Add RBO data from above form-->.
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                var userIDs = '@user_id';
+                                var rid = '@roleid';
+                                //console.log(rid);
+                                var property_get_url = "@UrlConfig.Action("GetFormPermissionMenuRole", "UserPermissionPartial")?role_id=" + rid;
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: property_get_url,
+                                    dataType: "json",
+                                    contentType: "application/json",
+
+                                    success: function (data) {
+                                        //console.log(data);
+                                        var FormDivString = "";
+                                        $(data).each(function (i, ob) {
+                                            //console.log(ob);
+                                            //if (ob.control_status != false) {
+                                            var counter = 1;
+
+                                            if (ob.is_active == true && ob.control_status != false) {
+                                                if (ob.control_type_id == 1 && ob.control_parent_id == 0) {
+
+                                                    FormDivString += '<li  ';
+                                                    $(data).each(function (x, xob) {
+                                                        if (xob.control_parent_id == ob.control_id && xob.control_type_id == 1) {
+                                                            FormDivString += 'id="main_manu_' + counter + '" class=hasSubmenu';
+
+                                                        }
+                                                        counter++;
+                                                    });
+                                                    FormDivString += '>';
+                                                    FormDivString += '<a  ';
+
+                                                    $(data).each(function (x, xob) {
+
+                                                        if (xob.control_parent_id == ob.control_id && xob.control_type_id == 1) {
+                                                            FormDivString += 'href="javascript: void(0);"';
+                                                            FormDivString += ' data-target="#' + ob.control_alias + '"';
+                                                            FormDivString += ' data-toggle="collapse"';
+
+                                                        }
+
+                                                    });
+                                                    if (ob.control_type_id == 1 && ob.control_parent_id == 0) {
+                                                        FormDivString += 'href = "/' + ob.control_controller + '/' + ob.control_action + '"';
+                                                    }
+                                                    FormDivString += ' >';
+                                                    FormDivString += '<i class="' + ob.icon + '"></i>';
+                                                    FormDivString += '<span>' + ob.control_name + '</span>';
+                                                    FormDivString += '</a>';
+                                                    FormDivString += '<ul id="' + ob.control_alias + '" class="collapse" style="height: auto;">';
+
+                                                    $(data).each(function (x, xob) {
+                                                        //if (xob.control_status != false) {
+                                                        if (xob.is_active == true && xob.control_status != false) {
+                                                            if (xob.control_parent_id == ob.control_id && xob.control_type_id == 1) {
+                                                               
+                                                                FormDivString += '<li id=' + xob.control_controller + "_" + xob.control_action + ' class="abc">';
+                                                                FormDivString += '<a href="/' + xob.control_controller + '/' + xob.control_action + '">';
+                                                                FormDivString += '<span class="pull-right badge badge-primary">';
+                                                                FormDivString += '<i class="fa fa-check"></i>';
+                                                                FormDivString += '</span>';
+                                                                FormDivString += xob.control_name;
+
+                                                                FormDivString += '</a>';
+                                                                FormDivString += '</li>';
+
+
+                                                                //console.log(xob.control_name);
+                                                            }
+
+                                                        }
+                                                    });
+                                                    FormDivString += '</ul>';
+                                                    FormDivString += '</li>';
+                                                    
+                                                }
+                                            }
+                                        });
+                                        //FormDivString += '<li></li>';
+                                        $(".list-unstyled").append(FormDivString);
+                                        // console.log(FormDivString);
+                                    }
+                                });
+                            });
+                        </script>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                //alert($(location).attr('href'));
+
+                var url = window.location.pathname.split("/");
+                var controller = url[1];
+                var action = url[2];
+
+                var manuId = controller + "_" + action;
+
+                setTimeout(function () {
+                    $("#" + manuId).addClass("active");
+                }, 900);
+
+
+                setTimeout(function () {
+                    var xxx = $("#" + manuId).closest('ul').attr('id');
+
+                    $("#" + xxx).removeClass("collapse");
+                    $("#" + xxx).addClass("in");
+                }, 1000);
+
+            });
+        </script>
+
+        <div id="content">
+
+            <div class="innerAll spacing-x2">
+                @RenderBody()
+            </div>
+        </div>
+
+
+
+        <!-- // Content END -->
+
+        <div class="clearfix"></div>
+        <!-- // Sidebar menu & content wrapper END -->
+        <div id="footer" class="hidden-print">
+
+            <!--  Copyright Line -->
+            <div class="copy">&copy; 2014 - 2015 - <a href="http://www.systechunimax.com">Systech Unimax Ltd.</a> - All Rights Reserved. </div>
+            <!--  End Copyright Line -->
+
+        </div>
+        <!-- // Footer END -->
+        <!-- // Main Container Fluid END -->
+        <!-- Global -->
+        <script>
+            function getDateInViewFormat(date) {
+                return kendo.toString(kendo.parseDate(date, 'yyyy-MM-ddTHH:mm:ss'), 'MM/dd/yyyy');
+            }
+            var basePath = '',
+                commonPath = '../assets/',
+                rootPath = '../',
+                DEV = false,
+                componentsPath = '../assets/components/';
+
+            var primaryColor = '#7ea700',
+                dangerColor = '#b55151',
+                infoColor = '#466baf',
+                successColor = '#8baf46',
+                warningColor = '#ab7a4b',
+                inverseColor = '#45484d';
+
+            var themerPrimaryColor = primaryColor;
+        </script>
+
+        <script src="@Url.Content("~/Content/assets/components/library/bootstrap/js/bootstrap.min.js?v=v1.2.3")"></script>
+        <script src="@Url.Content("~/Content/assets/components/plugins/nicescroll/jquery.nicescroll.min.js?v=v1.2.3")"></script>
+        <script src="@Url.Content("~/Content/assets/components/core/js/sidebar.main.init.js?v=v1.2.3")"></script>
+        <script src="@Url.Content("~/Content/assets/components/core/js/sidebar.collapse.init.js?v=v1.2.3")"></script>
+        <script src="@Url.Content("~/Content/assets/components/core/js/core.init.js?v=v1.2.3")"></script>
+        <script src="~/Content/assets/components/modules/admin/notifications/gritter/assets/lib/js/jquery.gritter.min.js?v=v1.2.3"></script>
+        <script src="~/Content/assets/components/modules/admin/notifications/gritter/assets/custom/js/gritter.init.js?v=v1.2.3"></script>
+    </body>
+</html>

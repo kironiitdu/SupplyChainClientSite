@@ -1,0 +1,698 @@
+﻿
+@{
+    ViewBag.Title = "PaymentRequestForSingleDealer";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+  
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetPartyPaymentAndRequisitionInfo", "PaymentRequest")?party_id=" + partyId,
+            dataType: "json",
+        success: function (data) {
+            Loading(false);                  
+            $('#credit_limit').val(data.credit_limit);
+            $('#requisition_no').val(data.requisition_code);
+            $('#requisition_line_total').val(data.amount);
+            $('#requisition_master_id').val(data.requisition_master_id);
+                 
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyCreditLimit", "Party")?party_id=" + partyId,               
+                dataType: "json",
+            success: function(data) {
+                Loading(false);              
+                $("#credit_limit").val(data);
+                getopeningBalance(partyId);
+            }
+            });
+            function getopeningBalance(partId) {
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetPartyOpeningBalance", "PartyJournal")",
+                    data: { party_id: partId }, //Passing parameter
+                dataType: "json",
+                success: function(data) {
+                    Loading(false);
+                    $("#opening_balance").val(data);
+                    if (data > 0) {
+                        $("#available_credit_limit").val(data);
+                    } else {
+                        var openingBalance = parseFloat(data);
+                        var credit_limit = $("#credit_limit").val();
+                        var currentLimit = parseFloat(openingBalance) - parseFloat(credit_limit);
+                        $("#available_credit_limit").val(currentLimit);
+                    }
+                }
+            });
+
+        }
+  
+           
+
+        }
+        });
+        // New Work
+
+
+    
+
+
+        var employees = jQuery("#payment_method_id").kendoDropDownList({
+            autoBind: false,
+            optionLabel: "---- Select Payment Method ----",
+            //placeholder: "Select Subsection...",
+            dataTextField: "payment_method_name",
+            dataValueField: "payment_method_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPaymentMethod", "PaymentMethod")",
+                        type: "GET"
+                    }
+                }
+
+            }
+        });
+
+
+
+        // $("#SameforAll").hide();
+        $("#forCash").hide();
+        $("#forBank").hide();
+        $("#forBankCheque").hide();
+        $("#fixedfield").hide();
+        $(document).on('change', '#payment_method_id', function () {
+            var paymentMethod = $("#payment_method_id").data("kendoDropDownList").text();
+            if (paymentMethod.toUpperCase() == "BANK")
+            {
+                $("#forBank").show(500);
+                $("#fixedfield").show(500);
+                $("#bankName").show(500);
+                $("#branchName").show(500);
+                $("#forCash").hide();
+                $("#SameforAll").show(500);
+            }
+            else if (paymentMethod.toUpperCase() == "CASH")
+            {
+                $("#forCash").show(500);
+                $("#fixedfield").show(500);
+                $("#SameforAll").show(500);
+                $("#forBank").hide();
+            }
+            else if (paymentMethod.toUpperCase() == "CHEQUE") {
+                $("#forBank").show(500);
+                $("#fixedfield").show(500);
+                $("#bankName").show(500);
+                $("#branchName").show(500);
+                $("#forCash").hide();
+                $("#SameforAll").show(500);
+
+            }
+        });
+
+    });
+</script>
+<div class="row" id="context">
+    @*<div class="widget">*@
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Add Payment Request</h5></div>
+        <div class="panel-body">
+            <form id="PaymentRequestAdd" enctype="multipart/form-data">
+                <div class="row" id="SameforAll">
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="party_type_id">Channel Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" id="party_type_id" name="party_type_id" style="width:80%;" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="party_id">Channels&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" id="party_id" name="party_id" style="width: 80%;"/>
+                        </div>
+                    </div>
+                    <br /><br />
+
+
+
+                    <div class="clearfix"></div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="opening_balance">Opening Balance</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input id="opening_balance" name="opening_balance" class="k-textbox" disabled placeholder="Opening Balance" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="requisition_line_total">Requisition Amount</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" id="requisition_line_total" name="requisition_line_total" style="width:80%;" disabled placeholder="Last Requisition Total" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="credit_limit">Credit Limit</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" id="credit_limit" name="credit_limit" style="width: 80%;" disabled placeholder="Credit Limit" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="available_credit_limit">Available Credit Limit</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input id="available_credit_limit" name="available_credit_limit" class="k-textbox" disabled style="width: 80%;" placeholder="Available Credit Limit" />
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="requisition_no">Requisition No</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" id="requisition_no" name="requisition_no" style="width:80%;" disabled placeholder="Requisition No" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="payment_method_id">Payment Method&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="" name="payment_method_id" id="payment_method_id" style="width:80%;">
+                        </div>
+                    </div>
+                    <br /><br />
+
+
+                    <div class="clearfix"></div>
+                    <div class="col-md-6" hidden="">
+                        <div class="col-md-4">
+                            <label for="requisition_master_id">requisition_master_id</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input id="requisition_master_id" name="requisition_master_id" class="k-textbox" disabled style="width: 80%;" />
+                        </div>
+                    </div>
+                    <br />
+                    <hr />
+                    @*-----Bank-----*@
+
+                    <div id="forBank">
+
+                        <div class="col-md-6" id="bankName">
+                            <div class="col-md-4">
+                                <label for="bank_id">Bank Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="dropdown" name="bank_id" id="bank_id" style="width:80%;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" id="branchName">
+                            <div class="col-md-4">
+                                <label for="bank_branch_id">Bank Branch Name</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="dropdown" name="bank_branch_id" id="bank_branch_id" style="width:80%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <div class="col-md-6" id="check">
+                            <div class="col-md-4">
+                                <label for="bank_account_id">Account No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="dropdown" name="bank_account_id" id="bank_account_id" style="width:80%;">
+                            </div>
+                        </div>
+                      
+                        <div class="col-md-6" id="check">
+                            <div class="col-md-4">
+                                <label for="cheque_no">Cheque/Payorder/DP No</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="cheque_no" id="cheque_no" style="width:80%;">
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-md-6" id="doc">
+                            <div class="col-md-4">
+                                <label for="document_attachment">Document Upload</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="file" class="" name="document_attachment" id="document_attachment" style="width:80%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <br />
+                    @*----Cash-----*@
+                    <div id="forCash">
+                        <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="sales_representative">Sales Representative&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="sales_representative" id="sales_representative" style="width:80%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="clearfix"></div>
+                    <br />
+                    <hr />
+
+                    <div id="fixedfield">
+
+                        <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="amount">Payment Amount&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="amount" id="amount" style="width:80%;">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="deposite_date">Deposit Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="" name="deposite_date" id="deposite_date" style="width:80%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="remarks">Remarks</label>
+                            </div>
+                            <div class="col-md-8">
+                                <textarea cols="50" rows="3" name="remarks" id="remarks" class="k-textbox"></textarea>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+                <div class="clearfix"></div>
+                <br/>
+                <div class="group-box">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="button" class="k-button" id="btnSavePayment" value="Save Payment" />
+                            <input type="button" class="k-button" id="PaymentRequestAddSubmit" value="Save & Make Another Payment" />
+                            <input type="hidden" class="textbox" name="party_type_name" id="party_type_name" style="width:80%;">
+                        </div>
+                    </div>
+                </div>          
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var partyTypeId='@ViewBag.party_type_id';
+    var partyId = '@ViewBag.party_id';
+    
+
+
+    $(document).ready(function () {
+        
+        // $("#party_type_id").kendoComboBox({enable: false});
+        //$("#party_id").kendoComboBox({enable: false});
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+        $("#deposite_date").val(todayDate);
+        //$('#context').addClass('animated zoomIn');
+        //party type dropdown
+
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetClientPartyTypes", "PartyType")"
+                    }
+                }
+            }
+        });
+        //For party dropdown
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channels ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                }
+            }
+        }
+        });
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channels ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+        });
+        // For selected particular party
+        $('#party_type_id').change(function () { // Maruf: load party type wise party
+            var partyTypeId = $('#party_type_id').val();
+            $("#party_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Channels ---",
+                dataTextField: "party_name",
+                dataValueField: "party_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetPartyTypewisePartyForDropdown", "Party")",
+                            data: { party_type_id: partyTypeId }
+                        }
+                    }
+                }
+            });
+        });
+ 
+        //maruf: 28.Sep.2016
+        // Selected party on Login and Disable Combobox
+        if (partyTypeId != 1) {
+            $("#party_type_id").data("kendoComboBox").value(partyTypeId);
+            $("#party_id").data("kendoComboBox").value(partyId);
+            $("#party_type_id").kendoComboBox({enable: false});
+            $("#party_id").kendoComboBox({enable: false});
+        }
+        //$("#party_type_id").data("kendoComboBox").value(partyTypeId);
+        //$("#party_id").data("kendoComboBox").value(partyId);
+        var bank = $("#bank_id").kendoComboBox({
+            placeholder: "Select Bank...",
+            dataTextField: "bank_name",
+            dataValueField: "bank_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBank", "Bank")",
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+    
+        $("#bank_branch_id").kendoComboBox({
+            cascadeFrom:'bank_id',
+            autoBind: false,
+            placeholder: "--- Select Branch ---",
+            dataTextField: "bank_branch_name",
+            dataValueField: "bank_branch_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBankBranch", "BankBranch")"
+                }
+            }
+        }
+        });
+
+    $("#bank_account_id").kendoComboBox({
+        cascadeFrom:'bank_branch_id',
+        autoBind: false,
+        placeholder: "--- Select Account ---",
+        dataTextField: "bank_account_name",
+        dataValueField: "bank_account_id",
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllBankAccoun", "BankBranch")"
+            }
+        }
+    }
+    });
+
+        @*var party_type_name = $("#party_type_name").val();
+        var bank = $("#sales_representative").kendoComboBox({
+            placeholder: "Select Representative...",
+            dataTextField: "employee_name",
+            dataValueField: "employee_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetDropdownForPaymentRequest", "Employee")?party_type_name=" + party_type_name,
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");*@
+
+        $("#deposite_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+
+        });
+
+
+    });
+
+    //data Save
+    $(document).ready(function () {
+        //Save Payment Only
+        $("#btnSavePayment").click(function () {
+            Loading(false);
+
+            var fData = new FormData();
+            var payment_type = "Not Advance";
+            var payment_method_id = $("#payment_method_id").val();
+            var Files = $("#document_attachment").get(0).files;
+            var party_id = $("#party_id").val();
+            var bank_id = $("#bank_id").val();
+            var bank_branch_id = $("#bank_branch_id").val();
+            var bank_account_id = $("#bank_account_id").val();
+            var amount = $("#amount").val();
+            var cheque_no = $("#cheque_no").val();
+            var sales_representative = $("#sales_representative").val();
+            var deposite_date = $("#deposite_date").val();
+            var remarks = $("#remarks").val();
+            var requisition_master_id = $("#requisition_master_id").val();
+           // alert(payment_method_id);
+            var userId = '@userId';
+            //if (payment_method_id == 1 || payment_method_id == 3 && bank_account_id == "" || bank_account_id == null) {
+            //  //  if (account_no=="")
+            //    sweetAlert("Sorry...", "Account No is empty!", "warning");
+            //    return false;
+            //}
+            if (payment_method_id == 2) {
+                bank_id = 0;
+                bank_branch_id = 0;
+                bank_account_id = 0;
+            }
+            if (amount == "" || amount < 0) {
+                sweetAlert("Sorry...", "Invalid Amount!", "warning");
+                return false;
+            }
+
+            //alert(party_id);
+            if (payment_method_id=="" ||payment_method_id==null) {
+                sweetAlert("Sorry...", "Channels Type can not be empty!", "warning");
+                return false;
+            }
+            if (amount=="") {
+                sweetAlert("Sorry...", "Amount can not be empty!", "warning");
+                return false;
+            }
+
+            if (payment_method_id == 1 && document_attachment =="") {
+                sweetAlert("Sorry...", "Please Select File", "warning");
+                return false;
+            }
+           
+
+            else if (Files.length > 0) {
+                fData.append("UploadedImage", Files[0]);
+            }
+            fData.append("bank_id", bank_id);
+            fData.append("bank_branch_id", bank_branch_id);
+            fData.append("bank_account_id", bank_account_id);
+            fData.append("amount", amount); 
+            fData.append("payment_type", payment_type);
+            fData.append("cheque_no", cheque_no);
+            fData.append("payment_method_id", payment_method_id);
+            fData.append("sales_representative", sales_representative);
+            fData.append("deposite_date", deposite_date);
+            fData.append("remarks", remarks);
+            fData.append("created_by", userId);
+            fData.append("party_id", party_id);         
+            fData.append("requisition_master_id", requisition_master_id);
+
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("InsertPaymentRequest", "PaymentRequest")",
+                contentType: false,
+            processData: false,
+            data: fData,
+            success: function (data) {
+                Loading(false);
+                console.log(data);
+
+                if (data.output === "success") {
+                    NotificationMessageWithRefresh(data);
+                    swal("Success", data.msg, "success");
+                    //sweetAlert("Yes...", data.msg, "success");
+                    setTimeout(function () {
+                    window.location.href = '/PaymentRequest/index';
+                    }, 1000);
+                    return false;
+                } else {
+                    NotificationMessage(data);                
+                    return false;
+                }
+            }
+        });
+
+        });
+        //Save Payment & Make Another payment for same dealer
+        $("#PaymentRequestAddSubmit").click(function() {
+            Loading(false);
+
+            var fData = new FormData();
+            var payment_method_id = $("#payment_method_id").val();
+            var Files = $("#document_attachment").get(0).files;
+            var party_id = $("#party_id").val();
+            var bank_id = $("#bank_id").val();
+            var payment_type = "Not Advance";
+            var bank_branch_id = $("#bank_branch_id").val();
+            var bank_account_id = $("#bank_account_id").val();
+            var amount = $("#amount").val();
+            var cheque_no = $("#cheque_no").val();
+            var sales_representative = $("#sales_representative").val();
+            var deposite_date = $("#deposite_date").val();
+            var remarks = $("#remarks").val();
+            var account_no = $("#account_no").val();
+            //alert(account_no);
+            var userId = '@userId';
+            //if (payment_method_id == 1 || payment_method_id == 3 && account_no == "" || account_no == null) {
+            //    sweetAlert("Sorry...", "Account No is empty!", "warning");
+            //    return false;
+            //}
+
+
+            //alert(party_id);
+            if (payment_method_id=="" ||payment_method_id==null) {
+                sweetAlert("Sorry...", "Channels Type can not be empty!", "warning");
+                return false;
+            }
+            if (amount=="") {
+                sweetAlert("Sorry...", "Amount can not be empty!", "warning");
+                return false;
+            }
+
+            if (payment_method_id == 1 && document_attachment =="") {
+                sweetAlert("Sorry...", "Please Select File", "warning");
+                return false;
+            }
+
+
+            else if (Files.length > 0) {
+                fData.append("UploadedImage", Files[0]);
+            }
+            fData.append("bank_id", bank_id);
+            fData.append("bank_branch_id", bank_branch_id);
+            fData.append("bank_account_id", bank_account_id);
+            fData.append("amount", amount);
+            fData.append("payment_type", payment_type);
+            fData.append("cheque_no", cheque_no);
+            fData.append("payment_method_id", payment_method_id);
+            fData.append("sales_representative", sales_representative);
+            fData.append("deposite_date", deposite_date);
+            fData.append("remarks", remarks);
+            fData.append("created_by", userId);
+            fData.append("party_id", party_id); 
+            fData.append("account_no", account_no);
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("InsertPaymentRequest", "PaymentRequest")",
+                contentType: false,
+                processData: false,
+                data: fData,
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        NotificationMessageWithRefresh(data);
+                       sweetAlert("Yes...", data.msg, "success");
+                        var party_type_id = $('#party_type_id').val();
+                        var party_id = $('#party_id').val();
+                        window.location.href = '/PaymentRequest/PaymentRequestForSingleDealer?party_type_id=' + party_type_id + '&party_id=' + party_id;                  
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        return false;
+                    }
+                }
+            });
+
+        });
+    });
+    //Modified By Kiron
+</script>

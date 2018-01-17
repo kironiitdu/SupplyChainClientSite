@@ -1,0 +1,120 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+
+<div id="grid"></div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        function currencyDropDownEditor(container, options) {
+            jQuery('<input data-text-field="currency_name" data-value-field="currency_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: false,
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllCurrency", "Currency")?company_id=" + '@companyId'
+                            }
+                        }
+                    }
+                    , optionLabel: "Select Currency"
+                });
+        }
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCurrencyConversion", "CurrencyConversion")?company_id=" + '@companyId',
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "CurrencyConversion")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "CurrencyConversion")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "CurrencyConversion")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+                model: {
+                    id: "currency_conversion_id",
+                    fields: {
+                        currency_conversion_id: { editable: false, nullable: true },
+                        actual_currency_id: { type: "string" },
+                        actual_currency_name: { type: "string" },
+                        converted_currency_id: { type: "string" },
+                        converted_currency_name: { type: "string" },
+                        actual_currency_unit: { type: "number" },
+                        converted_currency_unit: { type: "number" },
+                        currency_date: { editable: false, type: "date" },
+                        company_id: { defaultValue: '@companyId' },
+                        created_by: { defaultValue: '@userId' },
+                        updated_by: { defaultValue: '@userId' }
+                    }
+                }
+            }
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add" }],
+            columns: [
+                { field: "actual_currency_id", title: "Actual Currency", editor: currencyDropDownEditor, template: "#= actual_currency_name #" },
+                { field: "converted_currency_id", title: "Converted Currency", editor: currencyDropDownEditor, template: "#= converted_currency_name #" },
+                { field: "actual_currency_unit", title: "Actual Currency Unit" },
+                { field: "converted_currency_unit", title: "Converted Currency Unit" },
+                { field: "currency_date", title: "Currency Date", template: "#= kendo.toString(kendo.parseDate(currency_date, 'yyyy-MM-ddTHH:mm:ss'), 'dd/MM/yyyy') #" },
+                { command: ["edit", "destroy"], title: "Action" }
+            ],
+            editable: "inline"
+        });
+    });
+</script>
+<div id="kWindow"></div>

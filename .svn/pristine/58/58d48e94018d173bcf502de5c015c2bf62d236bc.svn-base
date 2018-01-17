@@ -1,0 +1,270 @@
+﻿@{
+    ViewBag.Title = "BalanceNCreditLimit";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+
+<style>
+    .approvedPanel {
+        background-color: #dff0d8;
+    }
+
+    .notApprovedPanel {
+        background-color: #f2dede;
+    }
+</style>
+
+
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Opening Balance & Credit LImit List</div>
+        <div class="panel-body">
+            <script id="edit-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/party/EditPartyAndWarehouse?party_id=#= party_id #" class="k-button k-grid-even edit">edit credit limit</a>
+            </script>
+            <script id="openingBalance-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/party/EditPartyAndWarehouse?party_id=#= party_id #" class="k-button k-grid-even openingBalance">edit OP Balance</a>
+            </script>
+
+            <script id="edit-template" type="text/x-kendo-template">
+                @*# if (requisition_type == 'Dealer Requisition') { #
+                    <a style="font-size:11px; text-decoration: none;" href="/Requisition/Edit?requisition_master_id=#= requisition_master_id #" class="k-button k-grid edit">Edit</a>
+                    # } else if (requisition_type == 'B2B Requisition') { #
+                    <a style="font-size:11px; text-decoration: none;" href="/Requisition/EditB2B?requisition_master_id=#= requisition_master_id #" class="k-button k-grid edit">Edit</a>
+                    # }  #*@
+            </script>
+
+            @*<script id="report-template" type="text/x-kendo-template">
+                    <a style="font-size:11px; text-decoration: none;" href="/Requisition/GetRequisitionReport?requisition_master_id=#= requisition_master_id #" target="_blank" class="k-button k-grid-even">Report</a>
+                </script>
+                <script id="approve-template" type="text/x-kendo-template">
+                    <a style="font-size:11px; text-decoration: none;" href="/Invoice/Approve?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Sales Approval</a>
+                </script>
+                <script id="financeapprove-template" type="text/x-kendo-template">
+                    <a style="font-size:11px; text-decoration: none;" href="/Invoice/FinanceApprove?requisition_master_id=#= requisition_master_id #" class="k-button k-grid financeapproved">Finance Approval</a>
+                </script>*@
+            @*<div class="k-grid  k-secondary" data-role="grid">
+                    <div class="k-grid  k-secondary" data-role="grid">
+                        <div class="k-toolbar k-grid-toolbar">
+                            <a class="k-button k-button-icontext k-grid-add" id="btnExportExcel">
+                                <span class="k-icon k-add"></span>
+                                Export Full Excel
+                            </a>
+                        </div>
+                    </div>
+                </div>*@
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var userId = @userId;
+                var roleId=@roleId;
+                var partyId=@partyId;
+
+
+                $("#btnExportExcel").click(function () {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetOpeningBalanceCreditLimit", "OpeningBalanceCreditLimit")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "Requisition")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "party_id",
+                            fields: {
+                                party_id: { editable: false, nullable: true },
+                                party_prefix: { type: "string" },
+                                party_type_name: { type: "string" },
+                                party_name: { type: "string" },
+                                party_code: { type: "string" },
+                                credit_limit: { type: "string" },
+                                opening_balance: { type: "string" },
+                                transaction_type: { type: "string" },
+                                has_transaction: {type: "boolean"}
+                            }
+
+                        }
+                    }
+
+                });
+                @*function verifyRequisition(e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var requisitionMasterId = dataItem.requisition_master_id;
+                    //alert(requisitionMasterId);
+                    //alert(dataItem.requisition_code);
+
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("UpdateApproveStatus", "Requisition")",
+                        data: { requisitionId: requisitionMasterId },//Passing parameter
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (data) {
+                            Loading(false);
+                            console.log(data);
+                            if (data.output === "success") {
+
+
+                                swal("Success", data.msg, "success");
+                                return false;
+                            } else {
+                                swal("Exception", data.msg, "error");
+                                return false;
+                            }
+                        }
+                    });
+
+                }*@
+
+                //cancel requisition 24.01.2017-Mohi Uddin
+                @*function cancelRequisition(e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var requisitionMasterId = dataItem.requisition_master_id;
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("cancelRequisition", "Requisition")",
+                        data: { requisition_master_id: requisitionMasterId, userid: userId },//Passing parameter
+                        dataType: "json",
+                        success: function (data) {
+                            Loading(false);
+                            console.log(data);
+                            if (data.output === "success") {
+
+                                swal("Success", data.msg, "success");
+                                window.location.href = '/Requisition/Index';
+                                return false;
+                            } else {
+                                swal("Exception", data.msg, "error");
+                                return false;
+                            }
+                        }
+                    });
+
+                }*@
+
+                var d = new Date();
+                var dateTime = d.toJSON();
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    excel: {
+                        fileName: "Requisition_List_" + dateTime + ".xlsx",
+                        allPages: true
+                    },
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 15, 20, 50, 100]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "party_id", hidden: true },
+                        { field: "party_prefix", title: "party_prefix", id: "party_id", width: "90px" },
+                        { field: "party_type_name", title: "Channel Type",  width: "110px" },
+                        { field: "party_name", title: "Channel Name", width: "150px" },
+                        { field: "party_code", title: "Channel Code", width: "90px" },
+                        { field: "credit_limit", title: "Credit Limit", width: "100px" },
+                        { field: "opening_balance", title: "Opening Balance", width: "100px" },
+                        { field: "transaction_type", title: "Tran Type", width: "100px" },
+                        { field: "has_transaction", title: "Has Transaction", width: "100px" },
+                        {
+                            title: "Action", width: "100px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                        //{ command: { text: "Cancel", click: cancelRequisition }, title: "Action", width: "100px" },
+                        {
+                            title: "Action", width: "100px",
+                            template: kendo.template($("#openingBalance-template").html())
+                        }
+                    ],
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                            var creditLimitEditButton = $(currenRow).find(".edit");
+                            var openingBalanceEditButton = $(currenRow).find(".openingBalance");
+                            //var approveFinanceButton = $(currenRow).find(".financeapproved");
+                            //var cancellButton = $(currenRow).find(".k-grid-Cancel");
+
+                            //if (gridData[i].status === "Not Approved") {
+                            //    $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                            //}
+                            //if (gridData[i].finance_status === "Not Approved") {
+                            //    $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                            //}
+                            if(gridData[i].has_transaction===true){
+                                //editButtonApproved.show();
+                                openingBalanceEditButton.hide();
+                            }
+                            if((gridData[i].transaction_type == null || gridData[i].transaction_type == "") && gridData[i].has_transaction===false){
+                                openingBalanceEditButton.hide();
+                            }
+                        }
+                    },
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+    </div>
+</div>

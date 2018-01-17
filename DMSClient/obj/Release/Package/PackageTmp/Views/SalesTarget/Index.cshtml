@@ -1,0 +1,94 @@
+﻿@*Author: Farzana Islam
+    Date: 21/8/2016*@
+@{
+    ViewBag.Title = "Index";
+}
+
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/SalesTarget/edit?target_id=#= target_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<div id="context">
+    <div class="k-grid  k-secondary" data-role="grid">
+        <div class="k-toolbar k-grid-toolbar">
+            <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "SalesTarget")">
+                <span class="k-icon k-add"></span>
+                Add Sales Target
+            </a>
+        </div>
+    </div>
+    <div id="grid"></div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#context').addClass('animated rollIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllSalesTarget", "SalesTarget")",
+                    type: "GET"
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "SalesTarget")",
+                    type: "DELETE",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                    }
+                },
+
+                model: {
+                    id: "target_id",
+                    fields: {
+                        target_id: { editable: false, nullable: true },
+                        target_month: { type: "string" },
+                        location_id: { type: "string" },
+                        target_on_emp_id: { type: "string" },
+                        target_quantity: { type: "string" },
+                        emp_name: { type: "string" }
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+
+            columns: [
+                { field: "emp_name", title: "Target Person", id: "target_on_emp_id", width: "150px" },
+                { field: "target_month", title: "Target Month", id: "target_month", width: "150px" },
+                { field: "location_id", title: "Location", id: "location_id", width: "155px" },
+                { field: "target_quantity", title: "Target Quantity", id: "target_quantity", width: "155px" },
+                {
+                    title: "Action", width: "100px",
+                    template: kendo.template($("#edit-template").html())
+                },
+                { command: ["destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+    });
+</script>
+

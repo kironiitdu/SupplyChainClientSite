@@ -1,0 +1,932 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<link href="~/Content/kendo/styles/kendo.web.plugins.css" rel="stylesheet" />
+<script src="~/Content/kendo/js/kendo.web.plugins.js"></script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Product Color Veriosn Map</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="product_id">Product Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_id" name="product_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="color_id">Color&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="color_id" name="color_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="product_version_id">Version&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_version_id" name="product_version_id" />
+                </div>
+                <div class="col-md-1"></div>
+
+                <div class="col-md-2">
+                    <label for="is_active">Is Active</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="is_active" name="is_active" type="checkbox" checked="checked" />
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="panel-heading">Pricing Setup</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="land_cost">Landed Cost&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="land_cost" name="land_cost" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="fin_cost">Fin Cost(%)</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="fin_cost" name="fin_cost" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+                <div class="col-md-1">
+                    <label id="fin_cost_label" style="margin-top: 9px !important;color: red;"></label>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="price_protection">Price Protection(%)</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="price_protection" name="price_protection" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+
+                <div class="col-md-1">
+                    <label id="price_protection_label" style="margin-top: 9px !important;color: red;"></label>
+                </div>
+                <div class="col-md-2">
+                    <label for="incentive">Incentive(%)</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="incentive" name="incentive" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+                <div class="col-md-1">
+                    <label id="incentive_label" style="margin-top: 9px !important;color: red;"></label>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="promotional_cost">Promotional Cost(%)</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="promotional_cost" name="promotional_cost" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+
+                <div class="col-md-1">
+                    <label id="promotional_cost_label" style="margin-top: 9px !important;color: red;"></label>
+                </div>
+                <div class="col-md-2">
+                    <label for="marketing_cost">Marketing Cost</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="marketing_cost" name="marketing_cost" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="distribution_cost">Distribution Cost</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="distribution_cost" name="distribution_cost" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="qc_cost">QC Cost</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="qc_cost" name="qc_cost" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="we_wifi">WE Wifi</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="we_wifi" name="we_wifi" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="we_cloud">WE Cloud</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="we_cloud" name="we_cloud" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="cost_price">Cost Per Set</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="cost_price" name="cost_price" class="k-textbox" onkeypress='return validateQty(event);' readonly="readonly" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="panel-heading">Total Cost Before Overhead</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="col-md-2">
+                        <label for="package_cost">Package Cost</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="package_cost" name="package_cost" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                    </div>
+
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="total_package_cost">Total Cost/Set Before Overhead</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="total_package_cost" name="total_package_cost" class="k-textbox" onkeypress='return validateQty(event);' readonly="readonly" />
+                    </div>
+                    <div class="col-md-1"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-heading">Price Margin</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="row">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-2">
+                            <label for="amra_margin">Amra Margin(%)</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="amra_margin" name="amra_margin" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                        </div>
+
+                        <div class="col-md-1">
+                            <label id="amra_margin_label" style="margin-top: 9px !important;color: red;"></label>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="dealer_margin">Dealer Margin(%)</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="dealer_margin" name="dealer_margin" class="k-textbox" value="0" onkeypress='return validateQty(event);' />
+                        </div>
+                        <div class="col-md-1">
+                            <label id="dealer_margin_label" style="margin-top: 9px !important;color: red;"></label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-2">
+                            <label for="retailer_margin">Retailer Margin(%)</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="retailer_margin" name="retailer_margin" class="k-textbox" onkeypress='return validateQty(event);' value="0" />
+                        </div>
+                        <div class="col-md-1">
+                            <label id="retailer_margin_label" style="margin-top: 9px !important;color: red;"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-heading">Overall Price</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="dealer_cost">Dealer Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="dealer_cost" name="dealer_cost" class="k-textbox" readonly="readonly" onkeypress='return validateQty(event);' />
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="emi_cost">EMI Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="emi_cost" name="emi_cost" class="k-textbox" onkeypress='return validateQty(event);' />
+                </div>
+                <div class="col-md-1"></div>
+
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="b2b_cost">B2B Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="b2b_cost" name="b2b_cost" class="k-textbox" onkeypress='return validateQty(event);' />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="telco_cost">Telco Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="telco_cost" name="telco_cost" class="k-textbox" onkeypress='return validateQty(event);' />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="corporate_cost">Corporate Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="corporate_cost" name="corporate_cost" class="k-textbox" onkeypress='return validateQty(event);' />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="internal_cost">Internal Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="internal_cost" name="internal_cost" class="k-textbox" onkeypress='return validateQty(event);' />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="online_cost">Online Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="online_cost" name="online_cost" class="k-textbox" onkeypress='return validateQty(event);' />
+                </div>
+                <div class="col-md-1"></div>
+
+                <div class="col-md-2">
+                    <label for="gift_cost">Gift Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="gift_cost" name="gift_cost" class="k-textbox" value="0" readonly="readonly" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="retailer_price">Retailer Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="retailer_price" name="retailer_price" class="k-textbox" onkeypress='return validateQty(event);' readonly="readonly" />
+                </div>
+                <div class="col-md-1"></div>
+
+                <div class="col-md-2">
+                    <label for="mrp_price">MRP Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="mrp_price" name="mrp_price" class="k-textbox" readonly="readonly" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnSave" name="btnSave" value="Update Product Pricing" />
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        var pricing = '@ViewBag.product_price_mapping_id';
+
+        $.ajax({
+
+            type: "GET",
+            url: "@UrlConfig.Action("GetProductPriceMappingBtId", "ProductPriceing")?product_price_mapping_id=" + pricing,
+
+            dataType: "json",
+            success: function (data) {
+                //Loading(false);
+                console.log(data);
+
+                $("#product_id").data("kendoComboBox").value(data.product_id);
+                loadColor(data.product_id);
+                loadVersion(data.product_id);
+                $("#color_id").data("kendoComboBox").value(data.color_id);
+                $("#product_version_id").data("kendoComboBox").value(data.product_version_id);
+                $("#dealer_cost").val(data.dealer_cost);
+                $("#b2b_cost").val(data.b2b_cost);
+                $("#telco_cost").val(data.telco_cost);
+                $("#corporate_cost").val(data.corporate_cost);
+                $("#internal_cost").val(data.internal_cost);
+                $("#online_cost").val(data.online_cost);
+                $("#gift_cost").val(data.gift_cost);
+
+                $("#emi_cost").val(data.emi_cost);
+                $("#mrp_price").val(data.mrp_cost);
+                $("#retailer_price").val(data.retailer_cost);
+
+                $("#land_cost").val(data.land_cost);
+                $("#fin_cost").val(data.fin_cost);
+                $("#price_protection").val(data.price_protection);
+                $("#incentive").val(data.incentive_cost);
+                $("#promotional_cost").val(data.promotional_cost);
+                $("#marketing_cost").val(data.marketing_cost);
+                $("#distribution_cost").val(data.distribution_cost);
+                $("#qc_cost").val(data.qc_cost);
+                $("#we_wifi").val(data.we_wifi);
+                $("#we_cloud").val(data.we_cloud);
+                $("#package_cost").val(data.package_cost);
+                $("#cost_price").val(data.cost_price);
+                $("#total_package_cost").val(data.total_package_cost);
+                $('#amra_margin').val(data.amra_margin);
+                $("#dealer_margin").val(data.dealer_margin);
+                $("#retailer_margin").val(data.retailer_margin);
+
+                if (data.is_active == true) {
+                    $("#is_active").prop("checked", true);
+                } else {
+                    $("#is_active").prop("checked", false);
+                }
+
+                $("#fin_cost_label").text(data.land_cost * (data.fin_cost/100));
+                $("#price_protection_label").text(data.land_cost * (data.price_protection/100));
+                $("#incentive_label").text(data.land_cost * (data.incentive_cost/100));
+                $("#promotional_cost_label").text(data.land_cost * (data.promotional_cost/100));
+                $("#amra_margin_label").text(data.total_package_cost * (data.amra_margin/100));
+                $("#dealer_margin_label").text(data.total_package_cost * (data.dealer_margin/100));
+                $("#retailer_margin_label").text(data.total_package_cost * (data.retailer_margin/100));
+
+
+            }
+
+        });
+
+        function loadColor(product_id) {
+            $("#color_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Color ---",
+                dataTextField: "color_name",
+                dataValueField: "color_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetColorByProductId", "ProductPriceing")?product_id="+product_id
+                        }
+                    }
+                }
+
+            });
+        }
+        function loadVersion(product_id) {
+            $("#product_version_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Version ---",
+                dataTextField: "product_version_name",
+                dataValueField: "product_version_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetProductVersionByProductId", "ProductPriceing")?product_id="+product_id
+                        }
+                    }
+                }
+
+            });
+        }
+
+    });
+
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        //text box event
+
+        $("#land_cost").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+
+            $("#fin_cost_label").text(($("#land_cost").val() * ($("#fin_cost").val()/100)).toFixed(2));
+            $("#price_protection_label").text(($("#land_cost").val() * ($("#price_protection").val()/100)).toFixed(2));
+            $("#incentive_label").text(($("#land_cost").val() * ($("#incentive").val()/100)).toFixed(2));
+            $("#promotional_cost_label").text(($("#land_cost").val() * ($("#promotional_cost").val()/100)).toFixed(2));
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));            
+
+        });
+        $("#fin_cost").change(function() {            
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#fin_cost_label").text(($("#land_cost").val() * ($("#fin_cost").val()/100)).toFixed(2));
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        //$("#fin_cost").change(function() {
+
+        //    var cost = costValue();
+        //    var packCost = costValueWithPackage();
+        //    $("#cost_price").val(cost);
+        //    $("#total_package_cost").val(packCost);
+        //});
+        $("#price_protection").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#price_protection_label").text(($("#land_cost").val() * ($("#price_protection").val()/100)).toFixed(2));
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        $("#incentive").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#incentive_label").text(($("#land_cost").val() * ($("#incentive").val()/100)).toFixed(2));
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+
+        $("#promotional_cost").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#promotional_cost_label").text(($("#land_cost").val() * ($("#promotional_cost").val()/100)).toFixed(2));
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        $("#marketing_cost").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        $("#distribution_cost").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        $("#qc_cost").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        $("#we_wifi").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        $("#we_cloud").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+        $("#package_cost").change(function() {
+
+            var cost = costValue();
+            var packCost = costValueWithPackage();
+            $("#cost_price").val(cost);
+            $("#total_package_cost").val(packCost);
+
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+
+        $("#amra_margin").change(function() {
+
+            var amra = $("#amra_margin").val()/100;
+            var packCost = costValueWithPackage();
+
+            var marginCost = packCost + parseInt(packCost * amra);
+            $("#dealer_cost").val(marginCost);
+            $("#internal_cost").val(marginCost);
+            $("#amra_margin_label").text(($("#total_package_cost").val() * ($("#amra_margin").val()/100)).toFixed(2));
+        });
+        $("#dealer_margin").change(function() {
+
+            var amra = $("#dealer_margin").val()/100;
+            var packCost = costValueWithPackage();
+
+            var marginCost = packCost + parseInt(packCost * amra);
+            $("#retailer_price").val(marginCost);
+            $("#dealer_margin_label").text(($("#total_package_cost").val() * ($("#dealer_margin").val()/100)).toFixed(2));
+        });
+        $("#retailer_margin").change(function() {
+
+            var amra = $("#retailer_margin").val()/100;
+            var packCost = costValueWithPackage();
+
+            var marginCost = packCost + parseInt(packCost * amra);
+            $("#mrp_price").val(marginCost);
+            $("#retailer_margin_label").text(($("#total_package_cost").val() * ($("#retailer_margin").val()/100)).toFixed(2));
+        });
+
+        //end
+
+        function costValueWithPackage() {
+            var pack = $("#package_cost").val();
+            var cost  = costValue();
+            var packagecost = cost + parseInt(pack);
+
+            if ($("#amra_margin").val() != 0) {
+                var amra = $("#amra_margin").val()/100;
+                var marginCost = packagecost + parseInt(packagecost * amra);
+                $("#dealer_cost").val(marginCost);
+                $("#internal_cost").val(marginCost);
+            }
+            if ($("#dealer_margin").val() != 0) {
+                var amra1 = $("#dealer_margin").val()/100;
+                var marginCost1 = packagecost + parseInt(packagecost * amra1);
+                $("#retailer_price").val(marginCost1);
+            }
+            if ($("#retailer_margin").val() != 0) {
+                var amra2 = $("#retailer_margin").val()/100;
+                var marginCost2 = packagecost + parseInt(packagecost * amra2);
+                $("#mrp_price").val(marginCost2);
+            }
+
+            return packagecost;
+        }
+
+        function costValue() {
+            var land = $("#land_cost").val();
+            var fin = $("#fin_cost").val()/100;
+            var protect = $("#price_protection").val()/100;
+            var incentive = $("#incentive").val()/100;
+            var promotional = $("#promotional_cost").val()/100;
+            var market = $("#marketing_cost").val();
+            var distribution = $("#distribution_cost").val();
+            var qc = $("#qc_cost").val();
+            var wifi = $("#we_wifi").val();
+            var cloud = $("#we_cloud").val();
+
+            var value = parseInt(land) + parseInt(land * fin) + parseInt(land  * protect) + parseInt(land * incentive) + parseInt(land * promotional) + parseInt(market) + parseInt(distribution) + parseInt(qc) + parseInt(wifi) + parseInt(cloud);
+            return value;
+        }
+
+
+        $("#product_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProducts", "Product")"
+                    }
+                }
+            }
+
+        });
+
+        $("#color_id").kendoComboBox({
+            placeholder: "--- Select Color ---"
+        });
+
+        $("#product_version_id").kendoComboBox({
+
+            placeholder: "--- Select Version ---",
+        });
+
+        $("#product_id").change(function() {
+
+            var prod = $("#product_id").val();
+            loadColor(prod);
+            loadVersion(prod);
+        });
+
+        function loadColor(product_id) {
+            $("#color_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Color ---",
+                dataTextField: "color_name",
+                dataValueField: "color_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetColorByProductId", "ProductPriceing")?product_id="+product_id
+                        }
+                    }
+                }
+
+            });
+        }
+        function loadVersion(product_id) {
+            $("#product_version_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Version ---",
+                dataTextField: "product_version_name",
+                dataValueField: "product_version_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetProductVersionByProductId", "ProductPriceing")?product_id="+product_id
+                        }
+                    }
+                }
+
+            });
+        }
+
+    });
+
+    function validateQty(event) {
+        var key = window.event ? event.keyCode : event.which;
+
+        if (event.keyCode == 8 || event.keyCode == 46
+            || event.keyCode == 37 || event.keyCode == 39) {
+            return true;
+        }
+        else if ( key < 48 || key > 57 ) {
+            return false;
+        }
+        else return true;
+    };
+
+    $("#btnSave").click(function () {
+        Loading(false);
+
+
+        var product_price_mapping_id = '@ViewBag.product_price_mapping_id';
+        var product_id = $("#product_id").val();
+        var color_id = $("#color_id").val();
+        var product_version_id = $("#product_version_id").val();
+        var dealer_cost = $("#dealer_cost").val();
+        var b2b_cost = $("#b2b_cost").val();
+        var telco_cost = $("#telco_cost").val();
+        var corporate_cost = $("#corporate_cost").val();
+        var internal_cost = $("#internal_cost").val();
+        var online_cost = $("#online_cost").val();
+        var gift_cost = $("#gift_cost").val();
+
+        var emi_cost = $("#emi_cost").val();
+        var mrp_price = $("#mrp_price").val();
+        var retailer_price = $("#retailer_price").val();
+
+        var land_cost = $("#land_cost").val();
+        var fin_cost = $("#fin_cost").val();
+        var price_protection = $("#price_protection").val();
+        var incentive = $("#incentive").val();
+        var promotional_cost = $("#promotional_cost").val();
+        var marketing_cost = $("#marketing_cost").val();
+        var distribution_cost = $("#distribution_cost").val();
+        var qc_cost = $("#qc_cost").val();
+        var we_wifi = $("#we_wifi").val();
+        var we_cloud = $("#we_cloud").val();
+        var package_cost = $("#package_cost").val();
+        var cost_price = $("#cost_price").val();
+        var total_package_cost = $("#total_package_cost").val();
+        var amra_margin = $('#amra_margin').val();
+        var dealer_margin = $("#dealer_margin").val();
+        var retailer_margin = $("#retailer_margin").val();
+
+        if (product_id == null || product_id == "") {
+            sweetAlert("Error", "please select the product", "error");
+            return false;
+        }
+        if (color_id == null || color_id == "") {
+            sweetAlert("Error", "please select the color", "error");
+            return false;
+        }
+        if (product_version_id == null || product_version_id == "") {
+            sweetAlert("Error", "please select the version", "error");
+            return false;
+        }
+        if (land_cost == null || land_cost == "") {
+            sweetAlert("Error", "please select the land cost", "error");
+            return false;
+        }
+        //if (b2b_cost == null || b2b_cost == "") {
+        //    sweetAlert("Error", "please select the b2b price", "error");
+        //    return false;
+        //}
+        //if (telco_cost == null || telco_cost == "") {
+        //    sweetAlert("Error", "please select the telco price", "error");
+        //    return false;
+        //}
+        //if (corporate_cost == null || corporate_cost == "") {
+        //    sweetAlert("Error", "please select the corporate price", "error");
+        //    return false;
+        //}
+        //if (internal_cost == null || internal_cost == "") {
+        //    sweetAlert("Error", "please select the internal price", "error");
+        //    return false;
+        //}
+        //if (online_cost == null || online_cost == "") {
+        //    sweetAlert("Error", "please select the online cprice", "error");
+        //    return false;
+        //}
+
+
+
+        var userId = @userId;
+        //var is_active = $('input:checkbox:checked').val();
+        var is_active = false;
+        if ($("#is_active").is(":checked")) {
+            is_active = true;
+        }
+
+        var productPriceing = {
+            product_price_mapping_id:product_price_mapping_id,
+            product_id: product_id,
+            color_id: color_id,
+            product_version_id: product_version_id,
+            dealer_cost: dealer_cost,
+            b2b_cost: b2b_cost,
+            telco_cost: telco_cost,
+            corporate_cost: corporate_cost,
+            internal_cost: internal_cost,
+            online_cost: online_cost,
+            gift_cost: gift_cost,
+            emi_cost: emi_cost,
+            is_active: is_active,
+            update_by: '@userId',
+            fin_cost: fin_cost,
+            land_cost: land_cost,
+            retailer_cost:retailer_price,
+            mrp_cost:mrp_price,
+            price_protection:price_protection,
+            incentive_cost:incentive,
+            promotional_cost:promotional_cost,
+            marketing_cost:marketing_cost,
+            distribution_cost:distribution_cost,
+            qc_cost:qc_cost,
+            we_wifi:we_wifi,
+            we_cloud:we_cloud,
+            cost_price:cost_price,
+            package_cost:package_cost,
+            total_package_cost:total_package_cost,
+            amra_margin:amra_margin,
+            dealer_margin:dealer_margin,
+            retailer_margin:retailer_margin
+        };
+
+        $.ajax({
+            type: "PUT",
+            url: "@UrlConfig.Action("Put", "ProductPriceing")?update_by="+'@userId',
+            data: JSON.stringify(productPriceing),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                Loading(false);
+                console.log(data);
+
+                if (data.output === "success") {
+                    sweetAlert("Yes...", data.msg, "success");
+
+
+
+                    return false;
+                } else {
+                    sweetAlert("Sorry...", data.msg, "error");
+                    return false;
+                }
+            }
+        });
+    });
+    $("#btnClear").click(function() {
+        window.location.href = '/ProductPriceing/Add';
+    });
+
+</script>
+
+

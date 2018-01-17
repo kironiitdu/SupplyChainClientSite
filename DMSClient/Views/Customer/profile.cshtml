@@ -1,0 +1,369 @@
+﻿@{
+    Layout = null;
+}
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SHORE TO SHORE || CUSTOMER PROFILE</title>
+
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+
+    <!--
+    **********************************************************
+    In development, use the LESS files and the less.js compiler
+    instead of the minified CSS loaded by default.
+    **********************************************************
+    <link rel="stylesheet/less" href="../assets/less/admin/module.admin.page.index.less"/>
+    -->
+    <!--[if lt IE 9]><link rel="stylesheet" href="../assets/components/library/bootstrap/css/bootstrap.min.css"/><![endif]-->
+    @*<link rel="stylesheet" href="@Url.Content("~/Content/assets/css/admin/module.admin.page.index.min.css")" />*@
+
+    @*<link href="@Url.Content("~/Content/kendo/styles/kendo.common.min.css")" rel="stylesheet" />
+        <link href="@Url.Content("~/Content/kendo/styles/kendo.default.min.css")" rel="stylesheet" />
+        <link href="@Url.Content("~/Content/kendo/styles/kendo.metro.min.css")" rel="stylesheet" />
+        <link href="~/Content/assets/components/modules/admin/notifications/gritter/assets/lib/css/jquery.gritter.css" rel="stylesheet" />*@
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="@Url.Content("~/Content/assets/components/library/jquery/jquery.min.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/library/jquery/jquery-migrate.min.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/library/modernizr/modernizr.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/kendo/js/kendo.web.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo-custom.js")"></script>
+    <link href="@Url.Content("~/Content/loading/loading.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/Content/loading/loading.js")"></script>
+
+
+    <style type="text/css">
+        .mainframe {
+            width: 960px;
+            height: auto;
+            margin: 0 auto;
+            border: 1px solid #777;
+        }
+
+        .header {
+            width: 960px;
+            height: 150px;
+            margin: 0 auto;
+            border-bottom: 1px solid #777;
+        }
+
+        .header-small-grid {
+            width: 320px;
+            height: 130px;
+            margin: 10px;
+        }
+
+        .left {
+            float: left;
+        }
+
+        .right {
+            float: right;
+        }
+
+        .bd-1 {
+            border: 1px solid #777;
+        }
+
+        .mar-0 {
+            margin: 0;
+        }
+
+        .logo {
+            height: 50px;
+            width: 200px;
+        }
+
+        .logo-btm-txt {
+            margin-top: -5px;
+        }
+
+        .v-card {
+            text-align: center;
+            vertical-align: middle;
+            line-height: 100px;
+        }
+
+        .customer-info {
+            width: 960px;
+            margin: 0 auto;
+            border-bottom: 1px solid #777;
+        }
+
+        .label {
+            text-transform: uppercase;
+        }
+
+        .info-table {
+            width: 960px;
+            text-transform: capitalize;
+        }
+
+            .info-table tr td {
+                width: 238px;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="mainframe">
+        <div class="header">
+            <div class="header-small-grid left">
+                <img class="logo mar-0" src="/Content/s2s.jpg" alt="SHORE TO SHORE" />
+                <h2 class="logo-btm-txt">CUSTOMER PROFILE</h2>
+            </div>
+            <div class="header-small-grid bd-1 right">
+                <p class="v-card">Visiting Card</p>
+            </div>
+        </div>
+        <div class="customer-info">
+            <table class="info-table">
+                <tr class="bd-1">
+                    <td class="bd-1">cp no:</td>
+                    <td colspan="3" class="bd-1">_________________________ (office use only)</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">customer name:</td>
+                    <td class="bd-1" id="customer_name">_________________________</td>
+                    <td class="bd-1">category:</td>
+                    <td class="bd-1">_________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">current address:</td>
+                    <td colspan="3" class="bd-1" id="address_1">_____________________________________________________________________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">previous address:</td>
+                    <td colspan="3" class="bd-1" id="address_2">_____________________________________________________________________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">factory location:</td>
+                    <td colspan="3" class="bd-1" id="factory_location">_____________________________________________________________________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">telephone:</td>
+                    <td class="bd-1" id="phone">_________________________</td>
+                    <td class="bd-1">fax:</td>
+                    <td class="bd-1" id="fax">_________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">contact person:</td>
+                    <td class="bd-1">_________________________</td>
+                    <td class="bd-1">email:</td>
+                    <td class="bd-1" id="email">_________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">enlisted date:</td>
+                    <td class="bd-1">_________________________</td>
+                    <td class="bd-1">credit limit:</td>
+                    <td class="bd-1" id="credit_limit">_________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">first order:</td>
+                    <td class="bd-1">_________________________</td>
+                    <td class="bd-1">mode of payment:</td>
+                    <td class="bd-1">
+                        <input type="checkbox" />&nbsp;l/c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="checkbox" />&nbsp;tt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</br>
+                        <input type="checkbox" />&nbsp;cheque(fdd)
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="4" class="bd-1"><strong>product &amp; capacity</strong></td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">major product:</td>
+                    <td class="bd-1" id="major_product">_________________________</td>
+                    <td class="bd-1">major brand:</td>
+                    <td class="bd-1" id="major_brand">_________________________</td>
+                </tr>
+                <tr class="bd-1">
+                    <td class="bd-1">total capacity (pcs):</td>
+                    <td class="bd-1" id="total_capacity">_________________________</td>
+                    <td class="bd-1">total employment:</td>
+                    <td class="bd-1" id="total_employment">_________________________</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="4" class="bd-1"><strong>department &amp; personnel</strong></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="3" class="bd-1">board of directors (name, phone and email):<br /><br /><br /></td>
+                    <td class="bd-1">seal and signature:<br /><br /><br /></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="3" class="bd-1">merchandise department (name, phone and email):<br /><br /><br /></td>
+                    <td class="bd-1">seal and signature:<br /><br /><br /></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="3" class="bd-1">commercial department (name, phone and email):<br /><br /><br /></td>
+                    <td class="bd-1">seal and signature:<br /><br /><br /></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="3" class="bd-1">accounts department (name, phone and email):<br /><br /><br /></td>
+                    <td class="bd-1">seal and signature:<br /><br /><br /></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="4" class="bd-1"><strong>name of sister concerns:</strong> <span id="sister_concerns"></span></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="4" class="bd-1"><strong>management &amp; remarks</strong></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="4" class="bd-1">special instruction (office use only): <span id="special_instruction"></span></td>
+                </tr>
+                <tr class="bd-1">
+                    <td colspan="4" class="bd-1">client history: <span id="client_history"></span></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+            </table>
+            <table class="info-table">
+                <tr>
+                    <td width="190" class="bd-1">cs dept.</td>
+                    <td width="190" class="bd-1">marketing dept.</td>
+                    <td width="190" class="bd-1">credit control</td>
+                    <td width="190" class="bd-1">gm</td>
+                    <td width="190" class="bd-1">approved by</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <br />
+    <br />
+
+
+    <script src="@Url.Content("~/Content/assets/components/library/bootstrap/js/bootstrap.min.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/plugins/nicescroll/jquery.nicescroll.min.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/core/js/sidebar.main.init.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/core/js/sidebar.collapse.init.js?v=v1.2.3")"></script>
+    <script src="@Url.Content("~/Content/assets/components/core/js/core.init.js?v=v1.2.3")"></script>
+    <script src="~/Content/assets/components/modules/admin/notifications/gritter/assets/lib/js/jquery.gritter.min.js?v=v1.2.3"></script>
+    <script src="~/Content/assets/components/modules/admin/notifications/gritter/assets/custom/js/gritter.init.js?v=v1.2.3"></script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetCustomerById", "Customer")",
+                dataType: 'json',
+                data: {
+                    customer_id: '@ViewBag.customer_id'
+                },
+                success: function (data) {
+                    console.log(data);
+
+                    $("#customer_name").html(data.customer_name);
+                    //$("#country_id").val(data.country_id);
+                    //$("#city_id").val(data.city_id);
+                    //$("#zip_code").val(data.zip_code);
+                    $("#address_1").html(data.address_1);
+                    $("#address_2").html(data.address_2);
+                    $("#phone").html(data.phone);
+                    //$("#mobile").val(data.mobile);
+                    $("#fax").html(data.fax);
+                    $("#email").html(data.email);
+                    //$("#web").val(data.web);
+                    //if (data.is_active) {
+                    //    $("#is_active").prop('checked', true);
+                    //}
+
+                    //__shipping_address_id = data.shipping_address_id;
+                    //__billing_address_id = data.billing_address_id;
+                    //$("#shipping_country_id").val(data.shipping_country_id);
+                    //$("#shipping_city_id").val(data.shipping_city_id);
+                    //$("#shipping_zip_code").val(data.shipping_zip_code);
+                    //$("#shipping_address_1").val(data.shipping_address_1);
+                    //$("#shipping_email").val(data.shipping_email);
+                    //$("#shipping_address_2").val(data.shipping_address_2);
+                    //$("#shipping_phone").val(data.shipping_phone);
+                    //$("#billing_country_id").val(data.billing_country_id);
+                    //$("#billing_city_id").val(data.billing_city_id);
+                    //$("#billing_zip_code").val(data.billing_zip_code);
+                    //$("#billing_address_1").val(data.billing_address_1);
+                    //$("#billing_email").val(data.billing_email);
+                    //$("#billing_address_2").val(data.billing_address_2);
+                    //$("#billing_phone").val(data.billing_phone);
+
+                    //factory location
+                    $("#factory_location").html(data.factory_location);
+
+                    //product capacity
+                    $("#major_product").html(data.major_product);
+                    $("#major_brand").html(data.major_brand);
+                    $("#total_capacity").html(data.total_capacity);
+                    $("#total_employment").html(data.total_employment);
+
+                    //Other information
+                    $("#sister_concerns").html(data.sister_concerns);
+                    $("#special_instruction").html(data.special_instruction);
+                    $("#client_history").html(data.client_history);
+
+
+                    //$("#sales_person").val(data.sales_person);
+                    //$("#invoicing_type").val(data.invoicing_type);
+                    ////$("#invoicing_type").data("kendoDropDownList").select(function (dataItem) {
+                    ////    return dataItem.fieldId == data.invoicing_type;
+                    ////});
+
+                    //$("#payment_terms").val(data.payment_terms);
+                    ////$("#payment_terms").data("kendoDropDownList").select(function (dataItem) {
+                    ////    return dataItem.fieldId == data.payment_terms;
+                    ////});
+
+                    //$("#payment_method").val(data.payment_method);
+                    ////$("#payment_method").data("kendoDropDownList").select(function (dataItem) {
+                    ////    return dataItem.fieldId == data.payment_method;
+                    ////});
+                    $("#credit_limit").html(data.credit_limit);
+
+                    ////$("#chart_of_account").val(data.chart_of_account);
+                    //$("#chart_of_account").data("kendoDropDownList").select(function (dataItem) {
+                    //    return dataItem.fieldId == data.chart_of_account;
+                    //});
+
+                    //$("#businees_posting_group").val(data.businees_posting_group);
+                    ////$("#businees_posting_group").data("kendoDropDownList").select(function (dataItem) {
+                    ////    return dataItem.fieldId == data.businees_posting_group;
+                    ////});
+
+                    //$("#bill_to_customer").val(data.bill_to_customer);
+                    ////$("#bill_to_customer").data("kendoDropDownList").select(function (dataItem) {
+                    ////    return dataItem.fieldId == data.bill_to_customer;
+                    ////});
+                }
+            });
+        });
+    </script>
+</body>
+</html>

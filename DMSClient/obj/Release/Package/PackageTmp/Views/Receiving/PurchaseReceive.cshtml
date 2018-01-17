@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "PurchaseReceive";
+
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+    var branchId = "";
+    if (Session["branch_id"] != null)
+    {
+        branchId = Session["branch_id"].ToString();
+    }
+}
+
+<h2>Purchase Receive</h2>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Approved PO List</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2"><label for="orderno">Order No</label></div>
+                <div class="col-md-3"><input class="k-textbox" type="text" id="orderno" name="orderno" /></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2"><input type="button" class="k-button" id="btnsearchpo" name="btnsearchpo" value="Search PO" /></div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <div id="ApprovedPoList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var dataSource;
+    var orderno = "";
+    $('#btnsearchpo').click(function () {
+        orderno = $('#orderno').val();
+
+        dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetApprovedPo", "Receiving")?orderno=" + orderno + "&companyid=" + '@companyId' + "&branchid=" + '@branchId',
+                    type: "GET",
+                    dataType: "json",
+                    complete: function (a) {
+                        console.log(a);
+                    }
+                }
+            }
+        });
+        $("#ApprovedPoList").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            resizable: true,
+            columns: [
+                { field: "po_master_id", hidden: true },
+                { field: "order_no", title: "Oder No" },
+                { field: "supplier_name", title: "Supplier Name" },
+                { field: "order_date", title: "Order Date", template: "#= kendo.toString(kendo.parseDate(order_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { field: "supplier_ref_no", title: "Supplier Refference No" },
+                { field: "quotation_no", title: "Quotation No" },
+                { field: "expected_date", title: "Expected Date", template: "#= kendo.toString(kendo.parseDate(expected_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { template: kendo.template($("#del-template").html()), title: "&nbsp", width: "198px" }]
+        });
+    });
+
+    $(function () {
+        if (orderno == "") {
+            dataSource = new kendo.data.DataSource({
+                pageSize: 20,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetApprovedPo", "Receiving")?orderno=" + orderno + "&companyid=" + '@companyId' + "&branchid=" + '@branchId',
+                        type: "GET",
+                        dataType: "json",
+                        complete: function (a) {
+                            console.log(a);
+                        }
+                    }
+                }
+            });
+            $("#ApprovedPoList").kendoGrid({
+                dataSource: dataSource,
+                pageable: true,
+                resizable: true,
+                columns: [
+                    { field: "po_master_id", hidden: true },
+                    { field: "order_no", title: "Oder No" },
+                    { field: "supplier_name", title: "Supplier Name" },
+                    { field: "order_date", title: "Order Date", template: "#= kendo.toString(kendo.parseDate(order_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                    { field: "supplier_ref_no", title: "Supplier Refference No" },
+                    { field: "quotation_no", title: "Quotation No" },
+                    { field: "expected_date", title: "Expected Date", template: "#= kendo.toString(kendo.parseDate(expected_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                    { template: kendo.template($("#del-template").html()), title: "&nbsp", width: "198px" }]
+            });
+        }
+    });
+</script>
+
+<script id="del-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="Add?po_master_id=#= po_master_id #" class="k-button k-button-icontext k-grid-edit"><span class="k-icon k-edit"></span>Receive from supplier</a>
+
+</script>
+
+

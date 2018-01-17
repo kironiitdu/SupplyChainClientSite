@@ -1,0 +1,257 @@
+﻿@{
+    ViewBag.Title = "Requisition List";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+<style>
+    .approvedPanel {
+        background-color: #dff0d8;
+    }
+
+    .notApprovedPanel {
+        background-color: #f2dede;
+    }
+</style>
+
+
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Requisition List For Accounts Forward</div>
+        <div class="panel-body">
+            <script id="report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/GetRequisitionReport?requisition_master_id=#= requisition_master_id #" target="_blank" class="k-button k-grid-even">Report</a>
+            </script>
+            @*<script id="approve-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Invoice/Approve?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+            </script>*@
+
+            @*<script id="approve-template" type="text/x-kendo-template">
+                # if (requisition_type == 'Dealer Requisition') { # 
+                <a style="font-size:11px; text-decoration: none;" href="/Invoice/Approve?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+                # } else if (requisition_type == 'Dealer Demo Requisition') { # 
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/DealerDemoAccountsVerify?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+                # } else if (requisition_type == 'B2B Requisition') { # 
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/ForwardDelarDemoRequisition?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+                # } #
+            </script>*@
+
+            <script id="approve-template" type="text/x-kendo-template">
+                # if (requisition_type == 'Dealer Requisition') { #
+                <a style="font-size:11px; text-decoration: none;" href="/Invoice/Approve?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+                # } else if (requisition_type == 'Dealer Demo Requisition') { #
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/DealerDemoAccountsVerify?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+                # } else if (requisition_type == 'B2B Requisition') { #
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/B2BAccountsVerify?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+                # }
+                else if (requisition_type == 'B2B Requisition') { #
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/ForwardDelarDemoRequisition?requisition_master_id=#= requisition_master_id #" class="k-button k-grid approved">Forward</a>
+                # } #
+            </script>
+
+            @*<div class="k-grid  k-secondary" data-role="grid">
+                <div class="k-toolbar k-grid-toolbar">
+                    <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Requisition")">
+                        <span class="k-icon k-add"></span>
+                        Add Requisition
+                    </a>
+                </div>
+            </div>*@
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                var userId = '@userId';
+                @*var partyTypeId = '@partyTypeId';*@
+                @*var roleId=@roleId;*@
+                var partyId=@partyId;
+
+                //$('#context').addClass('animated rollIn');
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetRequisitionForVerifyByPartyId", "Requisition")?party_id="+partyId+"",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "Requisition")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+
+                    },
+                  
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "requisition_master_id",
+                            fields: {
+                                requisition_master_id: { editable: false, nullable: true },
+                                //party_id: { type: "string" },
+                                party_name: { type: "string" },
+                                requisition_code: { type: "string" },
+                                requisition_type: { type: "string" },
+                                status: { type: "string" },
+                                expected_receiving_date: { type: "string" },
+                                warehouse_name: { type: "string" },
+                                amount: { type: "string" },
+                                requisition_date: { type: "date" }
+                            }
+
+                        }
+                    }
+
+                });
+                function verifyRequisition(e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var requisitionMasterId = dataItem.requisition_master_id;
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("UpdateApproveStatus", "Requisition")",
+                        data: { requisitionId: requisitionMasterId },//Passing parameter
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (data) {
+                            Loading(false);
+                            console.log(data);
+                            if (data.output === "success") {
+
+                                swal("Success", data.msg, "success");
+                                return false;
+                            } else {
+                                swal("Exception", data.msg, "error");
+                                return false;
+                            }
+                        }
+                    });
+
+                }
+                function forwardToHOS(e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var requisitionMasterId = dataItem.requisition_master_id;
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("ProceedToHOS", "Requisition")",
+                        data: { requisition_master_id: requisitionMasterId, userid: userId },//Passing parameter
+                    dataType: "json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+                        if (data.output === "success") {
+
+                            swal("Success", data.msg, "success");
+                            window.location.href = '/Requisition/ListForVerify';
+                            return false;
+                        } else {
+                            swal("Exception", data.msg, "error");
+                            return false;
+                        }
+                    }
+                });
+
+            }
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "requisition_master_id", hidden: true },
+                        //{ field: "party_id", hidden: true },
+                        { field: "requisition_code", title: "Requisition No", id: "requisition_master_id", width: "110px" },
+                        { field: "requisition_type", title: "Req Type",  width: "110px" },
+                        { field: "party_name", title: "Channel Name", width: "130px" },
+                        { field: "payment_status", title: "Payment Status", width: "125px" },
+                        { field: "requisition_date", title: "Req Date", width: "90px", format: "{0:dd-MM-yyyy}" },
+                        //{ field: "warehouse_name", title: "WH Name", width: "100px" },
+                        { field: "amount", title: "Req Amount", width: "90px" },
+                        { field: "verify_status", title: "Payment Verified", width: "100px" },
+                        { field: "status", title: "Acc Status", width: "120px" },//accounts status
+                        { field: "finance_status", title: "Sales Status", width: "100px" },//sales status
+                        //{ field: "forwarded_status", title: "Forward Status", width: "110px" },
+                        {
+                            title: "Fwd to HOS", width: "80px",
+                            template: kendo.template($("#approve-template").html())
+                        },
+                        { command: { text: "Forward", click: forwardToHOS }, title: "Fwd to HOOps", width: "1px", hidden:true },
+                        {
+                            title: "Action", width: "60px",
+                            template: kendo.template($("#report-template").html())
+                        }],
+                    //dataBound: function (e) {
+                    //    var grid = $("#grid").data("kendoGrid");
+                    //    var gridData = grid.dataSource.view();
+
+                    //    for (var i = 0; i < gridData.length; i++) {
+                    //        var currentUid = gridData[i].uid;
+                    //        var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                    //        if (gridData[i].verify_status === "Verified") {
+                    //            $("#grid tbody").find("tr[data-uid=" + currenRow + "]").color = green;
+                    //        }
+                    ////        var approvedSalesButton = $(currenRow).find(".approved");
+                    ////        var editButtonApproved = $(currenRow).find(".edit");
+                    ////        var approveFinanceButton = $(currenRow).find(".financeapproved");
+
+                    ////        if (gridData[i].status === "Not Approved") {
+                    ////            $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                    ////        }
+                    ////        if (gridData[i].finance_status === "Not Approved") {
+                    ////            $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                    ////        }
+                           
+                    //    }
+                    //},
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+    </div>
+</div>

@@ -1,0 +1,179 @@
+﻿
+@{
+    ViewBag.Title = "GetSalableQuantity";
+    var userId = "";
+    var partyTypeId = "";
+    var roleId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        roleId = Session["user_role_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+}
+<div class="panel panel-success">
+    <div class="panel-heading"><h4> Total Salable and Non-Salable</h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3"></div>
+                <div class="col-md-4">
+                    <input type="button" class="k-button" id="btnExcel" name="btnSearch" style="width: 49%;" value="Excel" />
+                </div>
+              
+                <div class="col-md-4">
+                    <input type="button" class="k-button" id="btnPrint" name="btnReset" style="width: 49%" value=" Print "/>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="grid" style="overflow-y: scroll;"></div>
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var roleId = @roleId;
+    var partyId = @partyId;
+    var product_version_id = 0;
+    $(document).ready(function () {
+        $("#btnExcel").hide();
+        $("#btnPrint").hide();
+            //$("#btnExcel").show();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetSalableAndNonSalableStock", "Report")",
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    var sampleData = [];
+
+                    if (data != '') {
+
+                        for (var i = 0; i < data.length; i++) {
+                            var dailySalesModel = {
+                                warehouse_id : data[i].warehouse_id ,
+                                product_name: data[i].product_name,
+                                warehouse_name: data[i].warehouse_name,
+                                salable_quantity: data[i].salable_quantity,
+                                non_salable_quantity: data[i].non_salable_quantity
+                            };
+
+                            sampleData.push(dailySalesModel);
+
+                        }
+
+                        //Report Data Source Grid---------------------
+                        var dataSource = new kendo.data.DataSource({
+                            pageSize: 20,
+                            transport: {
+                                read: function (e) {
+                                    // on success
+                                    e.success(sampleData);
+                                }
+                            },
+                            //    code: "Ok",
+                            autoSync: false,
+                            schema: {
+                                errors: function (e) {
+                                    console.log(e.errors);
+                                    //alert(e.error);
+                                    if (e.output === "error") {
+                                        console.log(e.output);
+                                        //KendoWindowFunction(e.msg, "error", "");
+                                        // this.cancelChanges();
+                                    }
+
+                                },
+
+                                model: {
+                                    id: "warehouse_id",
+                                    fields: {
+                                        warehouse_id: { editable: false, nullable: true },
+                                        product_name: { type: "string", editable: false },
+                                        warehouse_name: { type: "string", editable: false },
+                                        salable_quantity: { type: "number", editable: false },
+                                        non_salable_quantity: { type: "number", editable: false }   
+                                    }
+
+                                }
+                            }
+
+                        });
+                        // Kiron : 11-06-2017
+                        var d = new Date();
+                        var dateTime = d.toJSON();
+
+                        jQuery("#grid").kendoGrid({
+                            excel: {
+                                fileName: "Salable_Non_Salable_Report_" + dateTime + ".xlsx",
+                                allPages: true
+                            },
+                            dataSource: dataSource,
+                            filterable: true,
+                            pageable: {
+                                refresh: true,
+                                input: true,
+                                pageSize: 20,
+                                numeric: false,
+                                pageSizes: [10, 20, 50]
+                            },
+                            sortable: true,
+                            groupable: true,
+                            resizable: true,
+                            columns: [
+                               { field: "warehouse_name", title: "Warehouse Name", width: "150px"},
+                               { field: "product_name", title: "Product Name", width: "150px" },
+                               { field: "salable_quantity", title: "Salable Quantity", width: "150px" },
+                               { field: "non_salable_quantity", title: "Non Salable Quantity", width: "150px" }
+                            ],
+                            editable: "inline"
+                        });
+                        $("#btnExcel").show();
+                        $("#btnPrint").show();
+
+                    } else {
+                        swal("Opps", "Data Not Available !!", "warning");
+                        $("#grid").data("kendoGrid").dataSource.data([]);
+                        $("#btnExcel").hide();
+                        $("#btnPrint").hide();
+                        return false;
+                    }
+                }
+            });
+
+
+
+
+      
+        $("#btnExcel").click(function () {
+            var grid = $("#grid").data("kendoGrid");
+            grid.saveAsExcel();
+        });
+        //Print btn
+        $("#btnPrint").click(function () {
+
+            Loading(false);
+
+            {
+                var url = "/Report/GetSalableAndNonSalableStock";
+                window.open(url, '_blank');
+            }
+
+
+
+        });
+    });
+</script>
+
+
+
+
+
+

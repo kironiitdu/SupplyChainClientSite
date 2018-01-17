@@ -1,0 +1,371 @@
+﻿@{
+    ViewBag.Title = "Edit";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#warrenty_type").prop("disabled", true).addClass("k-state-disabled");
+        $("#warrenty_value").kendoComboBox();
+
+        var product_id = '@ViewBag.productId';
+        Loading(true);
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("GetProductById", "Product")",
+            data: {
+                product_id: product_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(product_id);
+                $("#product_name").val(data.product_name);
+                $("#product_code").val(data.product_code);
+                $("#current_balance").val(data.current_balance);
+                $("#batch_number").val(data.batch_number);
+                $("#warrenty_type").val(data.warrenty_type);
+                $('#warrenty_value').data("kendoComboBox").value(data.warrenty_value);
+                $("#vat_percentage").val(data.vat_percentage);
+                $("#tax_percentage").val(data.tax_percentage);
+                $("#rp_price").val(data.rp_price);
+                $("#md_price").val(data.md_price);
+                $("#mrp_price").val(data.mrp_price);
+                $("#bs_price").val(data.bs_price);
+
+                $('#unit_id').data("kendoComboBox").value(data.unit_id);
+                $('#brand_id').data("kendoComboBox").value(data.brand_id);
+                $('#product_category_id').data("kendoComboBox").value(data.product_category_id);
+
+                var x = data.has_serial;
+                var y = data.has_warrenty;
+
+                if (x === true) {
+                    $('#has_serial').prop('checked', true);
+                } else {
+                    $('#has_serial').prop('checked', false);
+                }
+                if (y === true) {
+                    $('#has_warrenty').prop('checked', true);
+                } else {
+                    $('#has_warrenty').prop('checked', false);
+                }
+
+                //KendoWindowFunction(data.msg, "error", "");
+            }
+        });
+    });
+</script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Product Add</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="product_name">Product Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_name" name="product_name" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="product_code">Product Code</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_code" name="product_code" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="unit_id">Unit&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="unit_id" name="unit_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="brand_id">Brand&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="brand_id" name="brand_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="product_category_id">Category&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_category_id" name="product_category_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="current_balance">Current Balance</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="current_balance" name="current_balance" class="k-textbox" readonly />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        @*<div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="rp_price">Retailer Shop Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="rp_price" name="rp_price" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="mrp_price">MRP Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="mrp_price" name="mrp_price" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="md_price">Master Dealer Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="md_price" name="md_price" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="md_price">Brand Shop Price</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="bs_price" name="bs_price" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="vat_percentage">VAT Percentage</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="vat_percentage" name="vat_percentage" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="tax_percentage">Tax Percentage</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="tax_percentage" name="tax_percentage" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>*@
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="warrenty_type">Warrenty Type</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="warrenty_type" name="warrenty_type" value="Monthly" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="warrenty_value">Warrenty Value</label>
+                </div>
+                <div class="col-md-3">
+                    <select id="warrenty_value" style="width: 80%;" name="warrenty_value">
+                        <option value="">--- Select ---</option>
+                        <option value="6">6</option>
+                        <option value="12">12</option>
+                        <option value="18">18</option>
+                        <option value="24">24</option>
+                        <option value="30">30</option>
+                        <option value="36">36</option>
+                    </select>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    
+                </div>
+                <div class="col-md-3">
+                    <input type="checkbox" id="has_serial" class="k-checkbox">
+                    <label class="k-checkbox-label" for="has_serial">Has Serial</label>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+                    <input type="checkbox" id="has_warrenty" class="k-checkbox">
+                    <label class="k-checkbox-label" for="has_warrenty">Has Warrenty</label>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnSaveUser" name="btnSaveUser" value="Update Product" />
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+
+        // unit list
+        $("#unit_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Unit ---",
+            dataTextField: "unit_name",
+            dataValueField: "unit_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllUnits", "Unit")"
+                    }
+                }
+            }
+
+        });
+
+        //brand list
+        $("#brand_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Brand ---",
+            dataTextField: "brand_name",
+            dataValueField: "brand_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBrands", "Brand")"
+                    }
+                }
+            }
+
+        });
+
+        //product category list
+        $("#product_category_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Category ---",
+            dataTextField: "product_category_name",
+            dataValueField: "product_category_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductCategories", "ProductCategory")"
+                    }
+                }
+            }
+
+        });
+
+
+
+        $("#btnSaveUser").click(function () {
+            Loading(true);
+
+            var product_id = '@ViewBag.productId';
+            var product_name = $("#product_name").val();
+            var product_code = $("#product_code").val();
+            var unit_id = $("#unit_id").val();
+            var brand_id = $("#brand_id").val();
+            var product_category_id = $("#product_category_id").val();
+            var current_balance = $("#current_balance").val();
+            var batch_number = $("#batch_number").val();
+            var warrenty_type = $("#warrenty_type").val();
+            var warrenty_value = $("#warrenty_value").val();
+            var vat_percentage = $("#vat_percentage").val();
+            var tax_percentage = $("#tax_percentage").val();
+            var rp_price = $("#rp_price").val();
+            var md_price = $("#md_price").val();
+            var mrp_price = $("#mrp_price").val();
+            var bs_price = $("#bs_price").val();
+
+            var has_serial = false;
+            if ($("#has_serial").is(':checked')) {
+                has_serial = true;
+            }
+
+            var has_warrenty = false;
+            if ($("#has_warrenty").is(':checked')) {
+                has_warrenty = true;
+            }
+
+            var product = {
+                product_id:product_id,
+                product_name: product_name,
+                product_code: product_code,
+                unit_id: 1,
+                brand_id: brand_id,
+                product_category_id: product_category_id,
+                current_balance: 0,
+                batch_number: batch_number,
+                warrenty_type: warrenty_type,
+                warrenty_value: warrenty_value,
+                vat_percentage: 0,
+                tax_percentage: 0,
+                rp_price: 0,
+                md_price: 0,
+                mrp_price: 0,
+                bs_price: 0,
+                has_serial: has_serial,
+                has_warrenty: has_warrenty
+            };
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("Put", "Product")",
+                data: JSON.stringify(product),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+
+
+
+        });
+    });
+
+
+
+
+
+</script>

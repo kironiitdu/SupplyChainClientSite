@@ -1,0 +1,643 @@
+﻿@{
+    ViewBag.Title = "Online Invoice Collect";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12 widget-body" id="context">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Online Requisition Search</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="col-md-4">
+                                    <span>&nbsp;&nbsp;Channel&nbsp;<i class="fa fa-asterisk fieldRequired"></i></span>
+                                    <input id="channal_id" name="channal_id" style="width: 245px;" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span>&nbsp;&nbsp;Requistion From&nbsp;<i class="fa fa-asterisk fieldRequired"></i></span>
+                                    <input id="requisition_from" name="requisition_from" style="width: 245px;" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span>&nbsp;&nbsp;Requistion To&nbsp;<i class="fa fa-asterisk fieldRequired"></i></span>
+                                    <input id="requisition_to" name="requisition_to" style="width: 245px;" />
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3">
+                                    <input type="button" style="width: 194px;float: right;" class="k-button" id="btnSearchRequisition" name="btnSearchRequisition" value="Search Requisition" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="pnlProduct">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Requisition List</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            @*<div class="row" id="daynamicPanel">
+                                    <div class="col-md-12">
+                                        <div class="col-md-2">
+                                            <label for="imei_scan">Invoicable IMEI Scan</label>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input id="imei_scan" name="imei_scan" class="k-textbox" />
+                                        </div>
+                                        <div class="col-md-1"></div>
+                                    </div>
+                                </div>*@
+                            <div class="col-md-12">
+                                <div id="grid"></div>
+                            </div>
+                            <div class="col-md-12">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-10">&nbsp;</div>
+                                <div class="col-md-2">
+                                    <input type="button" style="width: 194px;float: right;" class="k-button" id="btnProduct" name="btnProduct" value="Search Product" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-12">
+                                <div id="imeiGrid"></div>
+                            </div>
+                            <div class="col-md-12">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-12">
+
+                                <div class="col-md-6">
+                                    <div class="col-md-12">
+                                        <div class="col-md-4">Total Price</div>
+                                        <div class="col-md-8"><input id="total_price" value="0" name="total_price" type="text" style="width: 245px;" class="k-textbox" readonly="readonly" /></div>
+                                    </div>
+                                    <div class="col-md-12">&nbsp;</div>
+                                    @*<div class="col-md-12">
+                                            <div class="col-md-4">Amount Paid</div>
+                                            <div class="col-md-8"><input id="amount" name="amount" type="text" style="width: 245px;" class="k-textbox" /></div>
+                                        </div>*@
+                                </div>
+
+                            </div>
+                            <div class="col-md-12">
+                                &nbsp;
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="height: 100px;">
+                <div class="group-box">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="button" class="k-button" id="btnRetrunRequisition" name="btnRetrunRequisition" value="Invoice Generate" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>    
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#pnlProduct").hide();
+        $("#pnlPayment").hide();
+        $("#check_div").hide();
+        $("#bank_div").hide();
+        $("#btnRetrunRequisition").hide();
+
+        $("#channal_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channel ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPartyForPaymentCollect", "OnlineRequisition")"
+                    }
+                }
+            }
+        });
+        var today = new Date();
+        var lastofthis = new Date(today.getUTCFullYear(), today.getUTCMonth() + 1, 1);
+        $("#requisition_from").val(lastofthis.toISOString().substring(0, 10));
+
+        $("#requisition_from").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+        $("#requisition_to").val(lastofthis.toISOString().substring(0, 10));
+
+        $("#requisition_to").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+        //Payment Dropdown
+        $("#payment_method_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Payment Method ---",
+            dataTextField: "payment_method_name",
+            dataValueField: "payment_method_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPaymentMethod", "PaymentMethod")"
+                    }
+                }
+            },
+            change: onChange
+
+        });
+        function onChange(e) {
+            var paymentMethodId = $("#payment_method_id").val();
+            if (paymentMethodId == 3) {
+                $("#check_div").show(800);
+                $("#bank_div").show(800);
+
+            }
+            if (paymentMethodId == 1) {
+                $("#check_div").show(800);
+                $("#bank_div").hide(800);
+
+            }
+            if (paymentMethodId == 2) {
+                $("#check_div").hide(800);
+                $("#bank_div").hide(800);
+                //$("#cheque_no").val("");
+            }
+
+        }
+
+        $("#bank_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Bank ---",
+            dataTextField: "bank_name",
+            dataValueField: "bank_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBank", "Bank")"
+                    }
+                }
+            }
+        });
+
+
+        //grid
+        function gridList(partyId, reqfrom, reqTo) {
+
+            var dataSource = new kendo.data.DataSource({
+                pageSize: 20,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPaymentCollectGridForInvoice", "OnlineRequisition")?partyId=" + partyId + "&reqFrom=" + reqfrom + "&reqTo=" + reqTo,
+                        type: "GET"
+                    }
+                },
+                //    code: "Ok",
+                autoSync: false,
+                schema: {
+                    errors: function (e) {
+                        console.log(e.errors);
+                        //alert(e.error);
+                        if (e.output === "error") {
+                            console.log(e.output);
+                            //KendoWindowFunction(e.msg, "error", "");
+                            // this.cancelChanges();
+                        }
+
+                    },
+
+                    model: {
+                        id: "requisition_master_id",
+                        fields: {
+                            requisition_master_id: { editable: false, nullable: true },
+                            requisition_code: { type: "string" },
+                            requisition_date: { type: 'date' },
+                            delivery_no: { type: "string" },
+                            quantity: { type: "number" },
+                            invoicable_qauntity: { type: "number" },
+                            line_total: { type: "number" },
+                        }
+
+                    }
+                }
+
+            });
+            var grid = $("#grid").kendoGrid({
+                dataSource: dataSource,
+                scrollable: true,
+                filterable: true,
+                pageable: {
+                    refresh: true,
+                    input: true,
+                    pageSize: 20,
+                    numeric: false,
+                    pageSizes: [10, 20, 50]
+                },
+
+                sortable: true,
+                resizable: true,
+
+
+                columns: [
+                    { template: "<input type='checkbox' class='checkbox' />", width: "50px" },
+                    { field: "requisition_code", title: "Requisition No", id: "requisition_master_id", width: "50px" },
+                    { field: "delivery_no", title: "Delivery No", width: "50px" },
+                    { field: "requisition_date", title: "Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                    { field: "quantity", title: "Qty", width: "50px" },
+                    { field: "invoicable_qauntity", title: "Invoicable Qty", width: "50px" },
+                    { field: "line_total", title: "Total Amount", width: "50px" }
+                ],
+                editable: "inline"
+            }).data("kendoGrid");
+
+            grid.table.on("click", ".checkbox", selectRow);
+
+
+
+        }
+
+
+        function imeiList(list) {
+            var dataSource2 = new kendo.data.DataSource({
+                pageSize: 20,
+                transport: {
+                    read: function (f) {
+                        f.success(list);
+                    },
+                    update: function (e) {
+                        // locate item in original datasource and update it
+                        //sampleData[getIndexById(e.data.requisition_details_id)] = e.data;
+                        //e.success();
+                        ///////////////////////13.02.2017//////////////////////////
+                        var mmm = e.data.invoice_quantity;
+                        var checkNumeric = $.isNumeric(mmm);
+
+                        if (checkNumeric == false) {
+                            sweetAlert("Sorry...", "not valid requisition quantity !!!", "warning");
+                            return false;
+                        }
+
+                        if (mmm % 1 != 0) {
+                            sweetAlert("Sorry...", "invoice quantity decimal not allowed !!!", "warning");
+                            return false;
+                        }
+                        //if (e.data.invoice_quantity == 0) {
+                        //    sweetAlert("Sorry...", "invoice quantity zero not allowed !!!", "warning");
+                        //    return false;
+                        //}
+                        if (e.data.invoice_quantity == null) {
+                            sweetAlert("Sorry...", "invoice quantity is required !!!", "warning");
+                            return false;
+                        }
+
+                        if (e.data.invoice_quantity < 0) {
+                            sweetAlert("Sorry...", "negative invoice quantity not allowed !!!", "warning");
+
+                            return false;
+                        }
+
+                        else {
+                            if (e.data.invoice_quantity <= e.data.invoiceable_quantity) {
+                                e.success();
+                            } else {
+                                sweetAlert("Sorry...", "invoice quantity can not be grater then invoiceable quantity !!!", "warning");
+
+                                return false;
+
+                            }
+
+                        }
+                        ///////////////////////13.02.2017//////////////////////////
+                        //getRebateAndGiftInfo();
+
+                    },
+                },
+
+                autoSync: false,
+                schema: {
+                    errors: function (e) {
+                        console.log(e.errors);
+                        //alert(e.error);
+                        if (e.output === "error") {
+                            console.log(e.output);
+                            //KendoWindowFunction(e.msg, "error", "");
+                            // this.cancelChanges();
+                        }
+
+                    },
+
+                    model: {
+                        id: "requisition_details_id",
+                        fields: {
+                            requisition_details_id: { editable: false, nullable: true },
+                            requisition_master_id: { type: "number" },
+                            product_id: { type: "number" },
+                            color_id: { type: "number" },
+                            product_version_id: { type: "number" },
+                            product_name: { type: "string", editable: false },
+                            color_name: { type: 'string', editable: false },
+                            version_name: { type: "string", editable: false },
+                            requisition_quantity: { type: "number", editable: false },
+                            invoiceable_quantity: { type: "string", editable: false },
+                            invoice_quantity: { type: "number" },
+                            price: { type: "string", editable: false },
+                            line_total: { type: "string", editable: false },
+                            price_amount: { type: "string", editable: false },
+                            discount_price: { type: "string", editable: false },
+                            promotion_master_id: { type: "number", editable: false },
+                            is_gift: { type: "boolean", editable: false },
+                            gift_type: { type: "string", editable: false },
+                        }
+
+                    }
+                }
+
+            });
+            jQuery("#imeiGrid").kendoGrid({
+                dataSource: dataSource2,
+                scrollable: true,
+                filterable: true,
+                pageable: {
+                    refresh: true,
+                    input: true,
+                    pageSize: 20,
+                    numeric: false,
+                    pageSizes: [10, 20, 50]
+                },
+
+                sortable: true,
+                resizable: true,
+                save: function (data) {
+
+
+                    var entityGrid = $("#imeiGrid").data("kendoGrid");
+                    var gridData = entityGrid.dataSource.data();
+                    var totalNumber = gridData.length;
+
+                    var pPrice = parseFloat($("#total_price").val());
+                    var nPrice = 0;
+                    for (var i = 0; i < totalNumber; i++) {
+                        //alert(totalNumber[i].line_total);
+                        if ((gridData[i].invoice_quantity > 0) && (gridData[i].invoice_quantity <= gridData[i].invoiceable_quantity)) {
+                            var rPrice = parseFloat(gridData[i].line_total) / parseFloat(gridData[i].requisition_quantity);
+
+                            nPrice += parseFloat(rPrice) * parseFloat(gridData[i].invoice_quantity);
+                        }
+                    }
+                    $("#total_price").val(nPrice);
+
+                },
+
+                cancel: function (data) {
+                    data.model.set("invoiceable_quantity", data.model.invoiceable_quantity);
+
+                },
+
+                columns: [
+                    { field: "product_name", title: "Product", id: "requisition_details_id", width: "50px" },
+                    { field: "color_name", title: "Color", width: "50px" },
+                    { field: "version_name", title: "Version", width: "50px" },
+                    { field: "gift_type", title: "Gift Type", width: "50px" },
+                    { field: "price", title: "Price", width: "50px" },
+                    { field: "price_amount", title: "Amount", width: "50px" },
+                    { field: "discount_price", title: "Discount Amt", width: "50px" },
+                    { field: "line_total", title: "Total", width: "50px" },
+                    { field: "requisition_quantity", title: "Requition Qty", width: "50px" },
+                    { field: "invoiceable_quantity", title: "Invoiceable Qty", width: "50px" },
+                    { field: "invoice_quantity", title: "Invoice Qty", width: "50px" },
+                    { command: ["edit"], title: "&nbsp;", width: "110px" }
+                ],
+                editable: "inline"
+            });
+        }
+
+        $("#btnSearchRequisition").click(function () {
+
+            var partyId = $("#channal_id").val();
+            var reqFrom = $("#requisition_from").val();
+            var reqTo = $("#requisition_to").val();
+
+            if (partyId == "" || partyId == null) {
+                swal("Exception", "Please Select Party !!", "warning");
+                return false;
+            }
+            if (reqFrom == "" || reqFrom == null) {
+                swal("Exception", "Please Choose From Date !!", "warning");
+                return false;
+            }
+            if (reqTo == "" || reqTo == null) {
+                swal("Exception", "Please Choose To Date !!", "warning");
+                return false;
+            }
+
+            gridList(partyId, reqFrom, reqTo);
+
+            $("#pnlProduct").show();
+            $("#btnRetrunRequisition").show();
+
+            return false;
+        });
+
+        $("#btnRetrunRequisition").click(function () {
+
+            var grid1 = $("#imeiGrid").data("kendoGrid")._data;
+
+            var count = 0;
+            for (var i = 0; i < grid1.length; i++) {
+                if (grid1[i].invoice_quantity == 0) {
+                    count += 1;
+                }
+            }
+            if (count == grid1.length) {
+                swal("Exception", "Please give invoice quantity for invoice and payment !!", "warning");
+                return false;
+            } else {
+
+                var party_id = $('#channal_id').val();
+
+                var OnlineInvoiceMaster = {
+                    party_id: party_id,
+                    created_by: '@userId'
+
+                };
+
+                var OnlineInvoicedetails = [];
+                var ProductDetailsGrid = $("#imeiGrid").data("kendoGrid").dataSource.data();
+
+                for (var o = 0; o < ProductDetailsGrid.length; o++) {
+                    var productDetails = {
+                        product_id: ProductDetailsGrid[o].product_id,
+                        color_id: ProductDetailsGrid[o].color_id,
+                        product_version_id: ProductDetailsGrid[o].product_version_id,
+                        price: ProductDetailsGrid[o].price,
+                        invoice_quantity: ProductDetailsGrid[o].invoice_quantity,
+                        requisition_details_id: ProductDetailsGrid[o].requisition_details_id,
+                        requisition_master_id: ProductDetailsGrid[o].requisition_master_id,
+                        promotion_master_id: ProductDetailsGrid[o].promotion_master_id,
+                        is_gift: ProductDetailsGrid[o].is_gift,
+                    };
+                    OnlineInvoicedetails.push(productDetails);
+                }
+
+
+                var onlineInvoiceModel = {
+                    OnlineInvoiceMaster: OnlineInvoiceMaster,
+                    OnlinePaymentProductModels: OnlineInvoicedetails
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "@UrlConfig.Action("Post", "OnlineInvoiceAndPayment")",
+                    data: JSON.stringify(onlineInvoiceModel),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(onlineInvoiceModel);
+                        swal("Success", "Online Invoice created Successfully", "success");
+
+                        window.location.href = '/OnlineRequisition/OnlinePaymentList';
+
+                        //$.ajax({
+                        //    url: 'GetOnlineDeliveryChallanReport',
+                        //    data: {
+                        //        deliveryMasterId: data
+                        //    }
+                        //});
+                        //var url = "/OnlineRequisition/GetOnlineDeliveryChallanReport?deliveryMasterId=" + data;
+                        //window.open(url, '_blank');
+                        //window.location.href = '/OnlineRequisition/add';
+                        return false;
+                    }
+                });
+
+                $("#pnlPayment").show();
+                $("#btnRetrunRequisition").hide();                
+            }
+
+
+        });
+
+        $("#btnProduct").click(function () {
+            var checked = [];
+
+            for (var i in checkedIds) {
+                if (checkedIds[i]) {
+                    checked.push(i);
+                } 
+            }
+
+            var requisition_details = [];
+            for (var j = 0; j < checked.length; j++) {
+
+                var productDetails = {
+                    requisition_master_id: checked[j],
+                };
+                requisition_details.push(productDetails);
+            }
+
+            var OnlineRequisitionModel = {
+                RequisitionMaster: "",
+                RequisitionDetailses: requisition_details,
+                ReceiveSerialNoDetails: ""
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("GetProductForPaymentAndInvoiceGenerate", "OnlineRequisition")",
+                data: JSON.stringify(OnlineRequisitionModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    imeiList(data);
+                    return false;
+                }
+            });
+
+
+        });
+
+    });
+
+
+    var checkedIds = {};
+
+    function selectRow() {
+        var checked = this.checked,
+        row = $(this).closest("tr"),
+        grid = $("#grid").data("kendoGrid"),
+        dataItem = grid.dataItem(row);
+
+        checkedIds[dataItem.requisition_master_id] = checked;
+        if (checked) {
+            //-select the row
+            row.addClass("k-state-selected");
+        } else {
+            //-remove selection
+            row.removeClass("k-state-selected");
+        }
+    }
+
+
+</script>

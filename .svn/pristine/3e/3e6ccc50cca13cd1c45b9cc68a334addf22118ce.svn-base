@@ -1,0 +1,440 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<div class="panel panel-success" id="context">
+
+    <div class="panel-heading">Product Color Veriosn Map</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="category_id">Product Category</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="category_id" name="category_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="product_id">Product Name</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_id" name="product_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="color_id">Color</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="color_id" name="color_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="product_version_id">Product Version</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_version_id" name="product_version_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <label for="btnSearch"></label>
+            </div>
+            <div class="col-md-3">
+                <input id="btnSearch" class="k-button" value="Search Price" type="button" />
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
+    </div>
+
+    <div class="panel-heading"><h4>Product Pricing</h4></div>
+    <div class="panel-body">
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "ProductPriceing")">
+                    <span class="k-icon k-add"></span>
+                    Add Product Pricing
+                </a>
+                <a class="k-button k-button-icontext k-grid-add" id="btnExportExcel">
+                    <span class="k-icon k-add"></span>
+                    Export Full Excel
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+
+    </div>
+</div>
+
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/ProductPriceing/Edit?product_price_mapping_id=#= product_price_mapping_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnSearch").hide();
+        //Excel Export---------
+        //$("#btnExportExcel").click(function () {
+        //    var grid = $("#grid").data("kendoGrid");
+        //    grid.saveAsExcel();
+        //});
+        var category_id = $("#category_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product Category ---",
+            dataTextField: "product_category_name",
+            dataValueField: "product_category_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductCategories", "ProductCategory")"
+                    }
+                }
+            }
+
+        });
+
+        $("#product_id").kendoComboBox({
+            autoBind: false,
+            cascadeFrom: "category_id",
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProducts", "Product")"
+                    }
+                }
+            }
+
+        });
+
+        $("#category_id").change(function() {
+            $("#btnSearch").show();
+        });
+
+        $("#color_id").kendoComboBox({
+            placeholder: "--- Select Color ---"
+        });
+
+        $("#product_version_id").kendoComboBox({
+
+            placeholder: "--- Select Version ---",
+        });
+
+        $("#product_id").change(function () {
+
+            var prod = $("#product_id").val();
+            loadColor(prod);
+            loadVersion(prod);
+        });
+
+        function loadColor(product_id) {
+            $("#color_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Color ---",
+                dataTextField: "color_name",
+                dataValueField: "color_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetColorByProductId", "ProductPriceing")?product_id=" + product_id
+                        }
+                    }
+                }
+
+            });
+        }
+        function loadVersion(product_id) {
+            $("#product_version_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Version ---",
+                dataTextField: "product_version_name",
+                dataValueField: "product_version_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetProductVersionByProductId", "ProductPriceing")?product_id=" + product_id
+                        }
+                    }
+                }
+
+            });
+        }
+
+        jQuery(document).ready(function () {
+
+            $("#btnExportExcel").click(function () {
+                var grid = $("#grid").data("kendoGrid");
+                grid.saveAsExcel();
+            });
+
+            var dataSource = new kendo.data.DataSource({
+                pageSize: 20,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductPriceing", "ProductPriceing")",
+                        type: "GET"
+                    }
+                    @*,
+                    update: {
+                        url: "@UrlConfig.Action("Put", "ProductPriceing")?update_by=" + '@userId',
+                        type: "PUT",
+                        complete: function (e) {
+                            jQuery("#grid").data("kendoGrid").dataSource.read();
+                        }
+                    }*@
+                    @*,
+                    destroy: {
+                        url: "@UrlConfig.Action("Delete", "ProductPriceing")",
+                        type: "DELETE",
+                        complete: function (e) {
+                            jQuery("#grid").data("kendoGrid").dataSource.read();
+                            swal("", e.responseJSON.msg, e.responseJSON.output);
+                        }
+                    }*@
+                },
+                autoSync: false,
+                schema: {
+                    errors: function (e) {
+                        console.log(e.errors);
+                        if (e.output === "error") {
+                            console.log(e.output);
+                        }
+                    },
+
+                    model: {
+                        id: "product_price_mapping_id",
+                        fields: {
+                            product_price_mapping_id: { editable: false, nullable: true },
+                            product_id: { type: "number", editable: false },
+                            color_id: { type: "number", editable: false },
+                            product_version_id: { type: "number", editable: false },
+                            product_name: { type: "string", editable: false },
+                            color_name: { type: "string", editable: false },
+                            product_version_name: { type: "string", editable: false },
+                            dealer_cost: { type: "string" },
+                            b2b_cost: { type: "string" },
+                            telco_cost: { type: "string" },
+                            mrp_cost: { type: "string" },
+                            retailer_cost: { type: "string" },
+                            corporate_cost: { type: "string" },
+                            internal_cost: { type: "string" },
+                            online_cost: { type: "string" },
+                            gift_cost: { type: "string", editable: false },
+                            emi_cost: { type: "string" },
+                            is_active: { type: "boolean" },
+                            last_grn_no: { type: "string" }
+                        }
+
+                    }
+                }
+
+            });
+
+            var d = new Date();
+            var dateTime = d.toJSON();
+            jQuery("#grid").kendoGrid({
+                excel: {
+                    fileName: "Product_Pricing_List_" + dateTime + ".xlsx",
+                    allPages: true
+                },
+                dataSource: dataSource,
+                filterable: true,
+                pageable: {
+                    refresh: true,
+                    input: true,
+                    pageSize: 20,
+                    numeric: false,
+                    pageSizes: [10, 20, 50]
+                },
+                sortable: true,
+                groupable: true,
+                resizable: true,
+
+
+                columns: [
+                    { field: "product_name", title: "Product Name", width: "150px" },
+                    { field: "color_name", title: "Color Name", width: "100px" },
+                    { field: "product_version_name", title: "Version Name", width: "100px" },
+                    //{ field: "last_grn_no", title: "GRN No", width: "100px" },
+                    { field: "dealer_cost", title: "DP Price", width: "100px" },
+                    { field: "mrp_cost", title: "MRP Price", width: "100px" },
+                    { field: "retailer_cost", title: "RP Price", width: "100px" },
+                    //{ field: "b2b_cost", title: "B2B Price", width: "100px" },
+                    //{ field: "telco_cost", title: "Telco Price", width: "100px" },
+                    //{ field: "corporate_cost", title: "Corporate Price", width: "100px" },
+                    //{ field: "internal_cost", title: "Internal Price", width: "100px" },
+                    //{ field: "online_cost", title: "Online Price", width: "100px" },
+                    //{ field: "emi_cost", title: "EMI Price", width: "100px" },
+                    //{ field: "gift_cost", title: "Gift Price", width: "100px" },
+                    //{ field: "is_active", title: "Is Active", width: "100px" },
+
+                    {
+
+                        title: "Action",
+                        width: "100px",
+                        template: kendo.template($("#edit-template").html())
+                    }
+                ],
+                editable: "inline"
+            });
+        });
+
+        $("#btnSearch").click(function () {
+
+            var catId = $("#category_id").val();
+            var pId = $("#product_id").val();
+            var cId = $("#color_id").val();
+            var vId = $("#product_version_id").val();
+
+            if (catId == null || catId == "") {
+                catId = 0;
+            }
+            if (pId == null || pId == "") {
+                pId = 0;
+            }
+            if (cId == null || cId == "") {
+                cId = 0;
+            }
+            if (vId == null || vId == "") {
+                vId = 0;
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetFilterWiseProductPricing", "ProductPriceing")",
+                data: {
+                    catId: catId,
+                    pId: pId,
+                    cId: cId,
+                    vId: vId
+                },
+                dataType: "json",
+                success: function (data) {
+
+                    var dataSource = new kendo.data.DataSource({
+                        pageSize: 20,
+                        transport: {
+                            read: function (e) {
+                                e.success(data);
+                            }
+                        },
+                        autoSync: false,
+                        schema: {
+                            errors: function (e) {
+                                console.log(e.errors);
+                                if (e.output === "error") {
+                                    console.log(e.output);
+                                }
+                            },
+
+                            model: {
+                                id: "product_price_mapping_id",
+                                fields: {
+                                    product_price_mapping_id: { editable: false, nullable: true },
+                                    product_id: { type: "number", editable: false },
+                                    color_id: { type: "number", editable: false },
+                                    product_version_id: { type: "number", editable: false },
+                                    product_name: { type: "string", editable: false },
+                                    color_name: { type: "string", editable: false },
+                                    product_version_name: { type: "string", editable: false },
+                                    dealer_cost: { type: "string" },
+                                    b2b_cost: { type: "string" },
+                                    telco_cost: { type: "string" },
+                                    mrp_cost: { type: "string" },
+                                    retailer_cost: { type: "string" },
+                                    corporate_cost: { type: "string" },
+                                    internal_cost: { type: "string" },
+                                    online_cost: { type: "string" },
+                                    gift_cost: { type: "string", editable: false },
+                                    emi_cost: { type: "string" },
+                                    is_active: { type: "boolean" },
+                                    last_grn_no: { type: "string" }
+                                }
+
+                            }
+                        }
+
+                    });
+
+                    var d = new Date();
+                    var dateTime = d.toJSON();
+                    jQuery("#grid").kendoGrid({
+                        excel: {
+                            fileName: "Product_Pricing_List_" + dateTime + ".xlsx",
+                            allPages: true
+                        },
+                        dataSource: dataSource,
+                        filterable: true,
+                        pageable: {
+                            refresh: true,
+                            input: true,
+                            pageSize: 20,
+                            numeric: false,
+                            pageSizes: [10, 20, 50]
+                        },
+                        sortable: true,
+                        groupable: true,
+                        resizable: true,
+
+
+                        columns: [
+                            { field: "product_name", title: "Product Name", width: "150px" },
+                            { field: "color_name", title: "Color Name", width: "100px" },
+                            { field: "product_version_name", title: "Version Name", width: "100px" },
+                            //{ field: "last_grn_no", title: "GRN No", width: "100px" },
+                            { field: "dealer_cost", title: "DP Price", width: "100px" },
+                            { field: "mrp_cost", title: "MRP Price", width: "100px" },
+                            { field: "retailer_cost", title: "RP Price", width: "100px" },
+                            //{ field: "b2b_cost", title: "B2B Price", width: "100px" },
+                            //{ field: "telco_cost", title: "Telco Price", width: "100px" },
+                            //{ field: "corporate_cost", title: "Corporate Price", width: "100px" },
+                            //{ field: "internal_cost", title: "Internal Price", width: "100px" },
+                            //{ field: "online_cost", title: "Online Price", width: "100px" },
+                            //{ field: "emi_cost", title: "EMI Price", width: "100px" },
+                            //{ field: "gift_cost", title: "Gift Price", width: "100px" },
+                            //{ field: "is_active", title: "Is Active", width: "100px" },
+
+                            {
+
+                                title: "Action",
+                                width: "100px",
+                                template: kendo.template($("#edit-template").html())
+                            }
+                        ],
+                        editable: "inline"
+                    });
+                }
+            });
+
+
+        });
+
+    });
+</script>

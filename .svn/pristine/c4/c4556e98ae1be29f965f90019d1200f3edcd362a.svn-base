@@ -1,0 +1,247 @@
+﻿@{
+    ViewBag.Title = "Add Control";
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h5>Add Control</h5></div>
+    <div class="panel-body">
+        <form id="frmEmployeeAdd">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="control_name">Control Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="k-textbox" name="control_name" id="control_name" style="width:80%;">
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        @*<label for="control_type_id">Control Type</label>*@
+                    </div>
+                    <div class="col-md-8">
+                        @*<input type="text" name="control_type_id" id="control_type_id" style="width: 100%; margin-left: 4px;">*@
+                    </div>
+                </div>
+
+
+                <div class="clearfix"></div>
+         
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="control_parent_id">Control Parent</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" name="control_parent_id" id="control_parent_id" style="width: 100%; margin-left: 4px;">
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="control_sort">Sort</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" name="control_sort" id="control_sort" style="width: 100%; margin-left: 4px;">
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+       
+
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="control_alias">Control Alias</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="k-textbox" name="control_alias" id="control_alias" style="width:80%;">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="control_controller">Controller Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="k-textbox" name="control_controller" id="control_controller" style="width:80%;">
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+              
+
+
+
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="control_action">Controller Action</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="k-textbox" name="control_action" id="control_action" style="width:80%;">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="is_active">Is Visible</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" name="is_active" id="is_active" style="width: 100%; margin-left: 4px;">
+                    </div>
+                </div>
+
+
+                <div class="clearfix"></div>
+         
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="control_action">Controller Icon</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="k-textbox" name="icon" id="icon" style="width:80%;">
+                    </div>
+                </div>
+                <div class="col-md-6">
+
+                </div>
+
+
+                <div class="clearfix"></div>
+                <br />
+                <div class="col-md-6">
+                    <input type="button" class="k-button" id="frmEmployeeAddSubmit" value="Save Information" />
+                    <input type="hidden" class="k-textbox" name="company_id" id="company_id" value="@companyId" style="width: 100%;">
+                </div>
+                <div class="clearfix"></div>
+                <br />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="kWindow"></div>
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    var company_id = @companyId;
+
+    $("#control_alias").bind('keyup blur', function () {
+        var node = $(this);
+        node.val(node.val().replace(/[^a-z]/g, ''));
+    }
+   );
+
+    $("#control_action").bind('keyup blur', function () {
+        var node = $(this);
+        node.val(node.val().replace(/[^a-z]/g, ''));
+    }
+   );
+    $("#control_controller").bind('keyup blur', function () {
+        var node = $(this);
+        node.val(node.val().replace(/[^a-z]/g, ''));
+    }
+   );
+    //date time picker
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+
+        //Select Control Type
+        $("#control_type_id").kendoDropDownList({
+            autoBind: false,
+            dataTextField: "control_type_name",
+            dataValueField: "control_type_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllControlTypes", "ControlType")",
+                        type: "GET"
+                    }
+                },
+            },
+            optionLabel: "--Select Control Type--"
+
+        });
+
+
+        $("#control_sort").kendoNumericTextBox({
+            culture: "de-DE"
+        });
+
+
+        //Select Control Parent
+        $("#control_parent_id").kendoDropDownList({
+            autoBind: false,
+            dataTextField: "control_name",
+            dataValueField: "control_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllControlsOnly", "ControlPartial")",
+                        type: "GET"
+                    }
+                },
+            },
+            optionLabel: "--Select Control --"
+
+        });
+
+
+        $("#is_active").kendoDropDownList({
+            dataTextField: "childName",
+            dataValueField: "childId",
+            dataSource: [
+                { childName: "Visible", childId: "true" },
+                { childName: "In Visible", childId: "false" }
+            ],
+            optionLabel: "--Select--"
+        });
+
+
+        $("#frmEmployeeAddSubmit").click(function () {
+            
+
+            var formData = $("#frmEmployeeAdd").serializeArray();
+
+            var data = {};
+            $.each(formData, function (key, val) {
+                data[val.name] = val.value;
+            });
+
+           // console.log(data);
+
+
+            if (data.control_type_id == "" || data.control_type_id == 0) {
+                sweetAlert("Sorry...", "Please Select the Control Type !!!", "warning");
+
+            } else {
+                Loading(true);
+                $.ajax({
+                    type: "POST",
+                    url: "@UrlConfig.Action("Post", "Control")",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        Loading(false);
+
+                        if (data.output == "success") {
+                            NotificationMessageWithRefresh(data);
+                        } else {
+                            NotificationMessage(data);
+                        }
+                        //document.forms['frmEmployeeAdd'].reset();
+                        // KendoWindowFunction(data.msg, "error", "");
+                    }
+                });
+            }
+        });
+    });
+
+</script>

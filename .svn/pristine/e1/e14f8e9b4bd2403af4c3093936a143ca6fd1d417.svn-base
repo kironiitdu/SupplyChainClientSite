@@ -1,0 +1,332 @@
+﻿@{
+    ViewBag.Title = "Payment Collect";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="pnlPayment">
+
+    <div class="row">
+        <div class="panel panel-success">
+            <div class="panel-heading">Invoice Information</div>
+            <div class="panel-body">
+
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="invoice_no">Invoice No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="invoice_no" name="invoice_no" class="k-textbox" readonly="readonly" />
+                        <input id="invoice_id" type="hidden" />
+                    </div>
+
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="invoice_date">Invoice Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="invoice_date" name="invoice_date" readonly="readonly" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+
+            <div class="panel-heading">Payment Info</div>
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="payment_method_id">Payment Method&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="payment_method_id" name="payment_method_id" />
+                        </div>
+
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="amount">Payment Amount&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="amount" name="amount" class="k-textbox" />
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="document_attachment">Document Upload&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="file" class="" name="document_attachment" id="document_attachment" style="width:80%;">
+                        </div>
+
+                        <div class="col-md-1"></div>
+
+                    </div>
+
+                </div>
+
+                <div class="row" id="check_div">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="cheque_no">Cheque/Slip No</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="cheque_no" name="cheque_no" class="k-textbox" />
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="row" id="bank_div">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="bank_id">Bank Name</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="bank_id" name="bank_id" />
+                        </div>
+
+                        <div class="col-md-1"></div>
+
+                        <div class="col-md-2">
+                            <label for="bank_branch_name">Branch Name</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="bank_branch_name" name="bank_branch_name" class="k-textbox" />
+                        </div>
+
+                        <div class="col-md-1"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2" style="margin-left:5px;">
+                                <label for="account_no">Account No</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="account_no" name="account_no" class="k-textbox" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+
+                            </div>
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="height: 100px;">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnPaymentGenerate" name="btnPaymentGenerate" value="Payment Generate" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        if (@ViewBag.online_invoice_master_id == null || @ViewBag.online_invoice_master_id == "") {
+            $("#pnlPayment").hide();
+        } else {
+            
+
+            $("#pnlPayment").show();
+            $("#check_div").hide();
+            $("#bank_div").hide();
+
+            $("#payment_method_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Payment Method ---",
+                dataTextField: "payment_method_name",
+                dataValueField: "payment_method_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllPaymentMethod", "PaymentMethod")"
+                        }
+                    }
+                },
+                change: onChange
+
+            });
+            function onChange(e) {
+                var paymentMethodId = $("#payment_method_id").val();
+                if (paymentMethodId == 3) {
+                    $("#check_div").show(800);
+                    $("#bank_div").show(800);
+
+                }
+                if (paymentMethodId == 1) {
+                    $("#check_div").show(800);
+                    $("#bank_div").hide(800);
+
+                }
+                if (paymentMethodId == 2) {
+                    $("#check_div").hide(800);
+                    $("#bank_div").hide(800);
+                    //$("#cheque_no").val("");
+                }
+
+            }
+
+            $("#invoice_date").kendoDateTimePicker({
+                animation: {
+                    close: {
+                        effects: "fadeOut zoom:out",
+                        duration: 300
+                    },
+                    open: {
+                        effects: "fadeIn zoom:in",
+                        duration: 300
+                    }
+                },
+                value: new Date(),
+                format: "yyyy/MM/dd hh:mm tt"
+            });
+
+            $("#bank_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Bank ---",
+                dataTextField: "bank_name",
+                dataValueField: "bank_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllBank", "Bank")"
+                        }
+                    }
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetInvoiceNo", "OnlineInvoiceAndPayment")",
+                data: { masterId: @ViewBag.online_invoice_master_id },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+
+                    $("#invoice_no").val(data.online_invoice_no);
+                    $("#invoice_date".val(kendo.toString(kendo.parseDate(data.online_invoice_date, "yyyy-MM-dd", "MM/dd/yyyy"))));
+                    $("#invoice_id").val(data.online_invoice_master_id);
+                }
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetAmount", "OnlineInvoiceAndPayment")",
+                data: { masterId: @ViewBag.online_invoice_master_id },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+
+                    $("#amount").val(data);
+
+                }
+            });
+
+            $("#btnPaymentGenerate").click(function() {
+
+                Loading(false);
+
+                var fData = new FormData();
+                var payment_method_id = $("#payment_method_id").val();
+                var Files = $("#document_attachment").get(0).files;
+                var bank_id = $("#bank_id").val();
+                var bank_branch_name = $("#bank_branch_name").val();
+                var amount = $("#amount").val();
+                var account_no = $("#account_no").val();
+                var invoice_master_id = $("#invoice_id").val();
+                var cheque_no = $("#cheque_no").val();
+                var userId = '@userId';
+
+                //alert(party_id);
+                if (payment_method_id=="" ||payment_method_id==null) {
+                    sweetAlert("Sorry...", "Payment Type can not be empty!", "warning");
+                    return false;
+                }
+                if (amount=="" ||amount<0) {
+                    sweetAlert("Sorry...", "Amount can not be empty!", "warning");
+                    return false;
+                }                
+
+                if (Files.length < 1) {
+                    sweetAlert("Sorry...", "Please Select File", "warning");
+                    return false;
+                }
+                if (payment_method_id == 3) {
+                    if (bank_id == "" || bank_id == null) {
+                        sweetAlert("Sorry...", "Please Select Bank", "warning");
+                        return false;
+                    }
+                }                                
+
+                if (Files.length > 0) {
+                    
+                    fData.append("UploadedImage", Files[0]);
+                }
+                
+                fData.append("bank_id", bank_id);
+                fData.append("bank_branch_name", bank_branch_name);
+                fData.append("account_no", account_no);
+                fData.append("amount", amount);
+                fData.append("cheque_no", cheque_no);
+                fData.append("payment_method_id", payment_method_id);
+
+                fData.append("invoice_master_id", '@ViewBag.online_invoice_master_id');
+                fData.append("created_by", userId);
+
+                $.ajax({
+                    type: "POST",
+                    url: "@UrlConfig.Action("InsertOnlinePaymentReceive", "OnlineInvoiceAndPayment")",
+                    contentType: false,
+                    processData: false,
+                    data: fData,
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        swal("Success", "Online Payment created Successfully", "success");
+                        window.location.href = '/OnlineRequisition/OnlinePaymentList';
+                        return false;
+                    }
+                });
+
+            });
+
+        }
+
+    });
+</script>

@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "Customer";
+}
+
+<script id="view-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Customer/View?customer_id=#= customer_id #" class="k-button k-grid-even">View</a>
+</script>
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Customer/Edit?customer_id=#= customer_id #" class="k-button k-grid-even">Edit</a>
+</script>
+<script id="report-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" target="_blank" href="/Customer/GetCustomerInfoReport?customer_id=#= customer_id #" class="k-button k-grid-even">Report</a>
+</script>
+
+<div class="k-grid  k-secondary" data-role="grid">
+    <div class="k-toolbar k-grid-toolbar">
+        <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Customer")">
+            <span class="k-icon k-add"></span>
+            Add Customer
+        </a>
+    </div>
+</div>
+<div id="grid"></div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCustomers", "Customer")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Customer")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Customer")",
+                    type: "DELETE"
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        //KendoWindowFunction(e.msg, "error", "");
+                        // this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "customer_id",
+                    fields: {
+                        customer_id: { nullable: true, editable: false },
+                        customer_name: { type: "string" },
+                        mobile: { type: "string" },
+                        email: { type: "string" },
+                        phone: { type: "string" }
+                    }
+                }
+            }
+        });
+
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            scrollable: true,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            columns: [
+                { field: "customer_name", title: "Customer Name" },
+                { field: "mobile", title: "Mobile", width: "150px" },
+                { field: "email", title: "Email", width: "150px" },
+                { field: "phone", title: "Phone", width: "150px" },
+                {
+                    title: "Action", width: "250px",
+                    template: kendo.template($("#edit-template").html() + $("#view-template").html() + $("#report-template").html())
+                },
+                { command: ["destroy"], title: "Action", width: "100px" }],
+            editable: "inline"
+        });
+    });
+</script>

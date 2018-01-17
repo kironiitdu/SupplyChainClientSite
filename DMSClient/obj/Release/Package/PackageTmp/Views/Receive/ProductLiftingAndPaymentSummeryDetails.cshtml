@@ -1,0 +1,197 @@
+﻿
+@{
+    ViewBag.Title = "ProductLiftingAndPaymentSummeryDetails";
+}
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Product Lifting & Payment Summary Details</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="party_type_id">Party/MD/DBIS Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_type_id" name="party_type_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="party_id">Party/MD/DBIS Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="from_date">From Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="from_date" name="from_date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_date">To Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_date" name="To Date" />
+                    </div>
+                </div>
+            </div>
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="button" class="k-button " id="btnProductLiftingAndPaymentSummeryPDF" name="btnProductLiftingAndPaymentSummeryPDF" value="Export Product Lifting & Payment Details PDF" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+    //date time picker
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+        $("#from_date").val(todayDate);
+        $("#to_date").val(todayDate);
+
+        //date time picker
+        $("#from_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+        //date time picker
+        $("#to_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Party ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                }
+            }
+        }
+
+        });
+        $("#party_id").data("kendoComboBox").enable(false);
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Party Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetClientPartyTypes", "PartyType")"
+                }
+            }
+        }
+
+        });
+        //On Party Type Change : Added By Kiron: 28-11-2016
+        $('#party_type_id').change(function () {
+            var partyTypeId = $('#party_type_id').val();
+            $("#party_id").kendoComboBox({
+                autoBind: true,
+                placeholder: "--- Select Party ---",
+                dataTextField: "party_name",
+                dataValueField: "party_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetPartyTypewisePartyForDropdown", "Party")",
+                        data: { party_type_id: partyTypeId }
+                    }
+                }
+            }
+            });
+        $("#party_id").data("kendoComboBox").enable(true);
+
+    });
+
+        //For PDF
+        $("#btnProductLiftingAndPaymentSummeryPDF").click(function () {
+            var from_date = $("#from_date").val();
+            var to_date = $("#to_date").val();
+            var party_id = $("#party_id").val();
+
+            if (party_id == '') {
+                sweetAlert("Sorry...", "Select Party Name", "warning");
+                return false;
+            }
+
+            if (from_date == '') {
+                Loading(false);
+                sweetAlert("Sorry...", "Select From Date", "warning");
+                return false;
+            }
+            else if (to_date == '') {
+                Loading(false);
+                sweetAlert("Sorry...", "Select To Date", "warning");
+                return false;
+            }
+            var ProductLiftingAndPaymentSummeryData = {
+                from_date: from_date,
+                to_date: to_date,
+                party_id: party_id
+
+
+            };
+            var url = "/Receive/GetProductLiftingAndPaymentSummeryDetailsReport?from_date=" + from_date + "&to_date=" + to_date + "&party_id=" + party_id;
+
+            window.open(url, '_blank');
+
+        });
+
+    });
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+

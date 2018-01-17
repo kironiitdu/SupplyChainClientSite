@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "DeliverableTransferOrder";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+
+}
+
+
+<style>
+    .approvedPanel {
+        background-color: #dff0d8;
+    }
+
+    .notApprovedPanel {
+        background-color: #f2dede;
+    }
+</style>
+
+
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Deliverable Transfer Order List</div>
+        <div class="panel-body">
+            <script id="edit-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/TransferOrder/TransferOrderDelivery?transfer_order_master_id=#= transfer_order_master_id #" class="k-button k-grid-even edit">Transfer</a>
+            </script>
+            @*<script id="report-template" type="text/x-kendo-template">
+                    <a style="font-size:11px; text-decoration: none;" href="/Requisition/GetRequisitionReport?transfer_order_master_id=#= transfer_order_master_id #" target="_blank" class="k-button k-grid-even">Report</a>
+                </script>*@
+
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var userId = @userId;
+                var roleId=@roleId;
+
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllDeliverableTransferOrder", "TransferOrder")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "Requisition")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "transfer_order_master_id",
+                            fields: {
+                                transfer_order_master_id: { editable: false, nullable: true },
+                                order_no: { type: "string" },
+                                order_date: { type: "date" },
+                                from_warehouse_name: { type: "string" },
+                                to_warehouse_name: { type: "string" },
+                                status: { type: "string" },
+                                expected_transfer_date: { type: "date" }
+                            }
+
+                        }
+                    }
+
+                });
+
+
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 15, 20, 50, 100]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "transfer_order_master_id", hidden: true },
+                        { field: "order_no", title: "Order No", id: "transfer_order_master_id", width: "100px" },
+                        { field: "order_date", title: "Order Date", width: "100px", format: "{0:dd-MM-yyyy}" },
+                        { field: "expected_transfer_date", title: "Expected Order Date", width: "100px", format: "{0:dd-MM-yyyy}" },
+                        { field: "from_warehouse_name", title: "From Warehouse", width: "100px" },
+                        { field: "to_warehouse_name", title: "From Warehouse", width: "100px" },
+                        { field: "status", title: "Current Status", width: "100px" },
+                        {
+                            title: "&nbsp;", width: "70px",
+                            template: kendo.template($("#edit-template").html())
+                        }
+                        //{
+                        //    title: "&nbsp;", width: "70px",
+                        //    template: kendo.template($("#report-template").html())
+                        //}
+                    ],
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                            //var approvedSalesButton = $(currenRow).find(".approved");
+                            var editButtonApproved = $(currenRow).find(".edit");
+                            //var approveFinanceButton = $(currenRow).find(".financeapproved");
+                            //var cancellButton = $(currenRow).find(".k-grid-Cancel");
+
+                            //if (gridData[i].status === "Not Approved") {
+                            //    $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                            //}
+                            //if (gridData[i].finance_status === "Not Approved") {
+                            //    $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                            //}
+                            if (gridData[i].status === "Created" || gridData[i].status === "Partially Delivered") {
+                                editButtonApproved.show();
+                                //cancellButton.show();
+                            }
+                            else {
+                                editButtonApproved.hide();
+                            }
+                            
+                            //if( gridData[i].status === "Approved" || gridData[i].finance_status==="Approved"){
+
+                            //    cancellButton.hide();
+                            //}
+                        }
+                    },
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+    </div>
+</div>

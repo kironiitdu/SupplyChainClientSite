@@ -1,0 +1,268 @@
+﻿@{
+    ViewBag.Title = "EditCreditLimit";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var party_id = '@ViewBag.party_id';
+        Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetPartyById", "Party")?party_id=" + party_id,
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                $("#party_id").val(party_id);
+                $("#party_name").val(data.party_name);
+                $("#credit_limit").val(data.credit_limit);
+                $("#address").val(data.address);
+                $("#mobile").val(data.mobile);
+                $("#party_type_id").data("kendoComboBox").value(data.party_type_id);
+                $("#region_id").data("kendoComboBox").value(data.region_id);
+                $("#area_id").data("kendoComboBox").value(data.area_id);
+                $("#territory_id").data("kendoComboBox").value(data.territory_id);
+            }
+        });
+
+        $("#territory_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+    });
+</script>
+
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+<div class="row" id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Edit Credit Limit</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="party_type_id">Channel Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="party_type_id" id="party_type_id" class="dropdown" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="party_name">Channel Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="party_name" placeholder="Enter Party Name" id="party_name" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="credit_limit">Credit Limit&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" class="k-textbox" name="credit_limit" placeholder="Enter Credit Limit" id="credit_limit">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="address">Channel Address&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="address" id="address" placeholder="Enter Party Address" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="region_id">Region&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="region_id" id="region_id" class="dropdown" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="area_id">Area&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="area_id" id="area_id" class="dropdown" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="territory_id">Territory&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="territory_id" id="territory_id" class="dropdown" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="mobile">Mobile No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input name="mobile" id="mobile" class="k-textbox" placeholder="Enter Party Mobile No" disabled>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnUpdateParty" value="Update Credit Limit" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#start_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            }
+        });
+
+        //Party_type Combobox
+        $("#party_type_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "Select Party Type...",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPartyType", "PartyType")",
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+        // Region
+        $("#region_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        //Area
+        $("#area_id").kendoComboBox({
+            autoBind: true,
+            //cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        //Territory
+
+        $("#territory_id").kendoComboBox({
+            autoBind: true,
+            // cascadeFrom: "area_id",
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+     
+        $("#btnUpdateParty").click(function () {
+            var party_id = '@ViewBag.party_id';
+            var credit_limit = $("#credit_limit").val();
+
+            var oParty = {
+                party_id: party_id,
+                credit_limit: credit_limit
+            };
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("EditCreditLimit", "Party")",
+
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(oParty),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        $('#context').addClass('animated zoomOut');
+
+                        setTimeout(function () {
+                            window.location.href = '/OpeningBalanceCreditLimit/index';
+                        }, 1000);
+
+                        return false;
+                    }
+                    else
+                    {
+                        sweetAlert("Sorry...", data.msg, "warning");
+                        return false;
+                    }
+
+                }
+            });
+
+        });
+
+
+        //Closing curly brace for document ready function
+    });
+
+
+</script>

@@ -1,0 +1,246 @@
+﻿
+@{
+    ViewBag.Title = "Edit";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    } 
+}
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        var company_id = '@ViewBag.company_id';
+        Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetCompanyById", "Company")",
+            data: {
+                company_id:company_id
+            },
+        dataType: "json",
+        success: function (data) {           
+            $("#company_name").val(data.company_name);
+            $("#company_code").val(data.company_code);         
+            $("#country_id").data("kendoComboBox").value(data.country_id);
+            $("#city_id").data("kendoComboBox").value(data.city_id);
+            $("#address").val(data.address);
+            $("#mobile").val(data.mobile);
+            $("#zip_code").val(data.zip_code);
+            $("#email").val(data.email);
+            $("#address").val(data.address);
+            $("#created_date").val(data.created_date);
+            $("#address").val(data.address);         
+            $("#is_active").prop('checked',data.is_active);
+            Loading(false);
+        }
+    });
+    });
+</script>
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<div class="row">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Add Company</h5></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="company_name">Company Name</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="company_name" id="company_name">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="company_code">Company Code</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="company_code" id="company_code" style="text-transform: uppercase;">
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="country_id">Country</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="dropdown" name="country_id" id="country_id">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="city_id">City</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="city_id" id="city_id" class="dropdown">
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="address">Address</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="address" id="address">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="zip_code">Zip Code</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="zip_code" id="zip_code">
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="email">Email</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="email" id="email">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="mobile">Mobile</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" name="mobile" id="mobile">
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-3">
+                        <label for="is_active">Is Active</label>
+                        <input type="checkbox" name="is_active" checked="checked" id="is_active">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <br />
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="button" class="k-button" id="btnUpdateCompany" value="Update Company Information" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        //Country Dropdown
+        $("#country_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Country ---",
+            dataTextField: "country_name",
+            dataValueField: "country_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCountries", "Country")"
+                }
+            }
+        }
+        }).data("kendoComboBox");
+
+        //City DropDown
+        $("#city_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select City ---",
+            dataTextField: "city_name",
+            dataValueField: "city_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCities", "City")"
+                }
+            }
+        }
+        }).data("kendoComboBox");
+
+        $("#btnUpdateCompany").click(function () {
+            Loading(false);
+            var company_id = '@ViewBag.company_id';
+            var company_name = $("#company_name").val();
+            var company_code = $("#company_code").val();
+            var country_id = $("#country_id").val();
+            var city_id = $("#city_id").val();
+            var address = $("#address").val();
+            var zip_code = $("#zip_code").val();
+            var mobile = $("#mobile").val();
+            var email = $("#email").val();
+            var updated_by=@userId;
+            var is_active = false;
+            if ($("#is_active").is(":checked")) {
+                is_active = true;
+            }
+
+
+
+            var    objCompany = {
+                company_id:company_id,
+                company_name: company_name,
+                company_code: company_code,
+                country_id: country_id,
+                city_id: city_id,
+                address: address,
+                mobile: mobile,
+                zip_code: zip_code,
+                email: email,
+                updated_by:updated_by,
+                is_active:is_active
+                      };
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("put", "Company")",
+                data: JSON.stringify(objCompany),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        swal("Success", data.msg, "success");
+                        window.location.href = '/company/index';
+                        return false;
+                    } else {
+                        swal(data.output, data.msg, data.output);
+                        return false;
+                    }
+
+                }
+            });
+
+        });
+    });
+
+</script>
+
+
+

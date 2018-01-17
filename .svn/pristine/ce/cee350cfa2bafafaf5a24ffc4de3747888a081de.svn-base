@@ -1,0 +1,122 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewBag.Title = "Online Requisition List";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+<script id="report-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/OnlineRequisition/GetOnlineDeliveryChallanReport?delivery_master_id=#= delivery_master_id #" target="_blank" class="k-button k-grid-even">Delivery Challan</a>
+</script>
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Online Requisition List</div>
+        <div class="panel-body">
+            <div class="k-grid  k-secondary" data-role="grid">
+                <div class="k-toolbar k-grid-toolbar">
+                    <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("add", "onlinerequisition")">
+                        <span class="k-icon k-add"></span>
+                        Add New Online Requisition
+                    </a>
+                </div>
+            </div>
+            <div id="grid"></div>
+        </div>
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+
+
+                var dataSource2 = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetOnlineRequisitionAndDeliveryList", "OnlineRequisition")",
+                            type: "GET"
+                        }
+                    },
+
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "delivery_master_id",
+                            fields: {
+                                delivery_master_id: { editable: false, nullable: true },
+                                delivery_no: { type: "string" },
+                                requisition_code: { type: "string" },
+                                delivery_date: { type: "date" },
+                                reference_no: { type: "string" },
+                                party_name: { type: 'string' },
+                                quantity: { type: "string" },
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource2,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "delivery_no", title: "Delivery No",id:"delivery_master_id", width: "50px" },
+                        { field: "requisition_code", title: "Requisition No", width: "50px" },
+                        { field: "reference_no", title: "Customer PO", width: "50px" },
+                        { field: "party_name", title: "Party Name", width: "50px" },
+                        { field: "delivery_date", title: "Delivery Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        { field: "quantity", title: "Quantity", width: "50px" },
+                        {
+                            title: "Action", width: "65px",
+                            template: kendo.template($("#report-template").html())
+                        }
+                    ],
+                    editable: "inline"
+                });
+
+
+            });
+
+        </script>
+    </div>
+</div>

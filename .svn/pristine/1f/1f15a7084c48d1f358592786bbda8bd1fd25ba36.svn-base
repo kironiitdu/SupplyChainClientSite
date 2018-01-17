@@ -1,0 +1,105 @@
+﻿@*
+    Page: Branch List Form
+    Author: Farzana Islam
+
+*@
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+}
+
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/branch/edit?branch_id=#= branch_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<div class="k-grid  k-secondary" data-role="grid">
+    <div class="k-toolbar k-grid-toolbar">
+        <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","Branch")">
+            <span class="k-icon k-add"></span>
+            Add Branch
+        </a>
+    </div>
+</div>
+<div id="grid"></div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var company_id = '@companyId';
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllBranches", "Branch")?company_id=" + company_id,
+                    type: "GET"
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Branch")",
+                    type: "DELETE"
+                }
+            },
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                    }
+                },
+
+                model: {
+                    id: "branch_id",
+                    fields: {
+                        branch_id: { editable: false, nullable: true },
+                        branch_code: { type: "text" },
+                        branch_name: { type: "string" },
+                        country_id: { type: "integer" },
+                        city_id: { type: "integer" },
+                        country_name: { type: "string" },
+                        city_name: { type: "string" },
+                        branch_location: { type: "string" },
+                        branch_incharge_name: { type: "string" },
+                        company_title: { type: "string" },
+                        is_active: { type: "boolean" }
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+
+            columns: [
+                { field: "branch_code", title: "Branch Code", id: "branch_code", width: "150px" },
+                { field: "branch_name", title: "Branch Name", id: "branch_name", width: "150px" },
+                { field: "country_name", title: "Country", id: "country_name", width: "155px" },
+                { field: "city_name", title: "City", id: "city_name", width: "155px" },
+                { field: "branch_incharge_name", title: "Branch Incharge", id: "emp_firstname", width: "155px" },
+                { field: "company_title", title: "Company Name", id: "company_title", width: "150px" },
+               { field: "is_active", title: "Active?", template: "#= is_active ? 'yes' : 'no' #", width: "150px" },
+                {
+                    title: "Action", width: "100px",
+                    template: kendo.template($("#edit-template").html())
+                },
+                { command: ["destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+    });
+</script>

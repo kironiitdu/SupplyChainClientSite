@@ -1,0 +1,157 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+@{
+
+}
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Add Control</h4></div>
+    <div class="panel-body">
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Control")">
+                    <span class="k-icon k-add"></span>
+                    Add Control
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Control/Edit?control_id=#= control_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+       
+        var dataSource = new kendo.data.DataSource({
+            pageSize:20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllControls", "Control")",
+                    type: "GET"
+                },
+                update: {
+                    @*url: "@UrlConfig.Action("Put", "Control")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }*@
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Control")",
+                    type: "DELETE"
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                       //KendoWindowFunction(e.msg, "error", "");
+                      // this.cancelChanges();
+                   }
+                },
+
+                model: {
+                    id: "control_id",
+                    fields: {
+                        control_id: { editable: false },
+                        control_name: { type: "string", validation: { required: true } },
+                        control_parent_id: { type: "number"},
+                        //control_type_id: { type: "number"},
+                        control_sort: { type: "number"},
+                        control_alias: { type: "string"},
+                        control_controller: { type: "string"},
+                        control_action: { type: "string" },
+                        control_parent_name: { type: "string" },
+                        control_type_name: { type: "string" }
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 50,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+            columns: [
+                { field: "control_name", title: "Control Name", id: "control_id", width: "150px" },
+                { field: "control_parent_name", title: "Parent Name",  width: "150px" },
+                //{ field: "control_type_name", title: "Control Type", width: "150px" },
+                { field: "control_sort", title: "Sort", width: "150px" },
+                { field: "control_alias", title: "Control Alias", width: "150px" },
+                { field: "control_controller", title: "Controller Name", width: "150px" },
+                { field: "control_action", title: "Control Action ", width: "150px" },
+                {
+                    title: "Action", width: "100px",
+                    template: kendo.template($("#edit-template").html())
+                },
+                { command: [ "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+        function ControlDropDownEditor(container, options) {
+            jQuery('<input  data-text-field="control_parent_name" data-value-field="control_id" data-bind="value:' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        optionLabel: "Select Parent Name",
+
+                        autoBind: false,
+
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "@UrlConfig.Action("get_parent", "Control")",
+                                type: "GET"
+                            }
+                        },
+                    },
+
+            });
+    }
+        /* end custom activation Dropdown Editor */
+
+    function ControlTypeDropDownEditor(container,options){
+        jQuery('<input  data-text-field="control_type_name" data-value-field="control_type_id" data-bind="value:'+ options.field+'"/>')
+        .appendTo(container)
+        .kendoDropDownList({
+            optionLabel: "Select Control Type",
+            autoBind: false,
+            dataSource:{
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllControlTypes", "ControlType")",
+                    type: "GET"
+                }
+            },
+        }
+        });
+    }
+    });
+
+
+</script>
+
+
+
+<div id="kWindow"></div>
+

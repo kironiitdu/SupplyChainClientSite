@@ -1,0 +1,309 @@
+﻿@*Partial View*@
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h5>Payment Request Search</h5> </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="to_date" name="To Date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="channal_id">Channels</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="channal_id" name="channal_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <input type="button" class="k-button " id="btnSearch" name="btnSearch" value="Search" style="margin-top: 6px" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+
+            <div>
+                <input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel"/>
+            </div> 
+            <input type="button" class="k-button " id="btnExportPdf" name="btnExportPdf" value="Export PDF" />
+            
+            <div id="grid"></div>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                $("#btnExportExcel").hide();
+                $("#btnExportPdf").hide();
+
+                var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy/MM/dd');
+                $("#from_date").val(todayDate);
+                $("#to_date").val(todayDate);
+                //Excel Export---------
+                $("#btnExportExcel").click(function () {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+
+                //PDF Export---------
+                $("#btnExportPdf").click(function () {
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+                    var channal_id = $("#channal_id").val();
+
+                    if (channal_id == '') {
+                        channal_id = "0";
+                    }
+                    var url = '/PaymentRequest/GetAllPaymentRequest?from_date=' + from_date + '&to_date=' + to_date + '&from_warehouse_id=' + channal_id;
+                    window.open(url, '_blank');
+                });
+
+
+                //date time picker
+                $("#from_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                //date time picker
+                $("#to_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                $("#channal_id").kendoComboBox({
+                    autoBind: false,
+                    placeholder: "        --- Select Channel ---",
+                    dataTextField: "party_name",
+                    dataValueField: "party_id",
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+
+                                url: "@UrlConfig.Action("GetAllParty", "Party")"
+                            }
+                        }
+                    }
+                });
+
+                // Search Button
+                $("#btnSearch").click(function () {
+                    Loading(true);
+                   // sweetAlert("Opps...!", "Work Under Progress", "warning");
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+                    var partyId = $("#channal_id").val();
+                    if (partyId == "")partyId = 0;
+
+                    if (from_date == "") {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select From Date", "warning");
+                    }
+                    else if (to_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                    } else if (to_date == "") {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                    }
+                    else if (to_date < from_date) {
+                        Loading(false);
+                        sweetAlert("Sorry...", "To Date can not be less then From Date", "warning");
+                    }
+                    //else if (partyId == "") {
+                    //    //Loading(false);
+                    //    //sweetAlert("Sorry...", "Please Select Party", "warning");
+                    //    partyId = 0;
+                        //} 
+                    else {
+
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetAllPaymentRequest", "PaymentRequest")?fromDate=" + from_date + "&toDate=" + to_date + "&partyId=" + partyId + "",
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                Loading(false);
+                                console.log(data);
+
+                                var sampleData = [];
+
+                                if (data != '') {
+
+                                    for (var i = 0; i < data.length; i++) {
+
+                                        var paymentRequestDetails = {
+                                            payment_req_id: data[i].payment_req_id,
+                                            amount: data[i].amount,
+                                            deposite_date: data[i].deposite_date,
+                                            bank_branch_id: data[i].bank_branch_id,
+                                            bank_name: data[i].bank_name,
+                                            bank_branch_name: data[i].bank_branch_name,
+                                            bank_account_name: data[i].bank_account_name,
+                                            payment_method_name: data[i].payment_method_name,
+                                            cheque_no: data[i].cheque_no,
+                                            party_id: data[i].party_id,
+                                            party_name: data[i].party_name,
+                                            sales_representative: data[i].sales_representative,
+                                            party_type_id: data[i].party_type_id,
+                                            party_type_name: data[i].party_type_name,
+                                            approved: data[i].approved,
+                                            receipt_no: data[i].receipt_no,
+                                            opening_balance: data[i].opening_balance,
+                                            territory_name: data[i].territory_name,
+                                            approved_by: data[i].approved_by,
+                                            status: data[i].status
+                                        };
+                                        sampleData.push(paymentRequestDetails);
+                                    }
+
+                                    //Payment Grid---------------------
+                                    var dataSource = new kendo.data.DataSource({
+                                        pageSize: 20,
+                                        transport: {
+                                            read: function (e) {
+                                                // on success
+                                                e.success(sampleData);
+                                            }
+                                        },
+                                        //    code: "Ok",
+                                        autoSync: false,
+                                        schema: {
+                                            errors: function (e) {
+                                                console.log(e.errors);
+                                                //alert(e.error);
+                                                if (e.output === "error") {
+                                                    console.log(e.output);
+                                                    //KendoWindowFunction(e.msg, "error", "");
+                                                    // this.cancelChanges();
+                                                }
+
+                                            },
+
+                                            model: {
+                                                id: "payment_req_id",
+                                                fields: {
+                                                    payment_req_id: { editable: false, nullable: true },
+                                                    amount: { type: "number" },
+                                                    deposite_date: { type: "date" },
+                                                    payment_method_id: { type: "string" },
+                                                    bank_branch_id: { type: "string" },
+                                                    bank_name: { type: "string" },
+                                                    bank_branch_name: { type: "string" },
+                                                    bank_account_name: { type: "string" },
+                                                    payment_method_name: { type: "string" },
+                                                    cheque_no: { type: "string" },
+                                                    document_attachment: { type: "string" },
+                                                    party_id: { type: "string" },
+                                                    party_name: { type: "string" },
+                                                    sales_representative: { type: "string" },
+                                                    party_type_id: { type: "string" },
+                                                    party_type_name: { type: "string" },
+                                                    approved: { type: "string" },
+                                                    receipt_no: { type: "string" },
+                                                    opening_balance: { type: "number" },
+                                                    territory_name: { type: "string" },
+                                                    approved_by: { type: "string" },
+                                                    status: { type: "string" }
+                                                }
+
+                                            }
+                                        }
+
+                                    });
+
+                                    var d = new Date();
+                                    var dateTime = d.toJSON();
+                                    //Excel Export---------
+                                    jQuery("#grid").kendoGrid({
+                                        excel: {
+                                            fileName: "Payment_Request_List_" + dateTime + ".xlsx",
+                                            allPages: true
+                                        },
+                                        dataSource: dataSource,
+                                        scrollable: true,
+                                        filterable: true,
+                                        pageable: {
+                                            refresh: true,
+                                            input: true,
+                                            pageSize: 20,
+                                            numeric: false,
+                                            pageSizes: [10, 20, 50,100,500,1000]
+                                        },
+
+                                        sortable: true,
+                                        groupable: true,
+                                        resizable: true,
+
+
+                                        columns: [
+                                                { field: "receipt_no", title: "Receipt No", width: "150px" },
+                                                { field: "deposite_date", title: "Deposite Date", id: "deposite_date", width: "155px", template: "#= kendo.toString(kendo.parseDate(deposite_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #" },
+                                                { field: "party_name", title: "Channel Name", width: "150px" },
+                                                { field: "territory_name", title: "Channel Teritory", width: "150px" },
+                                                { field: "opening_balance", title: "Opening Balance", width: "150px" },
+                                                { field: "payment_method_name", title: "Payment Method", width: "150px" },
+                                                { field: "amount", title: "Payment Amount", width: "150px" },
+                                                { field: "bank_name", title: "Bank", width: "150px" },
+                                                { field: "bank_branch_name", title: "Branch", width: "150px" },
+                                                { field: "bank_account_name", title: "Account No", width: "150px" },
+                                                { field: "cheque_no", title: "Bank Deposit Ref", width: "150px" },
+                                                { field: "status", title: "Status", width: "150px" },
+                                                { field: "approved_by", title: "Approved By ", width: "150px" },
+                                                //{ title: "Action", width: "100px", template: kendo.template($("#edit-template").html()) },
+                                                //{ title: "Action", width: "100px", template: kendo.template($("#status-template").html()) },
+                                                //{ title: "Action", width: "100px", template: kendo.template($("#download-template").html()) },
+                                                //{ title: "Action", template: kendo.template($("#delete-template").html()), width: "100px" }
+
+                                        ],
+
+                                        editable: "inline"
+                                    });
+                                    $("#btnExportExcel").show();
+                                    // $("#btnExportPdf").show();
+
+                                } else {
+                                    swal("Opps !", "Data Not Available !!", "warning");
+                                    $("#grid").data("kendoGrid").dataSource.data([]);
+                                    $("#btnExportExcel").hide();
+                                    $("#btnExportPdf").hide();
+                                    return false;
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>
+

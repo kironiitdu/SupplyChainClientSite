@@ -1,0 +1,89 @@
+﻿@*
+    Page: Company List Form
+    Author: Farzana Islam
+
+*@
+@{
+    ViewBag.Title = "Index";
+}
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="edit?company_id=#= company_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<div class="k-grid  k-secondary" data-role="grid">
+    <div class="k-toolbar k-grid-toolbar">
+        <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","Company")">
+            <span class="k-icon k-add"></span>
+            Add Comapny
+        </a>
+    </div>
+</div>
+<div id="grid"></div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCompanies", "Company")",
+                    type: "GET"
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Company")",
+                    type: "DELETE"
+                }
+            },
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                    }
+                },
+
+                model: {
+                    id: "company_id",
+                    fields: {
+                        company_id: { editable: false, nullable: true },
+                        company_name: { type: "string" },
+                        address_1: { type: "string" },
+                        phone: { type: "string" },
+                        email: { type: "string" },
+                        is_active: { type: "boolean" }
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+
+            columns: [
+                { field: "company_name", title: "Company Name", id: "company_id", width: "150px" },
+                { field: "address_1", title: "Address", id: "address_1", width: "150px" },
+                { field: "phone", title: "Phone", id: "phone", width: "150px" },
+                { field: "email", title: "Email", id: "email", width: "155px" },
+               { field: "is_active", title: "Active?", template: "#= is_active ? 'yes' : 'no' #", width: "150px" },
+                {
+                    title: "Action", width: "100px",
+                    template: kendo.template($("#edit-template").html())
+                },
+                { command: ["destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+    });
+</script>

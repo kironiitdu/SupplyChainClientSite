@@ -1,0 +1,100 @@
+﻿@*/*
+    Author: Meraj
+    Date: 01/03/2017
+    */*@
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Add Currency</h4></div>
+    <div class="panel-body">
+
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCurrency", "Currency")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Currency")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+
+                create: {
+                    url: "@UrlConfig.Action("Post", "Currency")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        sweetAlert("Sorry...", e.msg, "error");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "currency_id",
+                    fields: {
+                        currency_id: { editable: false, nullable: true },
+                        currency_name: { type: "string", validation: { required: true } }
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add New" }],
+            columns: [
+                { field: "currency_name", title: "Currency", id: "currency_id", width: "150px" },
+            { command: ["edit"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+
+
+
+
+    });
+
+
+</script>
+
+
+
+<div id="kWindow"></div>
+

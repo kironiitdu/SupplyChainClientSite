@@ -1,0 +1,185 @@
+﻿@{
+    ViewBag.Title = "Model_wise Summary";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script id="excel-template" type="text/x-kendo-template">
+
+    <a style="font-size:11px; text-decoration: none;" href="/Inventory/GetAdaProductInventoryDetailsExcel?product_id=#= product_id#&color_id=#= color_id#&warehouse_id=#= warehouse_id#" class="k-button k-grid-even">Excel</a>
+
+</script>
+<div class="panel panel-success">
+    <div class="panel-heading"><h4> Model_wise Summary Report</h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="product_id">Product</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_id" name="product_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                   
+                </div>
+                <div class="col-md-3">
+                   
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                   
+                </div>
+                <div class="col-md-3">
+                   
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnmodelwisesummaryView" name="btnmodelwisesummaryView" value="View Model_wise Summary " />
+        </div>
+    </div>
+</div>
+<div class="panel-body">
+    <input type="button" class="k-button" id="exportExcel" name="exportExcel" value="Export to Excel"/>
+    <br/>
+    <div id="grid"></div>
+
+
+
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#exportExcel").hide();
+            $("#btnmodelwisesummaryView").click(function() {
+                $("#exportExcel").show();
+                var product_id = $("#product_id").val();
+                if (product_id == "") {
+                    product_id = 0;
+                }
+
+                $("#exportExcel").click(function() {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("ModelWiseSummaryReport", "ModelWiseSummary")",
+                            type: "GET",
+                            data: {
+                                // warehouse_id: warehouse_id,
+                                product_id: product_id
+                                //color_id: color_id
+                            },
+
+                        },
+
+                        autoSync: false,
+                        schema: {
+                            model: {
+                                id: "product_id",
+                                fields: {
+                                    product_id: { editable: false, nullable: true },
+                                    product_name: { type: "string" },
+                                    general: { type: "number", editable: false, nullable: true },
+                                    doa_others: { type: "number", editable: false, nullable: true },
+                                    gift: { type: "number", editable: false, nullable: true },
+                                    total_sales: { type: "number", editable: false, nullable: true },
+                                    rebate_quantity: { type: "number", editable: false, nullable: true },
+                                    rebate_amount: { type: "number", editable: false, nullable: true },
+                                    live_dummy: { type: "number", editable: false, nullable: true },
+                                    live_dummy_amount: { type: "number", editable: false, nullable: true },
+                                    adjustment_qty: { type: "number", editable: false, nullable: true },
+                                    adjustment: { type: "number", editable: false, nullable: true }
+                                }
+
+                            }
+                        }
+                    }
+                });
+                var d = new Date();
+                var dateTime = d.toJSON();
+                jQuery("#grid").kendoGrid({
+                    excel: {
+                        fileName: "modelwisesummary_" + dateTime + ".xlsx"
+                    },
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+
+                        numeric: false,
+
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    columns: [
+                        { field: "product_name", title: "Model", width: "150px" },
+                        { field: "general", title: "General", width: "90px" },
+                        { field: "doa_others", title: "DOA & Others", width: "90px" },
+                        { field: "gift", title: "Gift", width: "80px" },
+                        { field: "total_sales", title: "Total Sales", width: "80px" },
+                        { field: "rebate_quantity", title: "Rebate Quantity", width: "100px" },
+                        { field: "rebate_amount", title: "Rebate Amount", width: "95px" },
+                        { field: "live_dummy", title: "Live Dummy", width: "90px" },
+                        { field: "live_dummy_amount", title: "Live Dummy Amount", width: "110px" },
+                        { field: "adjustment_qty", title: "Adustment Qty", width: "100px" },
+                        { field: "adjustment", title: "Adustment", width: "90px" }
+                        //{ title: "Action", width: "100px", template: kendo.template($("#excel-template").html()) }
+                    ],
+                    editable: "inline"
+                });
+            });
+        });
+    </script>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnSaveNUpdate" name="btnSaveNUpdate" value="Post" />
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#product_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductList", "Product")"
+                    }
+                }
+            }
+
+        });
+
+    });
+</script>

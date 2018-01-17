@@ -1,0 +1,114 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+
+    //Added By Kiron:14-01-2017
+}
+
+@*<div class="k-grid  k-secondary" data-role="grid">
+        <div class="k-toolbar k-grid-toolbar">
+            <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","Bank")">
+                <span class="k-icon k-add"></span>
+                Add Bank
+            </a>
+        </div>
+    </div>*@
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h5>All SBU</h5></div>
+    <div class="panel-body">
+
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllSbu", "Sbu")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Sbu")?updated_by=" + userId,
+                    type: "PUT",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Sbu")?updated_by=" + userId,
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "Sbu")?created_by=" + userId,
+                    type: "POST",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function(e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "sbu_id",
+                    fields: {
+                        sbu_id: { editable: false, nullable: true },
+                        sbu_name: { type: "string", validation: { required: true } },
+                        is_active: { type: "boolean" }
+                    }
+
+                }
+
+            }
+
+
+    });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50,100,200,500,1000]
+                    },
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    update: true,
+                    destroy: true,
+
+                    toolbar: [{ name: "create", text: "Add New Sbu" }],
+                    columns: [
+                        { field: "sbu_name", title: "SBU Name", id: "sbu_id", width: "150px" },
+                        { field: "is_active", title: "Is Active", width: "150px" },
+                        { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+                    editable: "inline"
+                });
+
+            });
+</script>

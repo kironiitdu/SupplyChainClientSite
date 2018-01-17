@@ -1,0 +1,580 @@
+﻿@*Author:Kiron
+    Date:23/08/2016*@
+@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var companyId = @companyId;
+
+</script>
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Add Receive Amount</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="receipt_no">Money Receipt No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="receipt_no" name="receipt_no" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="invoice_no">Invoice No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="invoice_no" name="invoice_no " class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="receive_date">Receipt Date </label>
+                    </div>
+                    <div class="col-md-3" style="margin-left: 5px; margin-top: 4px;">
+                        <input id="receive_date" name="receive_date" style="width: 100%;" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="party_id">Channel Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="credit_limit">Credit Limit</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="credit_limit" name="credit_limit" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="last_invoice_balance">Previous Balance</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="last_invoice_balance" name="last_invoice_balance" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="payment_method_id">Payment Method&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="payment_method_id" name="payment_method_id" />
+                    </div>
+
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="amount">Payment Amount&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="amount" name="amount" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row" id="check_div">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="cheque_no">Cheque/Slip No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="cheque_no" name="cheque_no" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row" id="bank_div">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="bank_id">Bank Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="bank_id" name="bank_id" />
+                    </div>
+
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-2">
+                        <label for="bank_branch_id">Branch Name</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="bank_branch_id" name="bank_branch_id" />
+                    </div>
+
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2" style="margin-left:5px;">
+                            <label for="bank_account_id">Account No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="bank_account_id" name="bank_account_id" />
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="bank_charge">Bank Charge</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="bank_charge" name="bank_charge" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="remarks">remarks</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="remarks" name="remarks" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="representative">Representative</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="representative" name="representative" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-2"></div>
+                    <div class="col-md-3">
+
+                        <input type="checkbox" id="is_varified" class="k-checkbox">
+                        <label class="k-checkbox-label" for="is_varified">Is Varified</label>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="panel-heading"><h4>Channel Requisition Info</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="requisition_no">Requisition Code</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="requisition_no" name="requisition_no" class="k-textbox" disabled />
+                        </div>
+
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="requisition_line_total">Last Requisition Amount</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="requisition_line_total" name="requisition_line_total" class="k-textbox" disabled />
+                        </div>
+                        <div class="col-md-1"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnSaveReceivedAmount" name="btnSaveReceivedAmount" value="Save Received Amount" />
+            </div>
+        </div>
+    </div>
+</div>
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+
+
+
+    //date time picker
+    $(document).ready(function () {
+
+        //start
+        
+        //function getUserIP(onNewIP) { //  onNewIp - your listener function for new IPs
+        //    //compatibility for firefox and chrome
+        //    var myPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+        //    var pc = new myPeerConnection({
+        //        iceServers: []
+        //    }),
+        //    noop = function () { },
+        //    localIPs = {},
+        //    ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/g,
+        //    key;
+
+        //    function iterateIP(ip) {
+        //        if (!localIPs[ip]) onNewIP(ip);
+        //        localIPs[ip] = true;
+        //    }
+
+        //    //create a bogus data channel
+        //    pc.createDataChannel("");
+
+        //    // create offer and set local description
+        //    pc.createOffer().then(function (sdp) {
+        //        sdp.sdp.split('\n').forEach(function (line) {
+        //            if (line.indexOf('candidate') < 0) return;
+        //            line.match(ipRegex).forEach(iterateIP);
+        //        });
+
+        //        pc.setLocalDescription(sdp, noop, noop);
+        //    }).catch(function (reason) {
+        //        // An error occurred, so handle the failure to connect
+        //    });
+
+        //    //listen for candidate events
+        //    pc.onicecandidate = function (ice) {
+        //        if (!ice || !ice.candidate || !ice.candidate.candidate || !ice.candidate.candidate.match(ipRegex)) return;
+        //        ice.candidate.candidate.match(ipRegex).forEach(iterateIP);
+        //    };
+        //}
+
+        ////// Usage
+
+        //getUserIP(function (ip) {
+           
+        //    alert("Got IP! :" + ip);
+        //});
+        ////End
+
+        // party list
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channels ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+        });
+        //Get Credit Limit
+        $('#party_id').change(function () {
+            var partyId = $('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyPaymentAndRequisitionInfo", "PaymentRequest")?party_id=" + partyId,
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    $('#credit_limit').val(data.credit_limit);
+                    $('#requisition_no').val(data.requisition_code);
+                    $('#requisition_line_total').val(data.amount);
+                    //alert(data.credit_limit);
+                }
+            });
+        });
+
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+        $("#receive_date").val(todayDate);
+        $('#test').addClass('animated zoomIn');
+        $("#check_div").hide();
+        $("#bank_div").hide();
+
+        $("#receive_date").kendoDateTimePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            value:new Date(),
+            format: "yyyy/MM/dd hh:mm tt"
+        });
+
+
+
+
+        // bank_name
+        $("#bank_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Bank ---",
+            dataTextField: "bank_name",
+            dataValueField: "bank_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBank", "Bank")"
+                    }
+                }
+            }
+        });
+
+
+        $("#bank_branch_id").kendoComboBox({
+            cascadeFrom:'bank_id',
+            autoBind: false,
+            placeholder: "--- Select Branch ---",
+            dataTextField: "bank_branch_name",
+            dataValueField: "bank_branch_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBankBranch", "BankBranch")"
+                    }
+                }
+            }
+        });
+
+        $("#bank_account_id").kendoComboBox({
+            cascadeFrom:'bank_branch_id',
+            autoBind: false,
+            placeholder: "--- Select Account ---",
+            dataTextField: "bank_account_name",
+            dataValueField: "bank_account_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBankAccoun", "BankBranch")"
+                    }
+                }
+            }
+        });
+
+        ///payment_method
+        $("#payment_method_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Payment Method ---",
+            dataTextField: "payment_method_name",
+            dataValueField: "payment_method_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPaymentMethod", "PaymentMethod")"
+                    }
+                }
+            },
+            change: onChange
+
+        });
+        function onChange(e) {
+            var paymentMethodId = $("#payment_method_id").val();
+            if (paymentMethodId == 3) {
+                $("#check_div").show(800);
+                $("#bank_div").show(800);
+
+            }
+            if (paymentMethodId == 1) {
+                $("#check_div").show(800);
+                $("#bank_div").show(800);
+
+            }
+            if (paymentMethodId == 2) {
+                $("#check_div").hide(800);
+                $("#bank_div").hide(800);
+                //$("#cheque_no").val("");
+            }
+
+        }
+
+        //function onChange(e) {
+        //    var paymentMethodId = $("#payment_method_id").val();
+        //    if (paymentMethodId == 3) {
+        //        $("#check_div").show(800);
+        //        $("#bank_div").show(800);
+
+
+
+        //    }
+        //    else if (paymentMethodId == 1) {
+        //        $("#check_div").show(800);
+        //        $("#bank_div").hide(800);
+
+
+        //    }
+        //    else {
+        //        $("#check_div").hide(800);
+
+        //        $("#bank_div").hide(800);
+
+        //        $("#cheque_no").val("");
+        //        $("#cheque_no").val("");
+        //        var bank_branch_id = $("#bank_branch_id").data("kendoComboBox");
+        //        bank_branch_id.dataSource.data([]);
+        //        bank_branch_id.text("");
+        //        var bank_id = $("#bank_id").data("kendoComboBox");
+        //        bank_id.dataSource.data([]);
+        //        bank_id.text("");
+
+        //    }
+
+        //}
+
+
+
+        //CDDTOTXB
+        $('#party_id').change(function () {
+            var partyId = $('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetClousingBalance", "Receive")",
+                data: {party_id:partyId},
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    $('#last_invoice_balance').val(data);
+                }
+            });
+        });
+        //Invoice
+        $('#party_id').change(function () {
+            var partyId = $('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetInvoiceNumber", "Receive")",
+
+                data: {party_id:partyId},
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    $('#invoice_no').val(data);
+                }
+            });
+        });
+
+
+        $("#btnSaveReceivedAmount").click(function () {
+            Loading(false);
+
+            var userId = @userId;
+            var receive_date  = $("#receive_date").val();
+            var party_id = $("#party_id").val();
+            var invoice_no = $("#invoice_no").val();
+            var last_invoice_balance = $("#last_invoice_balance").val();
+            var payment_method_id = $("#payment_method_id").val();
+            var cheque_no = $("#cheque_no").val();
+            var bank_id = $("#bank_id").val();
+            var bank_branch_id = $("#bank_branch_id").val();
+            var bank_account_id = $("#bank_account_id").val();
+            var amount = $("#amount").val();
+            var remarks = $("#remarks").val();
+            var representative = $("#representative").val();
+            var bank_charge = $("#bank_charge").val();
+            var is_varified = false;
+            if ($("#is_varified").is(":checked")) {
+                is_varified = true;
+            }
+            if (amount=="" ||amount<0) {
+                sweetAlert("Sorry...", "Invalid Amount!", "warning");
+                return false;
+            }
+
+
+            var receivedAmount = {
+
+                receive_date: receive_date,
+                invoice_no:invoice_no,
+                last_invoice_balance:last_invoice_balance,
+                party_id: party_id,
+                bank_account_id:bank_account_id,
+                remarks:remarks,
+                representative:representative,
+                payment_method_id:payment_method_id,
+                cheque_no:cheque_no,
+                bank_id:bank_id,
+                bank_branch_id:bank_branch_id,
+                amount:amount,
+                bank_charge:bank_charge,
+                is_varified:is_varified,
+                created_by:userId
+            };
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Receive")",
+                data: JSON.stringify(receivedAmount),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        //$('#test').addClass('animated zoomIn');
+                        sweetAlert("Yes...", data.msg, "success");
+                        $('#test').addClass('animated zoomOut');
+
+                        setTimeout(function () {
+                            window.location.href = '/Receive/index';
+                        }, 1000);
+
+
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "warning");
+                        return false;
+                    }
+                }
+            });
+
+
+
+
+        });
+    });
+
+    
+</script>

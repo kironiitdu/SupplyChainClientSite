@@ -1,0 +1,282 @@
+﻿@{
+    ViewBag.Title = "Accessories";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+
+<div class="panel panel-success">
+    <div class="panel-heading">Inventory Adjustment Accessories</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="warehouse_id">Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="warehouse_id" name="warehouse_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="contra_warehouse_id">Contra Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="contra_warehouse_id" name="contra_warehouse_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="product_id">Product&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="product_id" name="product_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="system_quantity">QOH In System</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="system_quantity" name="system_quantity" class="k-textbox" disabled style="background-color: #d6e9c6" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="physical_quantity">Physical Count&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="physical_quantity" name="physical_quantity" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="adjustment_quantity">Adjustment Quantity</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="adjustment_quantity" name="adjustment_quantity" class="k-textbox" disabled style="background-color: #d6e9c6" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnSaveUser" name="btnSaveUser" value="Save" />
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        function onChange() {
+            var warehouseId = $("#warehouse_id").val();
+            var contraWarehouseId = $("#contra_warehouse_id").val();
+            if (warehouseId == contraWarehouseId) {
+                sweetAlert("Sorry !!", "Warehouse and Contra Warehouse should not be same", "warning");
+                $("#warehouse_id").data("kendoComboBox").value("");
+                $("#contra_warehouse_id").data("kendoComboBox").value("");
+            }
+        }
+
+        $( "#physical_quantity" ).keyup(function() {
+
+            var sQty=$("#system_quantity").val();
+            var pQty=$("#physical_quantity").val();
+
+            $("#adjustment_quantity").val(sQty-pQty);
+        });
+
+        function onChangeProduct() {
+            $("#physical_quantity").val("");
+            $("#adjustment_quantity").val("");
+            var warehouseId = $("#warehouse_id").val();
+            var contraWarehouseId = $("#contra_warehouse_id").val();
+            var productId = $("#product_id").val();
+            if (warehouseId=='') {
+                sweetAlert("Sorry !!", "Please Select Warehouse", "warning");
+                $("#product_id").data("kendoComboBox").value("");
+            }
+            else if (contraWarehouseId == '') {
+                sweetAlert("Sorry !!", "Please Select Contra Warehouse", "warning");
+                $("#product_id").data("kendoComboBox").value("");
+            }
+            else {
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetSystemQuantityForAccessories", "InventoryAdjustment")?warehouse_id=" + warehouseId + "&product_id=" + productId +"",
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        console.log(data);
+                        if (data != null) {
+                            $("#system_quantity").val(data.stock_quantity);
+                        } else {
+                            $("#system_quantity").val("");
+                        }
+                    }
+                });
+            }
+        }
+
+        $("#warehouse_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetWeWarehouse", "Warehouse")"
+                    }
+                }
+            },
+            change: onChange
+        });
+
+        $("#contra_warehouse_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Contra Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetWeWarehouse", "Warehouse")"
+                    }
+                }
+            },
+            change: onChange
+        });
+
+        $("#product_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllAccessories", "Product")"
+                    }
+                }
+            },
+            change: onChangeProduct
+        });
+
+        $("#btnSaveUser").click(function () {
+            Loading(true);
+
+            var warehouse_id = $("#warehouse_id").val();
+            var contra_warehouse_id = $("#contra_warehouse_id").val();
+            var product_id = $("#product_id").val();
+            var system_quantity = $("#system_quantity").val();
+            var physical_quantity = $("#physical_quantity").val();
+            var adjustment_quantity = $("#adjustment_quantity").val();
+            var created_by = userId;
+
+            var inventoryAdjustment = {
+                warehouse_id: warehouse_id,
+                contra_warehouse_id: contra_warehouse_id,
+                product_id: product_id,
+                system_quantity: system_quantity,
+                physical_quantity:physical_quantity,
+                adjustment_quantity:adjustment_quantity,
+                created_by: created_by
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("PostAccessories", "InventoryAdjustment")",
+                data: JSON.stringify(inventoryAdjustment),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        setInterval(function () { window.location.assign("index"); }, 1000);
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+</script>

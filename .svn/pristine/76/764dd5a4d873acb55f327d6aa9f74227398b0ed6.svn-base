@@ -1,0 +1,27 @@
+﻿
+@helper Action(string method, string controller)
+{
+    const string protocol = "http://";
+
+    const string domain_name = "localhost:7100/";
+    //const string domain_name = "59.152.97.62:9010/";//dev
+    //const string domain_name = "45.64.135.140:7100/";
+    //const string domain_name = "45.64.135.149:7100/"; //current ip
+
+    //string app_name = "";//Order_API
+    //string connection_domain = protocol + domain_name + app_name + "/" + controller + "/" + method;
+    string connection_domain = protocol + domain_name + controller + "/" + method;  // maruf:04-Oct-2016
+    @connection_domain;
+}
+
+@helper HttpRouteUrl()
+{
+
+   //const string apiPath = "http://45.64.135.140:7100/";
+   //const string apiPath = "http://45.64.135.149:7100/";//current ip
+   //const string apiPath = "http://59.152.97.62:9010/";//dev
+   const string apiPath = "http://localhost:7100/"; 
+
+
+    @apiPath;
+}

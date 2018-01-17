@@ -1,0 +1,373 @@
+﻿@{
+    ViewBag.Title = "DeliverySummaryReportFromADAMDDBIS";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+}
+<script id="excel-template" type="text/x-kendo-template">
+
+    <a style="font-size:11px; text-decoration: none;" href="/Delivery/GetDeliveryExcelReportByDeliveryMasterId?delivery_master_id=#= delivery_master_id #" class="k-button k-grid-even">Excel</a>
+
+</script>
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h4>
+                Delivery Summary Report ( From ADA →  MD → DBIS →  Company client → Other client )
+            </h4>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="party_type_id">Party Type</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="party_type_id"></select>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="product_id">Product</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="product_id"></select>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="color_id">Product Color</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="color_id"></select>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="from_date">From Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3" style="margin-left: -4px;">
+                        <input id="from_date" name="from_date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_date">To Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_date" name="To Date" />
+                    </div>
+                </div>
+            </div>
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="button" class="k-button" id="btndeliverySummary" name="btndeliverySummary" value="View Delivery Summary " />
+                    </div>
+                </div>
+            </div>
+            <div id="grid">
+                <hr />
+                <div class="row">
+                    <input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel" />
+                    <input type="button" class="k-button " id="btnAllIMEIExcel" name="btnAllIMEIExcel" value="All IMEI Excel" />
+                    <div id="deliverySummaryGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+
+    //date time picker
+    $(document).ready(function () {
+        $("#btnExportExcel").hide();
+        $("#btnAllIMEIExcel").hide();
+        $('#context').addClass('animated zoomIn');
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+        $("#from_date").val(todayDate);
+        $("#to_date").val(todayDate);
+
+        //date time picker
+        $("#from_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+        //date time picker
+        $("#to_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+        $("#product_id").kendoMultiSelect({
+            placeholder: "---Select Single/Multipule products---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            autoBind: false,
+            dataSource: {
+                type: "json",
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductList", "Product")"
+                    }
+                }
+            }
+        });
+        //color Multiselect
+        $("#color_id").kendoMultiSelect({
+            placeholder: "---Select Single/Multipule Color---",
+            dataTextField: "color_name",
+            dataValueField: "color_id",
+            autoBind: false,
+            dataSource: {
+                type: "json",
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllColors", "Color")"
+                    }
+                }
+            }
+        });
+        //Party Type Multiselect
+        $("#party_type_id").kendoMultiSelect({
+            placeholder: "---Select Single/Multipule Party Type---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            autoBind: false,
+            dataSource: {
+                type: "json",
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPartyTypeNotADA", "PartyType")"
+                    }
+                }
+            }
+        });
+
+        //Excel Export---------
+        $("#btnExportExcel").click(function () {
+            var grid = $("#deliverySummaryGrid").data("kendoGrid");
+            grid.saveAsExcel();
+        });
+
+
+        $("#btnAllIMEIExcel").click(function () {
+            window.location.href = '/Inventory/GetAllDeliveredIMEIExcel';
+        });
+        //search button click event--------------------
+        $("#btndeliverySummary").click(function () {
+            Loading(true);
+            var product_id = $("#product_id").val();
+            var party_type_id = $("#party_type_id").val();
+            var color_id = $("#color_id").val();
+            var from_date = $("#from_date").val();
+            var to_date = $("#to_date").val();
+
+            if (product_id == null) {
+                product_id ="0";
+            }
+            if (color_id == null) {
+                color_id = "0";
+            }
+            if (party_type_id == null) {
+                party_type_id = "0";
+            }
+            if (from_date == '') {
+                Loading(false);
+                sweetAlert("Sorry...", "Select From Date", "warning");
+            }
+            else if (to_date == '') {
+                Loading(false);
+                sweetAlert("Sorry...", "Select To Date", "warning");
+            } else {
+
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("DeliverySummaryReportADAToMDDBIS", "Inventory")?from_date=" + from_date + "&to_date=" + to_date + "&product_id=" + product_id + "&party_type_id=" + party_type_id + "&color_id=" + color_id + "",
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        var sampleData = [];
+
+                        if (data != "") {
+
+                            for (var i = 0; i < data.length; i++) {
+
+                                var deliverySummaryData = {
+                                    
+                                    delivery_master_id: data[i].delivery_master_id,
+                                    delivery_no: data[i].delivery_no,
+                                    delivery_date: data[i].delivery_date,
+                                    from_warehouse: data[i].from_warehouse,
+                                    from_warehouse_code: data[i].from_warehouse_code,
+                                    from_warehouse_province: data[i].from_warehouse_province,
+                                    party_name: data[i].party_name,
+                                    party_code: data[i].party_code,
+                                    party_type_name: data[i].party_type_name,
+                                    party_province: data[i].party_province,
+                                    party_district_city: data[i].party_district_city,
+                                    ship_to_province: data[i].ship_to_province,
+                                    ship_to_district_city: data[i].ship_to_district_city,
+                                    product_name: data[i].product_name,
+                                    color_name: data[i].color_name,
+                                    delivered_quantity: data[i].delivered_quantity,
+                                    from_date: data[i].from_date,
+                                    to_date: data[i].to_date
+                                };
+                                sampleData.push(deliverySummaryData);
+                            }
+
+                            //grn Grid---------------------
+
+                            var dataSource = new kendo.data.DataSource({
+                                transport: {
+                                    read: function (e) {
+                                        // on success
+                                        e.success(sampleData);
+                                    }
+                                },
+                                error: function (e) {
+                                    // handle data operation error
+                                    alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                                },
+                              
+                                batch: false,
+                                schema: {
+                                    model: {
+                                        fields: {
+                                            delivery_master_id: { type: "number" },
+                                            delivery_no: { type: "string" },
+                                            delivery_date: { type: "string" },
+                                            from_warehouse: { type: "string" },
+                                            from_warehouse_code: { type: "string" },
+                                            from_warehouse_province: { type: "string" },
+                                            party_name: { type: "string" },
+                                            party_code: { type: "string" },
+                                            party_type_name: { type: "string" },
+                                            party_province: { type: "string" },
+                                            party_district_city: { type: "string" },
+                                            ship_to_province: { type: "string" },
+                                            ship_to_district_city: { type: "string" },
+                                            product_name: { type: "string" },
+                                            color_name: { type: "string" },
+                                            delivered_quantity: { type: "number" },
+                                            from_date: { type: "string" },
+                                            to_date: { type: "string" }
+
+                                        }
+                                    }
+                                }
+                            });
+                            var d = new Date();
+                            var dateTime = d.toJSON();
+
+                            $("#deliverySummaryGrid").kendoGrid({
+                                excel: {
+                                    fileName: "Delivery_summary_report_From_ADA_To_MD_DBIS_" + dateTime + ".xlsx"
+                                },
+
+                                dataSource: dataSource,
+                                pageable: true,
+                                selectable: true,
+                                columns: [
+                                    { field: "from_date", title: "From Date", width: "150px" },
+                                    { field: "to_date", title: "To Date", width: "150px" },
+                                    { field: "delivery_no", title: "Delivery Code", width: "150px" },
+                                    { field: "delivery_date", title: "Delivery Date", width: "150px" },
+                                    { field: "from_warehouse", title: "ADA Warehouse Name", width: "150px" },
+                                    { field: "from_warehouse_code", title: "ADA Warehouse Code", width: "150px" },
+                                    { field: "from_warehouse_province", title: "Ship From Province", width: "150px" },
+                                    { field: "party_name", title: "Customer Name", width: "150px" },
+                                    { field: "party_code", title: "Customer Code", width: "150px" },
+                                    { field: "party_type_name", title: "Customer Type ", width: "150px" },
+                                    { field: "party_province", title: "Customer Province", width: "150px" },
+                                    { field: "party_district_city", title: "Customer District/City", width: "150px" },
+                                    { field: "ship_to_province", title: "Ship To Province", width: "150px" },
+                                    { field: "ship_to_district_city", title: "Ship To District City", width: "150px" },
+                                    { field: "product_name", title: "Product Huawei Product Model", width: "150px" },
+                                    { field: "color_name", title: "Product Color", width: "150px" },
+                                    { field: "delivered_quantity", title: "Delivered Quantity", width: "150px" },
+                                    { title: "Action", width: "100px", template: kendo.template($("#excel-template").html()) }
+                        
+
+                                ]
+                            });
+
+                            //deliverySummaryGrid---------------------
+                            $("#btnExportExcel").show();
+                            $("#btnAllIMEIExcel").show();
+
+                        } else {
+                            swal("Opps!", "No Data Found!!", "warning");
+                            $("#btnExportExcel").hide();
+                            $("#btnAllIMEIExcel").hide();
+                            $("#deliverySummaryGrid").data("kendoGrid").dataSource.data([]);
+                         
+                            return false;
+                        }
+
+                    }
+                });
+            }
+        });
+    });
+
+
+</script>
+
+
+
+
+
+
+
+

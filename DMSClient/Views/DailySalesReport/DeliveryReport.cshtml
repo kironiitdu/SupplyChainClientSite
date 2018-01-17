@@ -1,0 +1,300 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewBag.Title = "Delivery Report";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var partyId = @partyId;
+
+    $(document).ready(function () {
+        $('#base').addClass('animated zoomIn');
+    });
+</script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Daily Sales Report</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="to_date" name="to_date" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        @*<div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="party_id">Party Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="party_id">Party Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>*@
+        @*<div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="teritory">Teritory</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="teritory" name="teritory" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="area">Area</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="area" name="area" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="region">Region</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="teritory" name="teritory" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="area">Area</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="area" name="area" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>*@
+        <div class="row">
+            <br />
+            <br />
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnDailySalesReport" name="btnDailySalesReport" value="Generate Report" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-success">
+    <div class="panel-body">
+        <div class="row">
+            <input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel" />
+            <div id="reportDelivery">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+
+        $("#btnExportExcel").click(function () {
+            var grid = $("#reportDelivery").data("kendoGrid");
+            grid.saveAsExcel();
+        });
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy-MM-dd');
+        $("#from_date").val(todayDate);
+        $("#to_date").val(todayDate);
+        $("#from_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy-MM-dd"
+        });
+        $("#to_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy-MM-dd"
+        });
+
+        $("#btnDailySalesReport").click(function () {
+            Loading(false);
+            var fromDate = $("#from_date").val();
+            var toDate = $("#to_date").val();
+            //var partyId = $("#party_id").val();
+
+            if (fromDate == null || fromDate == "") {
+                sweetAlert("Sorry...", "Select From Date", "warning");
+                return false;
+            }
+            if (toDate == null || toDate == "") {
+                sweetAlert("Sorry...", "Select To Date", "warning");
+                return false;
+            }
+
+            Loading(true);
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetDailySalesReport", "DailySalesReport")",
+                data: {  fromDate: fromDate, toDate: toDate },
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    if (data != null) {
+
+                        var dataSource = new kendo.data.DataSource({
+                            pageSize: 20,
+                            transport: {
+                                read: function (e) {
+                                    e.success(data);
+                                }
+                            },
+                            autoSync: false,
+                            schema: {
+                                errors: function (e) {
+                                    console.log(e.errors);
+                                    if (e.output === "error") {
+                                        console.log(e.output);
+                                    }
+                                },
+
+                                model: {
+                                    id: "delivery_details_id",
+                                    fields: {
+                                        delivery_details_id: { editable: false, nullable: true },
+                                        delivery_master_id: { type: "number", editable: false },
+                                        is_gift: { type: "bool", editable: false },
+                                        color_id: { type: "number", editable: false },
+                                        product_version_id: { type: "number", editable: false },
+                                        product_name: { type: "string", editable: false },
+                                        color_name: { type: "string", editable: false },
+                                        product_version_name: { type: "string", editable: false },
+                                        requisition_master_id: { type: "number" },
+                                        invoice_no: { type: "string" },
+                                        delivered_quantity: { type: "string" },
+                                        unit_price: { type: "string" },
+                                        per_incentive: { type: "string" },
+                                        total_price_after_incen: { type: "string" },
+                                        invoice_total: { type: "string", editable: false },
+                                        territory_name: { type: "string" },
+                                        area_name: { type: "string" },
+                                        region_name: { type: "string" },
+                                        product_category_name: { type: "string", editable: false },
+                                        delivery_date: { type: "date" },
+
+                                        party_name: { type: "string" },
+                                        party_type_name: { type: "string" },
+                                        total_price: { type: "string" },
+                                        total_incentive_amt: { type: "string" }
+                                    }
+
+                                }
+                            }
+
+                        });
+
+                        var d = new Date();
+                        var dateTime = d.toJSON();
+
+                        jQuery("#reportDelivery").kendoGrid({
+                            excel: {
+                                fileName: "Sales_Report_" + dateTime + ".xlsx",
+                                allPages: true
+                            },
+                            dataSource: dataSource,
+                            filterable: true,
+                            pageable: {
+                                refresh: true,
+                                input: true,
+                                pageSize: 20,
+                                numeric: false,
+                                pageSizes: [10, 20, 50]
+                            },
+                            sortable: true,
+                            groupable: true,
+                            resizable: true,
+
+
+                            columns: [
+                                { field: "invoice_no", title: "Invoice No", width: "150px" },
+                                { field: "delivery_date", title: "Date", width: "100px", format: "{0:dd-MM-yyyy}" },
+                                { field: "party_type_name", title: "Channel", width: "100px" },
+                                { field: "party_name", title: "Buyer", width: "100px" },
+                                { field: "territory_name", title: "Territory", width: "100px" },
+                                { field: "area_name", title: "Area", width: "100px" },
+                                { field: "region_name", title: "Region", width: "100px" },
+                                { field: "product_category_name", title: "Product Category", width: "100px" },
+                                { field: "product_name", title: "Product Name", width: "150px" },
+                                { field: "color_name", title: "Color Name", width: "100px" },
+                                { field: "product_version_name", title: "Version Name", width: "100px" },
+                                { field: "delivered_quantity", title: "Quantity", width: "100px" },
+
+                                { field: "unit_price", title: "Per Unit Rate", width: "100px" },
+                                { field: "per_incentive", title: "Per Unit Incetive", width: "100px" },
+                                { field: "total_price", title: "Total Price", width: "100px" },
+                                { field: "total_incentive_amt", title: "Total Incentive Amt", width: "100px" },
+                                { field: "total_price_after_incen", title: "Total Price After Incentive", width: "100px" },
+                                { field: "invoice_total", title: "Invoice Amount", width: "100px" }
+
+                            ],
+                            editable: "inline"
+                        });
+
+                    }
+                    return false;
+                }
+
+            });
+
+        });
+    });
+
+</script>

@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Promotion List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/Promotion/Edit?promotion_master_id=#= promotion_master_id #" class="k-button k-grid-even">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","Promotion")">
+                    <span class="k-icon k-add"></span>
+                    Add Promotion
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#context').addClass('animated rollIn');
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllPromotions", "Promotion")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "Promotion")",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "promotion_master_id",
+                            fields: {
+                                promotion_master_id: { editable: false, nullable: true },
+                                promotion_name: { type: "string" },
+                                promotion_description: { type: "string" },
+                                is_active: { type: "boolean" },
+                                full_name: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "promotion_name", title: "Promotion Name", id: "promotion_master_id", width: "150px" },
+                        { field: "promotion_description", title: "Description", width: "400px" },
+                        { field: "full_name", title: "Created By", width: "100px" },
+                        { field: "is_active", title: "Is Active?", width: "100px" },
+                        {
+                            title: "Action", width: "100px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                        { command: ["destroy"], title: "Action", width: "100px" }],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

@@ -1,0 +1,118 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Online Requisition List";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+<script id="report-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/OnlineRequisition/Payment?online_invoice_master_id=#= online_invoice_master_id #" target="_blank" class="k-button k-grid-even">Payment Collect</a>
+</script>
+<script id="invoice-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/OnlineRequisition/GetOnlineDeliveryChallanReport?delivery_master_id=#= online_invoice_master_id #" target="_blank" class="k-button k-grid-even">Invoice Report</a>
+</script>
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Online Payment List</div>
+        <div class="panel-body">
+
+            <div id="grid"></div>
+        </div>
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+
+
+                var dataSource2 = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllOnlineInvoiceAndPayment", "OnlineInvoiceAndPayment")",
+                            type: "GET"
+                        }
+                    },
+
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "online_invoice_master_id",
+                            fields: {
+                                online_invoice_master_id: { editable: false, nullable: true },
+                                online_invoice_no: { type: "string" },
+                                online_invoice_date: { type: "date" },
+                                party_name: { type: 'string' },
+                                is_active: {type:'string'}
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource2,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "online_invoice_no", title: "Invoice No", id: "online_invoice_master_id", width: "50px" },
+                        { field: "party_name", title: "Party Name", width: "50px" },
+                        { field: "online_invoice_date", title: "Invoice Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        {
+                            title: "Action", width: "65px",
+                            template: kendo.template($("#report-template").html())
+                        },
+                        {
+                            title: "Action", width: "65px",
+                            template: kendo.template($("#invoice-template").html())
+                        }
+                    ],
+                    editable: "inline"
+                });
+
+
+            });
+
+        </script>
+    </div>
+</div>

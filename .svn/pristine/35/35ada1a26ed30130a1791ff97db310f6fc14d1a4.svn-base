@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="panel panel-success">
+    <div class="panel-heading">Product List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/Product/Edit?product_id=#= product_id #" class="k-button k-grid-even">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Product")">
+                    <span class="k-icon k-add"></span>
+                    Add Product
+                </a><input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel" />
+            </div>
+
+        </div>
+        <div id="grid" style="overflow-y: scroll;"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                //Excel Export---------
+                $("#btnExportExcel").click(function () {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "Product")",
+                            type: "DELETE"
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "product_id",
+                            fields: {
+                                product_id: { editable: false, nullable: true },
+                                product_name: { type: "string" },
+                                product_code: { type: "string" },
+                                unit_name: { type: "string" },
+                                brand_name: { type: "string" },
+                                product_category_name: { type: "string" },
+                                //current_balance: { type: "string" },
+                                has_serial: { type: "boolean" },
+                                has_warrenty: { type: "boolean" },
+                                warrenty_type: { type: "string" },
+                                warrenty_value: { type: "string" },
+                                //vat_percentage: { type: "string" },
+                                //tax_percentage: { type: "string" },
+                                //rp_price: { type: "string" },
+                                //md_price: { type: "string" },
+                                //mrp_price: { type: "string" },
+                                //bs_price: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+
+                var d = new Date();
+                var dateTime = d.toJSON();
+
+
+                jQuery("#grid").kendoGrid({
+                    excel: {
+                        fileName: "Product_Excel_Report_" + dateTime + ".xlsx"
+                    },
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "product_name", title: "Product Name", id: "product_id", width: "100px" },
+                        { field: "product_code", title: "Product Code", width: "100px" },
+                        { field: "brand_name", title: "Brand", width: "100px" },
+                        { field: "product_category_name", title: "Category", width: "100px" },
+                        //{ field: "md_price", title: "M.Dealer Price", width: "80px" },
+                        //{ field: "rp_price", title: "R.Shop Price", width: "80px" },
+                        //{ field: "mrp_price", title: "Mrp Price", width: "80px" },
+                        //{ field: "bs_price", title: "B.Shop Price", width: "80px" },
+                        {
+                            title: "Action", width: "90px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                        { command: ["destroy"], title: "Action", width: "90px" }],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

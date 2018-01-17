@@ -1,0 +1,180 @@
+﻿
+@{
+    ViewBag.Title = "EditTermsAndCondition";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () { 
+        var terms_and_condition_id = '@ViewBag.terms_and_condition_id';
+       // Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetTermsAndConditionById", "TermsAndCondition")",
+            data: {
+                terms_and_condition_id: terms_and_condition_id
+            },
+            dataType: "json",
+            success: function (data) {            
+                $("#terms_condition_header").val(data.terms_condition_header);
+                $("#terms_conditions").val(data.terms_and_condition_description);
+                $("#created_date").val(kendo.toString(kendo.parseDate(data.created_date, "yyyy-MM-dd"), "MM/dd/yyyy"));              
+                var kkk = data.is_active;
+                if (kkk === true) {
+                    $('#is_active').prop('checked', true);
+                }
+                else {
+                    $('#is_active').prop('checked', false);
+                }
+               
+            }
+        });
+    });
+</script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Terms And Conditions Add</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <label for="terms_condition_header">Terms And Conditions Reference:</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="terms_condition_header" name="terms_condition_header" class="k-textbox" placeholder="Enter PO/PI Reference" />
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <label for="terms_conditions">Terms And Conditions:</label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="30" rows="15" name="terms_conditions" id="terms_conditions" class="k-textbox" placeholder="Enter Terms And Conditions Description"></textarea>
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+
+                    <label for="created_date">Created Date:</label>
+
+
+                </div>
+                <div class="col-md-3">
+                    <input id="created_date" name="created_date" class="k-textbox" disabled="disabled"/>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                   
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                </div>
+              
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <label for="is_active">Is Active</label>
+                    <input type="checkbox" id="is_active">
+                </div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnTermsAndConditionSave" name="btnTermsAndConditionSave" value="Save Terms And Conditions" />
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnTermsAndConditionSave").click(function () {
+
+            var terms_and_condition_id = '@ViewBag.terms_and_condition_id';
+            var terms_condition_header = $("#terms_condition_header").val();
+            var terms_conditions = $("#terms_conditions").val();
+            var user_id=@userId;
+            var is_active = false;
+            if ($("#is_active").is(':checked')) {
+                is_active = true;
+            }
+
+            var termandconsition = {
+                terms_and_condition_id:terms_and_condition_id,
+                terms_condition_header: terms_condition_header,
+                terms_and_condition_description: terms_conditions,   
+                is_active:is_active,
+                updated_by:user_id
+            };
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("put", "TermsAndCondition")",
+                data: JSON.stringify(termandconsition),
+            dataType: "json",
+            contentType: "application/json",
+            success: function(data) {
+                Loading(false);
+                console.log(data);
+
+                if (data.output === "success") {
+                    sweetAlert("Yes...", data.msg, "success");
+                    setTimeout(function() {
+                        window.location.href = '/TermsAndCondition/index';
+                    }, 1000);
+
+                    return false;
+                } else {
+                    sweetAlert("Sorry...", data.msg, "error");
+                    return false;
+                }
+            }
+            });
+
+        });
+
+
+    });
+</script>
+
+
+

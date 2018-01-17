@@ -1,0 +1,133 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Sales Channels List</h4></div>
+    <div class="panel-body">
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("PartyAndWarehouse", "Party")">
+                    <span class="k-icon k-add"></span>
+                    Add Channel
+                </a><input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel" />
+            </div>
+        </div>
+        <div id="grid"></div>
+       
+    </div>
+</div>
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Party/EditPartyAndWarehouse?party_id=#= party_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        //Excel Export---------
+        $("#btnExportExcel").click(function () {
+            var grid = $("#grid").data("kendoGrid");
+            grid.saveAsExcel();
+        });
+
+        $('#context').addClass('animated zoomIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllParty", "Party")",
+                    type: "GET"
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Party")?updated_by=" + userId,
+                    type: "DELETE",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                    }
+                },
+
+                model: {
+                    id: "party_id",
+                    fields: {
+                        party_id: { editable: false, nullable: true },
+                        party_name: { type: "string" },
+                        party_code: { type: "string" },
+                        location_name: { type: "string" },
+                        address: { type: "string" },
+                        proprietor_name: { type: "string" },
+                        phone: { type: "string" },
+                        email: { type: "string" },
+                        party_type_id: { type: "number" },
+                        party_type_name: { type: "string" },
+                        start_date: { type: "date" },
+                        region_name: { type: "string" },
+                        area_name: { type: "string" },
+                        territory_name: { type: "string" }
+                          
+                    }
+
+                }
+            }
+
+        });
+
+        var d = new Date();
+        var dateTime = d.toJSON();
+
+        jQuery("#grid").kendoGrid({
+            excel: {
+                fileName: "Party_Excel_Report_" + dateTime + ".xlsx",
+                allPages: true
+            },
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50,100,500,1000,2000,5000,10000]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+
+            columns: [
+                { field: "party_name", title: "Channel Name", id: "party_id", width: "200px" },
+                { field: "party_code", title: "Channel Code", id: "party_code", width: "200px" },
+                { field: "party_type_name", title: "Channel Type", id: "party_type_id", width: "200px" },
+                { field: "proprietor_name", title: "Owner Name", id: "proprietor_name", width: "130px" },
+                { field: "address", title: "Channel Address", id: "address", width: "200px" },
+                { field: "region_name", title: "Region", id: "region_name", width: "200px" },
+                { field: "area_name", title: "Area", id: "area_name", width: "200px" },
+                { field: "territory_name", title: "Territory", id: "territory_name", width: "200px" },
+                { field: "start_date", title: "Start Date", id: "start_date", width: "150px",format: "{0:dd-MM-yyyy}" },
+                {
+                    title: "Action", width: "100px",
+                    template: kendo.template($("#edit-template").html())
+                },{ command: ["destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+    });
+</script>
+
+

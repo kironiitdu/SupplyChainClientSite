@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "Requisition List";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+<style>
+    .approvedPanel {
+        background-color: #dff0d8;
+    }
+
+    .notApprovedPanel {
+        background-color: #f2dede;
+    }
+</style>
+
+
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Requisition List For Dealer Head of Sales Approval</div>
+        <div class="panel-body">
+            <script id="report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/GetRequisitionReport?requisition_master_id=#= requisition_master_id #" target="_blank" class="k-button k-grid-even">Report</a>
+            </script>
+            <script id="financeapprove-template" type="text/x-kendo-template">
+                # if (requisition_type == 'Dealer Requisition') { #
+                <a style="font-size:11px; text-decoration: none;" href="/Invoice/FinanceApprove?requisition_master_id=#= requisition_master_id #" class="k-button k-grid financeapproved">Recommend & Fwd Or Decline</a>
+                # } else if (requisition_type == 'Dealer Demo Requisition') { #
+                <a style="font-size:11px; text-decoration: none;" href="/Invoice/FinanceApproveDealerDemo?requisition_master_id=#= requisition_master_id #" class="k-button k-grid financeapproved">Recommend & Fwd</a>
+                # }else if (requisition_type == 'B2B Requisition') { #
+                <a style="font-size:11px; text-decoration: none;" href="/Invoice/FinanceApproveB2B?requisition_master_id=#= requisition_master_id #" class="k-button k-grid financeapproved">Recommend & Fwd</a>
+                # } #
+            </script>
+            <div class="k-grid  k-secondary" data-role="grid">
+                @*<div class="k-toolbar k-grid-toolbar">
+                        <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Requisition")">
+                            <span class="k-icon k-add"></span>
+                            Add Requisition
+                        </a>
+                    </div>*@
+            </div>
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var userId = @userId;
+                var roleId=@roleId;
+                var partyId=@partyId;
+
+                //$('#context').addClass('animated rollIn');
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetRequisitionForApprovalByPartyId", "Requisition")?party_id="+partyId+"",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "Requisition")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "requisition_master_id",
+                            fields: {
+                                requisition_master_id: { editable: false, nullable: true },
+                                party_name: { type: "string" },
+                                requisition_code: { type: "string" },
+                                requisition_type: { type: "string" },
+                                status: { type: "string" },
+                                expected_receiving_date: { type: "string" },
+                                warehouse_name: { type: "string" },
+                                amount: { type: "string" },
+                                requisition_date: { type: "date" },
+
+                                deposite_date: { type: "date" },
+                                verified_date: { type: "date" },
+                                approved_date: { type: "date" },
+                                forward_2_date: { type: "date" }
+                            }
+
+                        }
+                    }
+
+                });
+                //21.06.2017
+                @*function cancelRequisition(e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var requisitionMasterId = dataItem.requisition_master_id;
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("cancelRequisition", "Requisition")",
+                        data: { requisition_master_id: requisitionMasterId, userid: userId },//Passing parameter
+                        dataType: "json",
+                        success: function (data) {
+                            Loading(false);
+                            console.log(data);
+                            if (data.output === "success") {
+
+                                swal("Success", data.msg, "success");
+                                window.location.href = '/Requisition/ListForApprove';
+                                return false;
+                            } else {
+                                swal("Exception", data.msg, "error");
+                                return false;
+                            }
+                        }
+                    });
+
+                }*@
+                function verifyRequisition(e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var requisitionMasterId = dataItem.requisition_master_id;
+                    //alert(requisitionMasterId);
+                    //alert(dataItem.requisition_code);
+
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("UpdateApproveStatus", "Requisition")",
+                        data: { requisitionId: requisitionMasterId },//Passing parameter
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (data) {
+                            Loading(false);
+                            console.log(data);
+                            if (data.output === "success") {
+
+
+                                swal("Success", data.msg, "success");
+                                return false;
+                            } else {
+                                swal("Exception", data.msg, "error");
+                                return false;
+                            }
+                        }
+                    });
+
+                }
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "requisition_master_id", hidden: true },
+                        { field: "requisition_code", title: "Requisition No", id: "requisition_master_id", width: "110px" },
+                        { field: "requisition_type", title: "Req Type",  width: "150px" },
+                        { field: "party_name", title: "Channel Name", width: "150px" },
+                        { field: "requisition_date", title: "Req Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(requisition_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #" },
+                        { field: "amount", title: "Req Amount", width: "100px" },
+                        { field: "status", title: "Acc Status", width: "150px" },// accounts status
+                        { field: "forward_2_status", title: "OOps Status", width: "110px" },//HOOps forward status
+                        { field: "finance_status", title: "Sales Status", width: "100px" },//sales status
+                        { field: "deposite_date", title: "Deposit Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(deposite_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #"},
+                        { field: "verified_date", title: "Acc Fwd Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(verified_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #"},//accounts fwd date
+                        { field: "approved_date", title: "HOS App Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(approved_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #"},//HOS approve date
+                        { field: "forward_2_date", title: "HOOps App Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(forward_2_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #"},//HOOps approve date
+                        //{
+                        //    title: "Action", width: "80px",
+                        //    template: kendo.template($("#edit-template").html())
+                        //},
+                        //{
+                        //    title: "Action", width: "115px",
+                        //    template: kendo.template($("#approve-template").html())
+                        //},
+                        {
+                            title: "Action", width: "160px",
+                            template: kendo.template($("#financeapprove-template").html())
+                        },
+                        //{ command: { text: "Decline", click: cancelRequisition }, title: "Action", width: "100px" },
+                        {
+                            title: "Action", width: "70px",
+                            template: kendo.template($("#report-template").html())
+                        }],
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                            //var approvedSalesButton = $(currenRow).find(".approved");
+                            //var editButtonApproved = $(currenRow).find(".edit");
+                            var approveFinanceButton = $(currenRow).find(".financeapproved");
+
+                            //if (gridData[i].status === "Not Approved") {
+                            //    $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                            //}
+                            //if (gridData[i].finance_status === "Not Approved") {
+                            //    $("#grid tbody").find("tr[data-uid=" + currentUid + "]").addClass("notApprovedPanel");
+                            //}
+
+                        }
+                    },
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+    </div>
+</div>

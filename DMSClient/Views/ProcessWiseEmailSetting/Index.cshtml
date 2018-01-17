@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Process Wise Email Setting List</div>
+        <div class="panel-body">
+            <script id="edit-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/ProcessWiseEmailSetting/Edit?process_wise_mail_setting_id=#= process_wise_mail_setting_id #" class="k-button k-grid-even">Edit</a>
+            </script>
+            <div class="k-grid  k-secondary" data-role="grid">
+                <div class="k-toolbar k-grid-toolbar">
+                    <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "ProcessWiseEmailSetting")">
+                        <span class="k-icon k-add"></span>
+                        Create New Process Wise Email Setting
+                    </a>
+                </div>
+            </div>
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var userId = '@userId';
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllProcessCodeForGrid", "ProcessWiseEmailSetting")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "ProcessWiseEmailSetting")?updatedBy=" + userId,
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                           }
+                        },
+                        //    code: "Ok",
+                        autoSync: false,
+                        schema: {
+                            errors: function (e) {
+                                console.log(e.errors);
+                                //alert(e.error);
+                                if (e.output === "error") {
+                                    console.log(e.output);
+                                    //KendoWindowFunction(e.msg, "error", "");
+                                    // this.cancelChanges();
+                                }
+
+                            },
+
+                            model: {
+                                id: "process_wise_mail_setting_id",
+                                fields: {
+                                    process_wise_mail_setting_id: { editable: false, nullable: true },
+                                    process_code_name: { type: "string" },
+                                    email_subject: { type: "string" },
+                                    email_body: { type: "string" },
+                                    created_by: { type: "string" }
+
+                                }
+
+                            }
+                        }
+                    
+                });
+
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50, 100, 500, 1000, 2000]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+                    //Kiron:20-03-2017
+                    columns: [
+                                { field: "process_code_name", title: "Process Code", id: "process_wise_mail_setting_id", width: "150px" },
+                                { field: "email_subject", title: "Email Subject", width: "150px" },
+                                { field: "email_body", title: "Email body", width: "150px" },
+                                { field: "created_by", title: "Created by", width: "150px" },
+                                { field: "created_date", title: "Created Date", width: "150px", template: "#= kendo.toString(kendo.parseDate(created_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #" },
+                                { title: "Action", width: "100px", template: kendo.template($("#edit-template").html()) },
+                                { command: ["destroy"], title: "Action", width: "100px" }
+                    ],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

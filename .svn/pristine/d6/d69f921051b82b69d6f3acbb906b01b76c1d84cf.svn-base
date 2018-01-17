@@ -1,0 +1,473 @@
+﻿@*
+    Page: Company Edit Form
+    Author: Farzana Islam
+*@
+
+@{
+    ViewBag.Title = "Edit";
+
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }  
+}
+
+<div class="row">
+    <div class="panel panel-success">
+        <div class="panel-heading">Add Company</div>
+        <div class="panel-body">
+            <form id="CompanyAdd">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="company">Company Name:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="company_name" id="company_name" style="width:80%;">
+                            <input type="hidden" id="company_id" name="company_id" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_code">Company Code:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="company_code" id="company_code" style="width:80%; text-transform:uppercase;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <br />
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Country:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="country_id" id="country_id" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">City:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="city_id" id="city_id" class="dropdown" style="width:80%;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Address 1:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="address_1" id="address_1" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Address 2:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="address_2" id="address_2" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Zip Code:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="zip_code" id="zip_code" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Fax:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="fax" id="fax" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Mobile:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="mobile" id="mobile" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Phone:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="phone" id="phone" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Email:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="email" id="email" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Web Address:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="web" id="web" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+                    @*//-----------------------------------*@
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="currency">Currency:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input class="dropdown" name="currency_id" id="currency_id" style="width:80%;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">&nbsp;</div>
+                        <div class="clearfix"></div>
+                        <br />
+
+                        <div class="col-md-6">
+                            <div class="col-md-6">
+                                <label for="Full name">Logo Path:</label>
+                                <input type="file" name="logo_path" id="logo_path" style="width:80%;">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Full name">Flag Path:</label>
+                                <input type="file" name="flag_path" id="flag_path" style="width:80%;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="col-md-6">
+                                <label for="is_active">Is Active:</label>
+                                <input type="checkbox" name="is_active" checked="checked" id="is_active">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="is_parent_company">Is Parent Company:</label>
+                                <input type="checkbox" name="is_parent_company" checked="checked" id="is_parent_company">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br />
+
+                        <div class="col-md-12">
+                            <div id="bank_grid"></div>
+                        </div>
+                    </div>
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="CompanyAddSubmit" value="Save Information" />
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //combobox
+    $(document).ready(function () {
+
+        var company_id = '@ViewBag.company_id';
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetCompanyByID", "Company")?company_id=" + company_id,
+
+            dataType: "json",
+            success: function(data) {
+                Loading(false);
+
+                $("#company_name").val(data.company_name);
+                $("#company_code").val(data.company_code);
+                //  $("#country_id").val(data.country_id);
+                $("#country_id").val(data.country_id);
+                loadCountry();
+
+                $("#currency_id").val(data.currency_id);
+                loadCurrency();
+
+                $("#city_id").val(data.city_id);
+                loadCity();
+
+                $("#address_1").val(data.address_1);
+                $("#address_2").val(data.address_2);
+                $("#zip_code").val(data.zip_code);
+                $("#fax").val(data.fax);
+                $("#mobile").val(data.mobile);
+                $("#phone").val(data.phone);
+                $("#email").val(data.email);
+                $("#web").val(data.web);
+                $("#logo_path").val(data.logo_path);
+                $("#flag_path").val(data.fla_pathg);
+                if (data.is_active == true) {
+                    $("#is_active").prop("checked", true);
+                } else {
+                    $("#is_active").prop("checked", false);
+                }
+
+                if (data.is_parent_company == true) {
+                    $("#is_parent_company").prop("checked", true);
+                } else {
+                    $("#is_parent_company").prop("checked", false);
+                }
+            }
+        });
+
+        function loadCountry() {
+            $("#country_id").kendoComboBox({
+                placeholder: "Select Country...",
+                dataTextField: "country_name",
+                dataValueField: "country_id",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllCountries", "Country")",
+                            type: "GET"
+                        }
+                    }
+                },
+                optionLabel: "Select Country"
+
+            }).data("kendoComboBox");
+        }
+
+        function loadCity() {
+
+            $("#city_id").kendoComboBox({
+                autoBind: false,
+                cascadeFrom: "country_id",
+                placeholder: "Select City..",
+                dataTextField: "city_name",
+                dataValueField: "city_id",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllCities", "City")",
+                            type: "GET"
+                        }
+                    }
+                },
+                optionLabel: "Select City"
+            }).data("kendoComboBox");
+
+        }
+
+        function loadCurrency() {
+            $("#currency_id").kendoComboBox({
+                placeholder: "Select currency...",
+                dataTextField: "currency_name",
+                dataValueField: "currency_id",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllCurrency", "Currency")?company_id=" + company_id,
+                            type: "GET"
+                        }
+                    }
+                },
+                optionLabel: "Select Currency"
+            }).data("kendoComboBox");
+
+        }
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllBank", "Company")?company_id=" + company_id,
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("UpdateBank", "Company")",
+                    type: "PUT",
+                    complete: function(e) {
+                        jQuery("#bank_grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Company")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("InsertBank", "Company")?company_id=" + company_id,
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#bank_grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+                model: {
+                    id: "bank_id",
+                    fields: {
+                        bank_id: { editable: false, nullable: true, type: "number" },
+                        bank_name: { type: "string", validation: { required: true } },
+                        bank_acc_no: { type: "string" },
+                        bank_acc_id: { type: "string" },
+                        bank_branch_name: { type: "string" },
+                        swift_code: { type: "string" },
+                        company_id: { type: "integer", defaultValue: company_id }
+
+                    }
+                }
+            }
+        });
+
+        jQuery("#bank_grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Bank" }],
+            columns: [
+                     { field: "bank_name", title: "Bank Name", width: "150px" },
+                    { field: "bank_acc_no", title: "Bank Account No", width: "150px" },
+                    { field: "bank_acc_id", title: "Bank Account Id", width: "150px" },
+                    { field: "bank_branch_name", title: "Branch Name", width: "150px" },
+                    { field: "swift_code", title: "Swift Code", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+ 
+
+
+      
+
+        //# Save Information
+        $("#CompanyAddSubmit").click(function () {
+            Loading(true);
+            var company_id = '@ViewBag.company_id';
+            var data = new FormData();
+            var company_name = $("#company_name").val();
+            var company_code = $("#company_code").val();
+            var country_id = $("#country_id").val();
+            var city_id = $("#city_id").val();
+            var address_1 = $("#address_1").val();
+            var address_2 = $("#address_2").val();
+            var zip_code = $("#zip_code").val();
+            var fax = $("#fax").val();
+            var mobile = $("#mobile").val();
+            var phone = $("#phone").val();
+            var email = $("#email").val();
+            var web = $("#web").val();
+            var is_active = false;
+            var emp_id = '@Session["employee_id"]';
+            var currency_id = $("#currency_id").val();
+
+            if ($("#is_active").is(":checked")) {
+                is_active = true;
+            }
+
+            var is_parent_company = false;
+
+            if ($("#is_parent_company").is(":checked")) {
+                is_parent_company = true;
+            }
+
+            var Files = $("#logo_path").get(0).files;
+            var FlagFiles = $("#flag_path").get(0).files;
+            if (Files.length > 0) {
+                data.append("UploadedImage", Files[0]);
+            }
+            if (FlagFiles.length > 0) {
+                data.append("UploadedFlagImage", FlagFiles[0]);
+            }
+            data.append("company_id", company_id);
+            data.append("company_name", company_name);
+            data.append("company_code", company_code);
+            data.append("country_id", country_id);
+            data.append("city_id", city_id);
+            data.append("address_1", address_1);
+            data.append("address_2", address_2);
+            data.append("zip_code", zip_code);
+            data.append("fax", fax);
+            data.append("mobile", mobile);
+            data.append("phone", phone);
+            data.append("email", email);
+            data.append("web", web);
+            data.append("is_active", is_active);
+            data.append("is_parent_company", is_parent_company);
+            data.append("bank_grid", JSON.stringify($("#bank_grid").data("kendoGrid").dataSource.data()));
+            data.append("emp_id", emp_id);
+            data.append("currency_id", currency_id);
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("UpdateCompany", "Company")",
+                data: data,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        NotificationMessage(data);
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        return false;
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+
+
+

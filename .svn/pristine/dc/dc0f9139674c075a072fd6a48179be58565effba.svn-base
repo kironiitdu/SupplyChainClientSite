@@ -1,0 +1,353 @@
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Net;
+
+namespace DMSClient.Models
+{
+    public class CoreRules
+    {
+        public static string httpRequest()
+        {
+            /*
+               //const string apiPath = "http://45.64.135.140:7100/";
+               //const string apiPath = "http://45.64.135.149:7100/";//current ip
+               //const string apiPath = "http://59.152.97.62:9010/";//dev
+               //const string apiPath = "http://localhost:7100/";   
+               //const string apiPath = "http://wescm.we.net.bd:7100/";//live
+               //const string apiPath = "http://45.64.135.249:7100/";//live
+             */
+            string apiPath = Properties.Settings.Default.ApiPath;
+           return apiPath;
+        }
+
+        public static bool ListPermission(int RoleID, string ControllerName, string ActionName)
+        {
+            try
+            {
+                WebClient wbClient = new WebClient();
+                string url = httpRequest();
+                var data = wbClient.DownloadString(url + "UserPermissionPartial/GetFormPermissionMenuRole?role_id=" + RoleID);
+
+                List<RolePermission> lstPermissionModels = JsonConvert.DeserializeObject<List<RolePermission>>(data);
+
+                Console.WriteLine(lstPermissionModels);
+
+                string controllername = ControllerName;
+                string actionname = ActionName;
+
+                RolePermission find =
+                    lstPermissionModels.Where(
+                        ls => ls.control_controller == controllername && ls.control_action == actionname).FirstOrDefault();
+                if (find.control_status == "True")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+       
+
+        public static bool ListPermissionByUser(int userId, string ControllerName, string ActionName)
+        {
+            try
+            {
+                WebClient wbClient = new WebClient();
+                string url = httpRequest();
+                var data = wbClient.DownloadString(url + "UserPermissionPartial/GetFormPermissionMenuForUsers?user_id=" + userId);
+
+                List<RolePermission> lstPermissionModels = JsonConvert.DeserializeObject<List<RolePermission>>(data);
+
+                Console.WriteLine(lstPermissionModels);
+
+                string controllername = ControllerName;
+                string actionname = ActionName;
+
+                RolePermission find =
+                    lstPermissionModels.Where(
+                        ls => ls.control_controller == controllername && ls.control_action == actionname).FirstOrDefault();
+                if (find.control_status == "True")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public static bool UserPermission(string roleid, string userid, string ConName, string ActionName)
+        {
+            try
+            {
+                bool permission = false;
+                if (userid != null || userid != string.Empty)
+                {
+                    permission = CoreRules.ListPermissionByUser(int.Parse(userid), ConName.ToLower(), ActionName.ToLower());
+                    if (!permission)
+                    {
+                        permission = CoreRules.ListPermission(int.Parse(roleid), ConName.ToLower(), ActionName.ToLower());
+                        if (!permission)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    permission = CoreRules.ListPermission(int.Parse(roleid), ConName.ToLower(), ActionName.ToLower());
+                    return true;
+                }
+                if (!permission)
+                {
+                    return false;
+                }
+                //else
+                    return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
+        }
+
+        //public static string commonPropertyField(int rbo_id, int label_type_id, int label_reference_id)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string commonField = wbClient.DownloadString(url + "OrderPlaceC4/Get?rbo_id=" + rbo_id + "&label_type_id=" + label_type_id + "&label_reference_id=" + label_reference_id);
+        //        return commonField;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message.ToString();
+        //    }
+        //}
+
+        //public static string variablePropertyField(int rbo_id, int label_type_id, int label_reference_id)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string variableField = wbClient.DownloadString(url + "ExcelReport/GetVariable?rbo_id=" + rbo_id + "&label_type_id=" + label_type_id + "&label_reference_id=" + label_reference_id);
+        //        return variableField;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message.ToString();
+        //    }
+        //}
+
+        //public static string getCompanyIdByEmployeeId(int employee_id)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string company_id = wbClient.DownloadString(url + "Employee/GetEmployeeCompanyByID?employee_id=" + employee_id);
+        //        return company_id;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        //public static string OrderSchemaMapping(string order_code)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string data = wbClient.DownloadString(url + "OrderSchemaMapping/GetAllOrdersByOrderCode?order_code=" + order_code);
+
+        //        return data;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message.ToString();
+        //    }
+        //}
+
+        //public static string OrderSchemaMappingForVersion(string order_code)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string data = wbClient.DownloadString(url + "OrderSchemamappingPartial/GetSchemaTableVirsonByOrderCode?order_code=" + order_code);
+
+        //        return data;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message.ToString();
+        //    }
+        //}
+
+        //public static string GetPrinterName(int printer_id)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string printerName = wbClient.DownloadString(url + "PrinterSetup/GetPrinterSetupNameById?printer_id=" + printer_id);
+
+        //        string data1 = (String)JsonConvert.DeserializeObject(printerName, (typeof(string)));
+        //        return data1;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message;
+        //    }
+        //}
+
+        //public static string GetPrinterUps(int printer_id)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string printerName = wbClient.DownloadString(url + "PrinterSetup/GetPrinterSetupUpsyId?printer_id=" + printer_id);
+
+        //        string data1 = (String)JsonConvert.DeserializeObject(printerName, (typeof(string)));
+        //        return data1;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ex.Message;
+        //    }
+        //}
+
+        public static string GetCompanyCode(int company_id)
+        {
+            try
+            {
+                WebClient wbClient = new WebClient();
+                string url = httpRequest();
+                string companyCode = wbClient.DownloadString(url + "Company/GetCompanyCode?company_id=" + company_id);
+                string data1 = (String)JsonConvert.DeserializeObject(companyCode, (typeof(string)));
+                return data1;
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
+
+        public static string getCompanyNameById(int companyId)
+        {
+            try
+            {
+                WebClient wbClient = new WebClient();
+                string url = httpRequest();
+                string companyCode = wbClient.DownloadString(url + "Company/GetCompanyName?company_id=" + companyId);
+                string data1 = (String)JsonConvert.DeserializeObject(companyCode, (typeof(string)));
+                return data1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        //public static string GetCompanyIdByBatchCode(string batchCode)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string companyId = wbClient.DownloadString(url + "TestBatch/GetCompanyIdByBatchCode?batch_code=" + batchCode);
+        //        string data1 = (String)JsonConvert.DeserializeObject(companyId, (typeof(string)));
+        //        return data1;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        //public static string getFlagById(int companyId)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string flagPath = wbClient.DownloadString(url + "Company/GetCompanyFlagLogo?company_id=" + companyId);
+        //        string data1 = (String)JsonConvert.DeserializeObject(flagPath, (typeof(string)));
+        //        return data1;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        //public static string GetAllOrder(int companyId)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string flagPath = wbClient.DownloadString(url + "Deshboard/GetAllOrderByCompanyId?company_id=" + companyId);
+        //        string data1 = (String)JsonConvert.DeserializeObject(flagPath, (typeof(string)));
+        //        return data1;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        //public static string GetAllBatch(int companyId)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        string flagPath = wbClient.DownloadString(url + "Deshboard/GetAllBatchByCompanyId?company_id=" + companyId);
+        //        string data1 = (String)JsonConvert.DeserializeObject(flagPath, (typeof(string)));
+        //        return data1;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        //public static DataTable GetCustomerAddress(string order_code)
+        //{
+        //    try
+        //    {
+        //        WebClient wbClient = new WebClient();
+        //        string url = httpRequest();
+        //        var data = wbClient.DownloadString(url + "OrderSchemamappingPartial/GetCustomerAddress?order_code=" + order_code);
+        //        DataTable dt = (DataTable)JsonConvert.DeserializeObject(data, (typeof(DataTable)));
+        //        return dt;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataTable();
+        //    }
+        //}
+    }
+}

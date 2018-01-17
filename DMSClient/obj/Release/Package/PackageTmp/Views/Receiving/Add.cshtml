@@ -1,0 +1,312 @@
+﻿@{
+    ViewBag.Title = "Add";
+    <link href="~/Content/CSS/CustomStyle/CustomStyle.css" rel="stylesheet" />
+    <link href="~/Content/dist/sweetalert.css" rel="stylesheet" />
+    <script src="~/Content/dist/sweetalert.min.js"></script>
+    <script src="~/Scripts/Custom/Validation.js"></script>
+    <script src="~/Scripts/Custom/NotificationMessage.js"></script>
+    <script src="~/Scripts/Custom/GlobalVariable.js"></script>
+}
+
+@{
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+
+<h2>Receving Add</h2>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Receiving Form</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2"><label for="receive_code">Receiving Code</label></div>
+                <div class="col-md-3"><input id="receive_code" name="receive_code" class="k-textbox" readonly="readonly" /></div>
+                <div class="col-md-2"></div>
+                <div class="col-md-2"><label for="receive_date">Receiving Date</label></div>
+                <div class="col-md-3"><input id="receive_date" name="receive_date" /></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2"><label for="supplier_id">Supplier Name</label></div>
+                <div class="col-md-3"><input id="supplier_id" name="supplier_id" readonly="readonly" class="k-textbox" /></div>
+                <div class="col-md-2"></div>
+                <div class="col-md-2"><label for="po_order_id">Purchase Order No</label></div>
+                <div class="col-md-3"><input id="po_order_id" name="po_order_id" class="k-textbox" readonly="readonly" /></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2"></div>
+                <input type="checkbox" id="partial_receive" class="k-checkbox">
+                <label class="k-checkbox-label" for="partial_receive">Partial Receive</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-success">
+    <div class="panel-heading">Receive Product</div>
+    <div class="panel-body">
+        <div class="col-md-12"><div id="receivegrid"></div></div>
+    </div>
+</div>
+<div class="row">
+    <input type="button" class="k-button" id="btnreceivefrmSave" style="margin-left: 5px; background-color: #d6e9c6;" value="Receive Information" />
+</div>
+<script>
+
+    $(function () {
+        $("#receive_date").kendoDatePicker({
+
+            format: "yyyy/mm/dd",
+            value: new Date(),
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 150
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 150
+                }
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetRecevieCode", "Receiving")",
+            dataType: 'json',   //you may use jsonp for cross origin request
+            crossDomain: true,
+            success: function (data) {
+                $("#receive_code").val(data);
+            }
+        });
+
+    });
+
+    var po_master_id = 0;
+    po_master_id = '@ViewBag.po_master_id';
+
+    if (po_master_id > 0) {
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("PurchaseOrderMasterData", "Receiving")?pomasterid=" + po_master_id,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $("#supplier_id").val(data[0].supplier_name);
+                $("#po_order_id").val(data[0].order_no);
+                if (data[0].status == "Partial_Received") $("#partial_receive").prop('checked', true);
+            }
+        });
+
+        $("#receivegrid").kendoGrid({
+            pageable: true,
+            resizable: true,
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProduct", "Receiving")?pomasterid=" + po_master_id,
+                        type: "GET",
+                        complete: function (a) {
+                            console.log(a);
+                            var data = $("#receivegrid").data("kendoGrid").dataSource.data();
+                            var i;
+                            for (i = 0; i < data.length; i++) {
+                                if (data[i].received_quantity == null || data[i].received_quantity == 0) data[i].received_quantity = data[i].quantity;
+                            }
+                            $('#receivegrid').data('kendoGrid').refresh();
+                        }
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "po_details_id",
+                        fields: {
+                            po_details_id: { type: "number", editable: false },
+                            product_name: { type: "string", editable: false },
+                            product_id: { type: "number", editable: false },
+                            unit_id: { type: "number", editable: false },
+                            uom_name: { type: "string", editable: false },
+                            amount: { type: "number", editable: false },
+                            discount_amount: { type: "number", editable: false },
+                            discount_percentage: { type: "number", editable: false },
+                            vat_amount: { type: "number", editable: false },
+                            vat_percentage: { type: "number", editable: false },
+                            tax_amount: { type: "number", editable: false },
+                            tax_percentage: { type: "string", editable: false },
+                            line_total: { type: "number", editable: false },
+                            receivablequantity: { type: "number", editable: false },
+                            received_quantity: { type: "number" },
+                            quantity: { type: "number", editable: false }
+                        }
+                    }
+                },
+                pagesize: 10,
+            },
+            columns: [
+                {
+                    field: "po_details_id",
+                    hidden: true
+                },
+                {
+                    field: "product_id",
+                    title: "Product",
+                    template: "#= product_name #"
+                },
+                {
+                    field: "unit_id",
+                    title: "Unit",
+                    template: "#= uom_name #"
+                },
+                {
+                    field: "amount",
+                    title: "Amount"
+                },
+                {
+                    field: "discount_amount",
+                    title: "Discount Amount"
+                },
+                {
+                    field: "discount_percentage",
+                    title: "Discount Percentage"
+                },
+                {
+                    field: "vat_amount",
+                    title: "Vat Amount"
+                },
+                {
+                    field: "vat_percentage",
+                    title: "Vat Percentage"
+                },
+                {
+                    field: "tax_amount",
+                    title: "Tax Amount"
+                },
+                {
+                    field: "tax_percentage",
+                    title: "Tax Percentage"
+                },
+                {
+                    field: "line_total",
+                    title: "Line Total"
+                },
+                {
+                    field: "quantity",
+                    title: "Receivable Quantity"
+                },
+                {
+                    title: "Receive Quantity",
+                    field: "received_quantity"
+                }
+            ],
+            editable: true,
+            save: function (data) {
+                console.log(data);
+                data.model.set("received_quantity", data.values.received_quantity);
+                $("#receivegrid").data("kendoGrid").refresh();
+
+            }
+        });
+
+    }
+
+    $('#btnreceivefrmSave').click(function () {
+        var status;
+        var partialreceive;
+        if ($('#partial_receive').prop('checked')) {
+            partialreceive = 1;
+            status = 'Partial_Received';
+        } else {
+            partialreceive = 0;
+            status = 'Received';
+        }
+
+        var gridvalue = $("#receivegrid").data("kendoGrid").dataSource.data();
+        console.log(gridvalue);
+        var count = 0;
+        var i;
+        for ( i= 0; i < gridvalue.length; i++) {
+            if (gridvalue[i].quantity > gridvalue[i].received_quantity && partialreceive == 0) {
+                count ++;
+                break;
+            }
+        }
+        if (count > 0) {
+            swal({
+                title: "Are you sure ?",
+                text: "For <span style=color:red;>" + gridvalue[i].product_name + "</span>, received quantity < receivable quantity  , do you want to save it as a full  receiving!",
+                type: "warning",
+                showCancelButton: true,
+                html: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, Take it!",
+                closeOnConfirm: false
+            },
+                function () {
+                    post();
+                    return;
+                });
+        }
+        if (count == 0) {
+            post();
+        }
+
+        function post() {
+            var receiveDate = $('#receive_date').val();
+            var receiveCode = $('#receive_code').val();
+
+            var receiving_master = {
+                po_master_id: po_master_id,
+                receive_date: receiveDate,
+                receive_code: receiveCode,
+                employee_id: '@userId',
+                company_id: '@companyId',
+                status: status,
+                partial_receive: partialreceive
+            }
+            console.log(receiving_master);
+
+            var receiving_details = [];
+            var requistiongrid = $("#receivegrid").data("kendoGrid").dataSource.data();
+            console.log(requistiongrid);
+
+            for (var x = 0; x < requistiongrid.length; x++) {
+                var receivingdetails = {
+                    product_id: requistiongrid[x].product_id,
+                    quantity: requistiongrid[x].received_quantity,
+                    uom_id: requistiongrid[x].unit_id,
+                    receive_details_id: requistiongrid[x].po_details_id
+                };
+                receiving_details.push(receivingdetails);
+            }
+            var ReceiveModel = {
+                receiving_master: receiving_master,
+                receiving_details: receiving_details
+            };
+            console.log("ReceiveModel", ReceiveModel);
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("ReceiveFromSupplier", "Receiving")",
+                data: JSON.stringify(ReceiveModel),
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    console.log(data);
+                    NotificationMessage(data);
+                }
+            });
+        }
+    });
+</script>

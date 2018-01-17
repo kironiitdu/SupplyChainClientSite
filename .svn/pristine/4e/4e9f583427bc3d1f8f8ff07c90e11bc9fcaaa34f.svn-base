@@ -1,0 +1,95 @@
+﻿using DMSClient.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using DMSClient.Reports.crystal_models;
+using Newtonsoft.Json;
+
+namespace DMSClient.Controllers
+{
+    public class ChartController : Controller
+    {
+        //
+        // GET: /Chart/
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public ActionResult TopTenDealerChart()
+        {
+            string roleid = (string)Session["user_role_id"];
+            string userid = (string)Session["user_au_id"];
+
+            string ConName = "Chart";
+            string ActionName = "TopTenDealerChart";
+
+            if ((roleid == null || roleid == string.Empty) && (userid == null || userid == string.Empty))
+            {
+                Response.Redirect("/Login/Index");
+            }
+            bool permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            if (!permission)
+                Response.Redirect("/Error/Index");
+            return View();
+        }
+
+        public ActionResult BestSellingProducts()
+        {
+            string roleid = (string)Session["user_role_id"];
+            string userid = (string)Session["user_au_id"];
+
+            string ConName = "Chart";
+            string ActionName = "BestSellingProducts";
+
+            if ((roleid == null || roleid == string.Empty) && (userid == null || userid == string.Empty))
+            {
+                Response.Redirect("/Login/Index");
+            }
+            bool permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            if (!permission)
+                Response.Redirect("/Error/Index");
+            return View();
+        }
+
+        public void GetTopTenDealerReport(DateTime from_date, DateTime to_date)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "/Dashboard/GetTopTenDealerReport?from_date=" + from_date + "&to_date=" + to_date;
+            string apidata = wbClient.DownloadString(downloadString);
+            List<TopTenDealerReportModel> oDeliAndDis = JsonConvert.DeserializeObject<List<TopTenDealerReportModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/TopTenDealerReport.rpt"));
+                reportDocument.SetDataSource(oDeliAndDis);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+
+        public void BestSellingProductsReport(DateTime from_date, DateTime to_date)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "/Dashboard/BestSellingProductsReport?from_date=" + from_date + "&to_date=" + to_date;
+            string apidata = wbClient.DownloadString(downloadString);
+            List<BestSellingProductsReportModel> oDeliAndDis = JsonConvert.DeserializeObject<List<BestSellingProductsReportModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/BestSellingProductReport.rpt"));
+                reportDocument.SetDataSource(oDeliAndDis);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+	}
+}

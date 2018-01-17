@@ -1,0 +1,743 @@
+﻿@{
+    ViewBag.Title = "Add Return";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var partyId = @partyId;
+
+    //$(document).ready(function () {
+    //    $('#base').addClass('animated zoomIn');
+    //});
+</script>
+
+@*<div class="col-md-12 widget-body" id="context">*@
+    @*<div class="row">*@
+        @*<div class="col-md-9">*@
+            @*<div class="row">*@
+                <div class="panel panel-success">
+                    <div class="panel-heading">Receive Return</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="return_date">Return Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="return_date" name="return_date" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="return_code">Return Code</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="return_code" name="return_code" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="party_type_id">Channel Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="party_type_id" name="party_type_id" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="party_id">Channel Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="party_id" name="party_id" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="region_id">Region&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="region_id" name="region_id" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="area_id">Area&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="area_id" name="area_id" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="territory_id">Territory&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="territory_id" name="territory_id" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <label for="return_type">Return Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="return_type" name="return_type" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    @*<label for="invoice_no">Invoice No</label>*@
+                                    <label for="remarks">Remarks</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="remarks" name="remarks" class="k-textbox" />
+                                    <input id="invoice_no" name="invoice_no" class="k-textbox" style="visibility: hidden" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @*</div>*@
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Receive Details Information</div>
+                    <div class="panel-body">
+                        <div id="ReturnDetailsGrid"></div>
+
+                    </div>
+                </div>
+            </div>
+
+        @*</div>*@
+    @*</div>*@
+
+    <div class="row">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnReceiveReturn" name="btnReceiveReturn" value="Receive" />
+                </div>
+            </div>
+        </div>
+    </div>
+@*</div>*@
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $("#return_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+        $("#return_type").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Return Type ---",
+            dataTextField: "return_type_name",
+            dataValueField: "return_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetReturnType", "Return")"
+                    }
+                }
+            }
+
+        });
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "Select Party Type",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPartyTypesForReturn", "PartyType")"
+                    }
+                }
+            }
+        });
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Party ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+        });
+
+        //region dropdown
+        $("#region_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        });
+        //area dropdown
+        $("#area_id").kendoComboBox({
+            autoBind: false,
+            //cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        });
+        //load territory
+        $("#territory_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        });
+
+        function myFunction() {
+            var sampleData = [];
+            //get master and details information----------------
+            var return_master_id = '@ViewBag.return_master_id';
+            Loading(true);
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("GetVerifiedReturnById", "Return")",
+                data: {
+                    return_master_id: return_master_id
+                },
+                dataType: "json",
+                success: function(data) {
+                    Loading(false);
+                    $("#return_code").val(data.ReturnMasterData.return_code);
+                    $("#return_date").val(data.ReturnMasterData.return_date);
+                    $('#return_type').data("kendoComboBox").value(data.ReturnMasterData.return_type);
+                    $("#remarks").val(data.ReturnMasterData.remarks);
+                    $('#party_id').data("kendoComboBox").value(data.ReturnMasterData.party_id);
+                    $("#return_master_id").val(data.ReturnMasterData.return_master_id);
+
+                    //////////////04.03.2017
+                    //alert(data.ReturnMasterData.party_id);
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("GetRegionAreaTerritory", "Party")",
+                        data: { party_id: data.ReturnMasterData.party_id },//Passing parameter
+                        dataType: "json",
+                        success: function (data) {
+                            Loading(false);
+                            $("#region_id").data("kendoComboBox").value(data.region_id);
+                            $("#area_id").data("kendoComboBox").value(data.area_id);
+                            $("#territory_id").data("kendoComboBox").value(data.territory_id);
+                            $("#party_type_id").data("kendoComboBox").value(data.party_type_id);
+                        }
+                    });
+                    //////////////04.03.2017
+
+
+                    for (var i = 0; i < data.ReturnDetailsList.length; i++) {
+                        var returnDetails = {
+                            return_details_id: data.ReturnDetailsList[i].return_details_id,
+                            product_id: data.ReturnDetailsList[i].product_id,
+                            product_name: data.ReturnDetailsList[i].product_name,
+                            return_master_id: data.ReturnDetailsList[i].return_master_id,
+                            color_id: data.ReturnDetailsList[i].color_id,
+                            color_name: data.ReturnDetailsList[i].color_name,
+
+                            product_version_id: data.ReturnDetailsList[i].product_version_id,
+                            product_version_name: data.ReturnDetailsList[i].product_version_name,
+
+                            brand_id: data.ReturnDetailsList[i].brand_id,
+                            brand_name: data.ReturnDetailsList[i].brand_name,
+                            unit_id: data.ReturnDetailsList[i].unit_id,
+                            unit_name: data.ReturnDetailsList[i].unit_name,
+                            price: data.ReturnDetailsList[i].price,
+                            quantity: data.ReturnDetailsList[i].quantity,
+
+                            imei_no: data.ReturnDetailsList[i].imei_no,
+                            imei_no2: data.ReturnDetailsList[i].imei_no2,
+                            party_id: data.ReturnDetailsList[i].party_id,
+                            party_type_id: data.ReturnDetailsList[i].party_type_id,
+                            party_prefix: data.ReturnDetailsList[i].party_prefix,
+
+                            //15.11.2016
+                            invoice_no: data.ReturnDetailsList[i].invoice_no,
+                            invoice_date: data.ReturnDetailsList[i].invoice_date
+                        };
+                        sampleData.push(returnDetails);
+                    }
+                    //console.log(sampleData);
+
+                    //productList Grid---------------------
+
+                    var sampleDataNextID = sampleData.length + 1;
+
+                    function getIndexById(id) {
+                        var idx,
+                            l = sampleData.length;
+
+                        for (var j = 0; j < l; j++) {
+                            if (sampleData[j].return_details_id == id) {
+                                return j;
+                            }
+                        }
+                        return null;
+                    }
+
+                    // custom logic end
+
+                    var dataSource = new kendo.data.DataSource({
+                        transport: {
+                            read: function(e) {
+                                // on success
+                                e.success(sampleData);
+                            },
+                            create: function(e) {
+                                // assign an ID to the new item
+                                e.data.return_details_id = sampleDataNextID++;
+                                // save data item to the original datasource
+
+                                var gridData = sampleData;
+                                var totalNumber = gridData.length;
+                                var count = 0;
+
+                                for (var i = 0; i < totalNumber; i++) {
+                                    var productId = gridData[i].product_id;
+                                    var colorId = gridData[i].color_id;
+                                    if (e.data.product_id === productId && e.data.color_id === colorId) {
+                                        count++;
+                                    }
+                                }
+                                if (count > 0) {
+                                    sweetAlert("Sorry...", "Selected Product is Duplicate !!!", "warning");
+                                    e.preventDefault();
+                                    return false;
+                                } else {
+                                    sampleData.push(e.data);
+                                    e.success(e.data);
+                                    return true;
+                                }
+
+                            },
+                            update: function(e) {
+                                // locate item in original datasource and update it
+                                sampleData[getIndexById(e.data.return_details_id)] = e.data;
+                                e.success();
+
+                            },
+
+
+                            destroy: function (e) {
+                                // locate item in original datasource and remove it
+                                sampleData.splice(getIndexById(e.data.requisition_details_id), 1);
+                                // on success
+                                e.success();
+                                var entityGrid = $("#ReturnDetailsGrid").data("kendoGrid");
+                                var gridData = entityGrid.dataSource.data();
+                                var totalNumber = gridData.length;
+
+
+                            }
+                        },
+                        error: function (e) {
+                            // handle data operation error
+                            alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                        },
+                        pageSize: 10,
+                        batch: false,
+                        schema: {
+                            model: {
+                                id: "return_details_id",
+                                fields: {
+                                    return_details_id: { editable: false, nullable: true },
+                                    return_master_id:{ field: "return_master_id", type: "integer" },
+                                    product_id: { field: "product_id", type: "integer" },
+                                    product_name: { type: "string" },
+                                    //product_category_id: { field: "product_category_id", type: "integer" },
+                                    //product_category_name: { type: "string" , editable: false},
+                                    brand_id: { field: "brand_id", type: "integer" },
+                                    brand_name: { type: "string", editable: false },
+                                    unit_id: { field: "unit_id", type: "integer" },
+                                    unit_name: { type: "string", editable: false },
+                                    color_id: { field: "color_id", type: "integer" },
+                                    color_name: { type: "string" },
+                                    party_id: {type:"integer"},
+                                    party_type_id: {type:"integer"},
+                                    party_prefix: {type:"string"},
+                                    quantity: { type: "number" },
+                                    imei_no: { type: "string" },
+                                    imei_no2: { type: "string" },
+                                    price: { type: "number" },
+
+                                    //15.11.2016
+                                    invoice_no: { type: "string" },
+                                    invoice_date: { type: "string" },
+                                    invoice_master_id: { type: "integer" }
+
+                                }
+                            }
+                        }
+                    });
+
+
+
+                    $("#ReturnDetailsGrid").kendoGrid({
+                        dataSource: dataSource,
+                        pageable: true,
+                        toolbar: ["create"],
+                        selectable: true,
+                        save: function (data) {
+
+                            //var tempAmount = +data.model.quantity * +data.model.price;
+                            //data.model.set("line_total", tempAmount);
+
+
+                            var entityGrid = $("#ReturnDetailsGrid").data("kendoGrid");
+                            var gridData = entityGrid.dataSource.data();
+                            var totalNumber = gridData.length;
+
+                            var amount = 0;
+
+                            for (var i = 0; i < totalNumber; i++) {
+                                //amount += +parseFloat(gridData[i].line_total).toFixed(2);
+                            }
+
+                            //$("#amount").val(amount);
+
+                        },
+                        edit: function (e) {
+
+                            //$('input[name="line_total"]').attr('readonly', 'readonly');
+
+                        },
+                        cancel: function(data) {
+
+                            //var tempAmount = +data.model.quantity * +data.model.price;
+                            //data.model.set("lineTotal", tempAmount);
+
+
+                            var gridData = sampleData;
+                            var totalNumber = gridData.length;
+
+
+                            //console.log(sampleData);
+
+                        },
+                        columns: [
+                            { field: "product_id", title: "Product", template: "#= product_name #", editor: productDropDownEditor, width: "50px" },
+                            { field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditor, width: "50px" },
+                            { field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionDropDownEditor, width: "30px" },
+                            { field: "imei_no", title: "IMEI", width: "60px" },
+                            { field: "imei_no2", title: "IMEI2", width: "60px" },
+                            { field: "price", title: "Price", width: "50px" },
+                            { field: "party_id", title: "Party Id", width: "30px", hidden:true },
+
+                            { field: "invoice_no", title: "Invoice No", width: "50px" },
+                            { field: "invoice_date", title: "Invoice Date", width: "80px" },
+
+                            { field: "party_type_id", title: "Party Type Id", width: "30px", hidden:true },
+                            { field: "party_prefix", title: "Party Type", width: "50px", hidden:true },
+                            { command: ["edit", "destroy"], title: "&nbsp;", width: "70px" }
+                        ],
+                        editable: "inline"
+                    });
+
+
+                    //template for product comboBox
+                    function productDropDownEditor(container, options) {
+                        jQuery('<input required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                            .appendTo(container)
+
+                            .kendoComboBox({
+                                autoBind: true,
+                                placeholder: "-Select-",
+                                dataSource: {
+                                    transport: {
+                                        read: {
+                                            url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                                            type: "GET"
+                                        }
+                                    }
+
+                                },
+
+                                change: function (e) {
+                                    var dataItem = this.dataItem(e.item);
+
+                                    console.log(dataItem.product_name);
+                                    var grid = $("#ReturnDetailsGrid").data("kendoGrid");
+                                    var sel = grid.select();
+                                    var sel_idx = sel.index();
+                                    var gridData = grid.dataSource.data();
+                                    gridData[sel_idx].product_id = dataItem.product_id,
+                                    gridData[sel_idx].product_name = dataItem.product_name;
+                                    gridData[sel_idx].color_id = dataItem.color_id,
+                                    gridData[sel_idx].color_name = dataItem.color_name;
+                                    gridData[sel_idx].unit_id = dataItem.unit_id;
+                                    gridData[sel_idx].unit_name = dataItem.unit_name;
+                                    gridData[sel_idx].brand_id = dataItem.brand_id;
+                                    gridData[sel_idx].brand_name = dataItem.brand_name;
+                                    gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                                    gridData[sel_idx].product_category_name = dataItem.product_category_name;
+
+                                    //05.11.2016
+                                    gridData[sel_idx].warehouse_id = dataItem.warehouse_id;
+                                    gridData[sel_idx].warehoue_name = dataItem.warehoue_name;
+                                    //gridData[sel_idx].price = dataItem.price;
+                                    //if (partyTypeId==1) {
+                                    //    gridData[sel_idx].price = dataItem.rp_price;
+                                    //}
+                                    //if (partyTypeId==2) {
+                                    //    gridData[sel_idx].price = dataItem.md_price;
+                                    //}
+                                    //if (partyTypeId==3) {
+                                    //    gridData[sel_idx].price = dataItem.bs_price;
+                                    //}
+
+                                }
+                            });
+                    }
+
+
+                    //template for color comboBox
+                  function colorDropDownEditor(container, options) {
+                        jQuery('<input required data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                            .appendTo(container)
+
+                            .kendoComboBox({
+                                autoBind: true,
+                                placeholder: "-Select-",
+                                dataSource: {
+                                    transport: {
+                                        read: {
+                                            url: "@UrlConfig.Action("GetAllColors", "Color")",
+                                                    type: "GET"
+                                                }
+                                            }
+
+                                        },
+
+                                        change: function (e) {
+                                            var dataItem = this.dataItem(e.item);
+
+                                            console.log(dataItem.product_name);
+                                            var grid = $("#ReturnDetailsGrid").data("kendoGrid");
+                                            var sel = grid.select();
+                                            var sel_idx = sel.index();
+                                            var gridData = grid.dataSource.data();
+                                            gridData[sel_idx].color_id = dataItem.color_id,
+                                            gridData[sel_idx].color_name = dataItem.color_name;
+
+
+                                        }
+                                    });
+                  }
+                    function productVersionDropDownEditor(container, options) {
+
+                        jQuery('<input required data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoComboBox({
+                                autoBind: true,
+                                placeholder: "-Select-",
+                                dataSource: {
+                                    transport: {
+                                        read: {
+                                            url: "@UrlConfig.Action("GetAllProductVersionForDropDown", "ProductVersion")",
+
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+                                var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+                                //////////////////////19.02.2017 start//////////////////////
+                                //to get party type, product, color and version wise price
+                                @*var cId=gridData[sel_idx].color_id;
+                                var partyTypeId=($("#party_type_id").val());
+                                $.ajax({
+                                    type: "GET",
+                                    url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",
+                                    data: {
+                                    party_type_id:partyTypeId,
+                                    product_id: pId,
+                                    color_id: cId,
+                                    product_version_id: dataItem.product_version_id
+                                    },
+                                dataType: "json",
+                                contentType: "application/json",
+                                success: function (data) {
+                                    gridData[sel_idx].price =data;
+                                    //gridData[sel_idx].price_ori =data;
+                                }
+                            });*@
+                        //////////////////////19.02.2017 end//////////////////////
+
+
+                            }
+                });
+        }
+
+        }
+    });
+    }
+
+    myFunction();
+    //save
+    $("#btnReceiveReturn").click(function() {
+        //Loading(true);
+        var return_code = $('#return_code').val();
+        var return_date = $('#return_date').val();
+        var return_type = $('#return_type').val();
+        var remarks = $('#remarks').val();
+        var return_master_id = '@ViewBag.return_master_id';
+
+        var ReturnMasterData = {
+            return_code: return_code,
+            return_date: return_date,
+            return_type: return_type,
+            remarks: remarks,
+            @*return_master_id:'@ViewBag.return_master_id',*@
+            return_master_id: return_master_id,
+            //party_name: return_by,
+            //return_by: userId
+            ada_doa_received_by: userId
+        };
+
+        var ProductDetailsList = [];
+        var ProductDetailsGrid = $("#ReturnDetailsGrid").data("kendoGrid").dataSource.data();
+        for (var i = 0; i < ProductDetailsGrid.length; i++) {
+            var productDetails = {
+                return_details_id: ProductDetailsGrid[i].return_details_id,
+                return_master_id: ProductDetailsGrid[i].return_master_id,
+                product_id: ProductDetailsGrid[i].product_id,
+                product_category_id: ProductDetailsGrid[i].product_category_id,
+                color_id: ProductDetailsGrid[i].color_id,
+                unit_id: ProductDetailsGrid[i].unit_id,
+                brand_id: ProductDetailsGrid[i].brand_id,
+                quantity: ProductDetailsGrid[i].quantity,
+                price: ProductDetailsGrid[i].price,
+                imei_no: ProductDetailsGrid[i].imei_no,
+
+                //26.10.2016
+                party_id: ProductDetailsGrid[i].party_id,
+                party_type_id: ProductDetailsGrid[i].party_type_id,
+                party_prefix: ProductDetailsGrid[i].party_prefix
+            };
+            ProductDetailsList.push(productDetails);
+        }
+
+        var ReturnModel = {
+            ReturnMasterData: ReturnMasterData,
+            ReturnDetailsList: ProductDetailsList
+        };
+        //console.log(ReturnModel);
+        //return false;
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("ReceiveReturn", "Return")",
+            data: JSON.stringify(ReturnModel),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                Loading(false);
+                console.log(ProductDetailsGrid);
+                if (data.output === "success") {
+
+                    //clear grid
+                    $("#ReturnDetailsGrid").data("kendoGrid").dataSource.data([]);
+                    sampleData = [];
+                    $('#ReturnDetailsGrid').data('kendoGrid').refresh();
+                    //clear textboxes
+                    $("#return_date").val("");
+                    $("#return_code").val("");
+                    $("#remarks").val("");
+
+                    //clear comboBox
+                    var ReturnType = $("#return_type").data("kendoComboBox");
+                    ReturnType.dataSource.data([]);
+                    ReturnType.text("");
+
+                    swal("Success", data.msg, "success");
+                    //window.location.href = '/Return/Verify';
+                    window.location.href = '/Return/ListForReceive';
+                    return false;
+                } else {
+                    swal("Exception", data.msg, "error");
+                    return false;
+                }
+            }
+        });
+    });
+
+    });
+
+</script>

@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "SCM Dashboard";
+    var userId = "";
+    var partyTypeId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+    }
+
+
+}
+<script>
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+
+    $(document).ready(function () {
+        $('#jPopup').show(1200);
+        $('#jPopup').addClass('animated zoomIn');
+
+        @*$.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetAAllRequisition", "Requisition")",
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(data);
+
+                var counter = 0;
+
+                $.each(data, function (key, obj) {
+                    counter++;
+                });
+                $('#totalRequisition').text(counter);
+            }
+
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetAllInvoice", "Invoice")",
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(data);
+
+                var invoiceTotal = 0;
+
+                $.each(data, function (key, obj) {
+                    invoiceTotal += obj.invoice_total;
+                });
+                $('#totalInvoiceAmount').text(invoiceTotal+" /=");
+
+            }
+
+        });*@
+
+    });
+</script>
+<div class="row " hidden="" id="jPopup" style="text-align: center; padding-bottom: 20px; color: #ed1b24; font-weight: 800; ">
+    <h3>WELCOME TO AAMRA SCM @*<span>&nbsp;</span> @Session["user_role_name"]*@</h3>
+    <br/>
+    <div class="col-md-6 col-sm-6">
+        <div class="panel-3d animated" style="visibility: visible;">
+            <div class="front">
+                <div class="widget text-center">
+                    <div class="widget-body padding-none">
+                        <div>
+                            <div class="innerAll" style="background-color :slategray">
+                                <p class="lead text-white strong margin-none"><i class="icon-graph-up-1 animated fadeInDown" style="visibility: visible;"></i><br>
+                                <p id="totalRequisition" style="font-size: 14px; color: white"></p>
+                            </div>
+                            <div class="innerAll">
+                                <input type="button" class="btn btn-defult" onclick="window.location ='/Requisition/index'" value="Total Number of Requisition">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-6">
+        <div class="panel-3d animated" style="visibility: visible;">
+            <div class="front">
+                <div class="widget text-center">
+                    <div class="widget-body padding-none">
+                        <div>
+                            <div class="innerAll" style="background-color :slategray">
+                                <p class="lead text-white strong margin-none"><i class="icon-graph-up-1 animated fadeInDown" style="visibility: visible;"></i><br>
+                                <p id="totalInvoiceAmount" style="font-size: 14px; color: white"></p>         
+                            </div>
+                            <div class="innerAll">
+                                <input type="button" class="btn btn-defult" onclick="window.location ='/Invoice/index'" value="Total Invoice Amount">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

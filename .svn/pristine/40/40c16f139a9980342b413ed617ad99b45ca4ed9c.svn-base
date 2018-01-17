@@ -1,0 +1,187 @@
+﻿@{
+    ViewBag.Title = "Approve";
+    var userId = "";
+    var partyTypeId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+    }
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+
+</script>
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Return List</h4></div>
+        <div class="panel-body">
+            <script id="verify-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Return/Verify?return_master_id=#= return_master_id #" class="k-button k-grid verify">Verify</a>
+            </script>
+            <script id="receive-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Return/Receive?return_master_id=#= return_master_id #" class="k-button k-grid receive">Receive</a>
+            </script>
+            <script id="report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Return/GetReturnReport?return_master_id=#= return_master_id #" target="_blank" class="k-button k-grid-even">Report</a>
+            </script>
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+              
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetAllMDNDBISReturn", "Return")",
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        var sampleData = [];
+
+                        if (data != "") {
+
+                            for (var i = 0; i < data.length; i++) {
+                                //For Verify Status
+                                var verfiyStatusForGrid = "";
+                                var verfiyStatus = data[i].ada_doa_varify_status;                              
+                                if (verfiyStatus === true) {
+                                    verfiyStatusForGrid = 'Verified';
+                                } else {
+                                    verfiyStatusForGrid = 'Not Verified'; }
+                               
+                                //For Receive Status
+                                var receiveStatusForGrid = "";
+                                var verfiyReceiveStatus = data[i].ada_doa_receive_status;  
+                                if (verfiyReceiveStatus === true) {
+                                    receiveStatusForGrid = 'Received';
+                                } else {
+                                    receiveStatusForGrid = 'Not Received'; }
+
+                                //Object For Grid
+                                var returnData = {
+                                    return_master_id: data[i].return_master_id,
+                                    party_name: data[i].party_name,
+                                    return_code: data[i].return_code,
+                                    return_date: data[i].return_date,
+                                    return_type_name: data[i].return_type_name,
+                                    ada_doa_varify_status:verfiyStatusForGrid ,
+                                    ada_doa_receive_status: receiveStatusForGrid
+
+                                };                             
+
+                                sampleData.push(returnData);
+                            }
+
+                            var dataSource = new kendo.data.DataSource({
+                                transport: {
+                                    read: function (e) {
+                                        // on success
+                                        e.success(sampleData);
+                                    }
+                                },
+                                error: function (e) {
+                                    // handle data operation error
+                                    alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                                },
+
+                                batch: false,
+                                schema: {
+                                    model: {
+                                        id: "return_master_id",
+                                        fields: {
+                                            return_master_id: { editable: false, nullable: true },
+                                            party_name: { type: "string" },
+                                            return_code: { type: "string" },
+                                            return_date: { type: "string" },
+                                            return_type_name: { type: "string" },
+                                            ada_doa_varify_status: { type: "string" },
+                                            ada_doa_receive_status: { type: "string" }
+
+                                        }
+
+                                    }
+                                }
+                            });
+                            //Datasource Finsish
+                            $("#grid").kendoGrid({
+                                dataSource: dataSource,
+                                selectable: true,
+                                scrollable: true,
+                                filterable: true,
+                                pageable: {
+                                    refresh: true,
+                                    input: true,
+                                    pageSize: 20,
+                                    numeric: false,
+                                    pageSizes: [10, 20, 50]
+                                },
+
+                                sortable: true,
+                                groupable: true,
+                                resizable: true,
+                                columns: [
+                                            { field: "return_master_id", hidden: true },
+                                            { field: "return_details_id", hidden: true },
+                                            { field: "return_code", title: "Return No", id: "return_master_id", width: "110px" },
+                                            { field: "party_name", title: "Party Name", width: "150px" },
+                                            { field: "return_type_name", title: "Return Type", width: "90px" },
+                                            { field: "return_date", title: "Return Date", width: "90px", template: "#= kendo.toString(kendo.parseDate(return_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                                            { field: "ada_doa_varify_status", title: "DOA Varify Status", width: "100px" },
+                                            { field: "ada_doa_receive_status", title: "Received Status", width: "90px" },
+                                            { title: "Action", width: "70px", template: kendo.template($("#verify-template").html()) },
+                                            { title: "Action", width: "70px", template: kendo.template($("#receive-template").html())  },
+                                            {  title:"Action", width: "70px", template: kendo.template($("#report-template").html())  }
+
+                                ],
+                                dataBound: function (e) {
+                                    var grid = $("#grid").data("kendoGrid");
+                                    var gridData = grid.dataSource.view();
+
+                                    for (var i = 0; i < gridData.length; i++) {
+                                        var currentUid = gridData[i].uid;
+                                        var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                                        var verifyButton = $(currenRow).find(".verify");
+                                        var receiveButton = $(currenRow).find(".receive");
+                                     
+                                        //var xxx = $(currenRow).find("a");
+                                        //When Not Verified
+                                        if (gridData[i].ada_doa_varify_status === "Not Verified") {
+
+                                            verifyButton.show();
+                                            receiveButton.hide();
+                                          
+                                        } 
+                                      
+                                        if (gridData[i].ada_doa_varify_status === "Verified") {
+
+                                            verifyButton.hide();
+                                            receiveButton.show();
+                                          
+                                        }
+                                        //For Receive Button
+                                        if (gridData[i].ada_doa_receive_status === "Not Received") {
+
+                                           receiveButton.show();
+                                          
+                                        }
+                                        if (gridData[i].ada_doa_receive_status === "Received") {
+
+                                            receiveButton.hide();
+                                          
+                                        }
+                                    }
+                                },
+                            });
+                        }
+
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

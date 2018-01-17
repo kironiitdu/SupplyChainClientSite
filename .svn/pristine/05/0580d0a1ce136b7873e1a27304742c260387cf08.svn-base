@@ -1,0 +1,1399 @@
+﻿@{
+    ViewBag.Title = "Edit Customer";
+}
+@{
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+
+<style type="text/css">
+    /*#frmCustomerInformation label, #frmCustomerAddress label, #frmCustomerSales label, #frmCustomerPayment label, #frmCustomerAccounts label {
+        margin-top: 5px;
+    }*/
+</style>
+
+<div class="row">
+    <div class="panel panel-success">
+    <div class="panel-heading"><h4>Edit Customer</h4></div>
+        <div id="kWindow"></div>
+        <div class="panel-body">
+            <div id="customerTab">
+                <ul>
+                    <li class="k-state-active">Customer Information</li>
+                    <li id="user_info_tab">User Info</li>
+                    <li>Address</li>
+                    <li>Contacts</li>
+                    <li>Sales</li>
+                    <li>Payment</li>
+                    <li>Accounts</li>
+                    <li>Bank</li>
+                    <li>Product and Capacity</li>
+                    <li>Others</li>
+                </ul>
+
+            <div>
+                <form id="frmCustomerInformation" style="padding: 10px;">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="customer_name">Customer Name</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="customer_name" id="customer_name" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="country_id">Country</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" name="country_id" id="country_id" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br/>
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="city_id">City</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" name="city_id" id="city_id" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="zip_code">Zip Code</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="zip_code" id="zip_code" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br/>
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="address_1">Current Address</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="address_1" id="address_1" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="address_2">Previous Address</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="address_2" id="address_2" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br/>
+
+                        @*
+                            Added by : Rajan Hossain
+                            Added on: 03-01-2016
+                            Record: Factory Location
+                            *@
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="factory_location">Factory Location</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="factory_location" id="factory_location" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="phone">Phone</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="phone" id="phone" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br/>
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="mobile">Mobile</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="mobile" id="mobile" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="fax">Fax</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="fax" id="fax" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br/>
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="email">Email</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="email" class="k-textbox" name="email" id="email" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="web">Web</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="web" id="web" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br/>
+
+
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-8">
+                                <input type="checkbox" id="is_active" name="is_active" class="k-checkbox" checked="checked">
+                                <label class="k-checkbox-label" for="is_active">Is Active</label>
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        <br/>
+                    </div>
+
+                    <div class="row text-center">
+                        <hr/>
+                        <div class="col-md-12">
+                            <input type="button" id="customerAddSubmit" value="Save Customer" class="k-button" style="width: auto;"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+                <!-- Start User Role for Login to system-->
+                <div id="user_info_tab_details">
+                    <div class="col-md-6">
+                        <label for="employee_name">User Name</label><br />
+                        <input type="text" class="k-textbox" name="user_name" id="user_name" style="width:80%;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="employee_status">Password</label><br />
+                        <input type="password" class="k-textbox" name="password" id="password" style="width: 80%;">
+                    </div>
+
+
+                    <div class="clearfix"></div>
+                    <br />
+                    <div class="col-md-6">
+                        <label for="employee_name">Retype Password:</label><br />
+                        <input type="password" class="k-textbox" name="retype_password" id="retype_password" style="width:80%;">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="employee_status">Role Name:</label><br />
+                        <input name="role_id" id="role_id" style="width: 80%;">
+                    </div>
+
+                    <br />
+                    <div class="clearfix"></div>
+                    <br />
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="frmLoginInfoSubmit" value="Save Information" />
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+
+                </div>
+                <!-- End User Role for Login to system-->
+
+
+
+            <div>
+                    <form id="frmCustomerAddress">
+                        <div class="row">
+                            <div class="widget">
+                                <div class="widget-head">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shipping Addres</div>
+                                <div class="widget-body">
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="shipping_country_id">Country</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" name="shipping_country_id" id="shipping_country_id" style="width: 100%;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="shipping_city_id">City</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" name="shipping_city_id" id="shipping_city_id" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="shipping_zip_code">Zip Code</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="shipping_zip_code" id="shipping_zip_code" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="shipping_address_1">Address Line 1</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="shipping_address_1" id="shipping_address_1" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="shipping_email">Email</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="email" class="k-textbox" name="shipping_email" id="shipping_email" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="shipping_address_2">Address Line 2</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="shipping_address_2" id="shipping_address_2" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="shipping_phone">Phone</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="shipping_phone" id="shipping_phone" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+                                </div>
+                            </div>
+
+                            <div class="widget">
+                                <div class="widget-head">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Billing Address <span id="sameAddress" class="btn btn-xs btn-info" style="float: right;">Same As Shipping Address</span></div>
+                                <div class="widget-body">
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="billing_country_id">Country</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" name="billing_country_id" id="billing_country_id" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="billing_city_id">City</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" name="billing_city_id" id="billing_city_id" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="billing_zip_code">Zip Code</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="billing_zip_code" id="billing_zip_code" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="billing_address_1">Address Line 1</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="billing_address_1" id="billing_address_1" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="billing_email">Email</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="email" class="k-textbox" name="billing_email" id="billing_email" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="billing_address_2">Address Line 2</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="billing_address_2" id="billing_address_2" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+
+                                    <div class="col-md-5">
+                                        <div class="col-md-3">
+                                            <label for="billing_phone">Phone</label>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input type="text" class="k-textbox" name="billing_phone" id="billing_phone" style="width: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix"></div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="row text-center">
+                            <hr />
+                            <div class="row">
+                                <input type="button" id="customerAddressSubmit" value="Update Address" class="k-button" style="width: auto;" />
+                            </div>
+                            <br />
+                        </div>
+                    </form>
+                </div>
+
+                <div>
+                    <form id="frmCustomerContacts" style="padding: 10px;">
+                        <div class="row">
+                            <div id="contact_person_grid"></div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                    </form>
+                </div>
+
+                <div>
+                    <form id="frmCustomerSales" style="padding: 10px;">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="sales_person">Sales Person</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="sales_person" id="sales_person" style="width: 100%;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="invoicing_type">Invoicing Type</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="invoicing_type" id="invoicing_type" style="width: 100%;">
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <br />
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <div class="row text-center">
+                            <hr />
+                            <div class="col-md-12">
+                                <input type="button" id="customerSalesSubmit" value="Update Sales Information" class="k-button" style="width: auto;" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div>
+                    <form id="frmCustomerPayment" style="padding: 10px;">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="payment_terms">Payment Terms</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="payment_terms" id="payment_terms" style="width: 100%;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="payment_method">Payment Method</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="payment_method" id="payment_method" style="width: 100%;">
+                                </div>
+                            </div>
+
+                            <div class="clearfix"></div>
+                            <br />
+
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="credit_limit">Credit Limit</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="k-textbox" name="credit_limit" id="credit_limit" style="width: 100%;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <div class="row text-center">
+                            <hr />
+                            <div class="col-md-12">
+                                <input type="button" id="customerPaymentSubmit" value="Update Payment Terms" class="k-button" style="width: auto;" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div>
+                    <form id="frmCustomerAccounts" style="padding: 10px;">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="chart_of_account">Chart Of Account</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="chart_of_account" id="chart_of_account" style="width: 100%;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="businees_posting_group">Business Posting Group</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="businees_posting_group" id="businees_posting_group" style="width: 100%;">
+                                </div>
+                            </div>
+
+                            <div class="clearfix"></div>
+                            <br />
+
+                            <div class="col-md-5">
+                                <div class="col-md-3">
+                                    <label for="bill_to_customer">Bill to Customer</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="bill_to_customer" id="bill_to_customer" style="width: 100%;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <div class="row text-center">
+                            <hr />
+                            <div class="col-md-12">
+                                <input type="button" id="customerAccountsSubmit" value="Update Accounts Information" class="k-button" style="width: auto;" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div>
+                    <form id="frmCustomerBank" style="padding: 10px;">
+                        <div class="row">
+                            <div id="bank_grid"></div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                    </form>
+                </div>
+
+                @*Product and capacity tab start*@
+                <div>
+                    <form id="frmCustomerProductCapacity" style="padding: 10px;">
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="major_product">Major Product</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="major_product" id="major_product" style="width: 100%;">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="major_brand">Major Brand</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" name="major_brand" id="major_brand" class="k-textbox" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="total_capacity">Total Capacity</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" name="total_capacity" id="total_capacity" class="k-textbox" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="total_employment">Total Employment</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" name="total_employment" id="total_employment" class="k-textbox" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <input type="button" class="k-button pull-right" id="save_product_capacity" value="Save Information">
+                    </form>
+                </div>
+
+                @*Others tab starts*@
+                <div>
+                    <form id="save_others" style="padding: 10px;">
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="sister_concerns">Name of Sister Concerns</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" name="sister_concerns" id="sister_concerns" class="k-textbox" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="special_instruction">Special Instructions</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="special_instruction" id="special_instruction" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label for="client_history">Client History</label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="client_history" id="client_history" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+
+                        <input type="button" id="other_information" class="k-button pull-right" value="Save Information">
+                        <div class="clearfix"></div>
+                        <br />
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var __customer_id = 0;
+    var __shipping_address_id = 0;
+    var __billing_address_id = 0;
+    var dataForEdit;
+    var customerTab;
+
+
+    /* ---------------------- If Userinfo is Exists ---------------- */
+    $.getJSON("@UrlConfig.Action("CheckCustomerHasUserInfo", "Customer")", { customer_id: '@ViewBag.customer_id' }, function (rData) {
+         if (rData == false) {
+             $("#user_info_tab").show();
+             $("#user_info_tab_details").show();
+         } else {
+             $("#user_info_tab").hide();
+             $("#user_info_tab_details").hide();
+         }
+    });
+
+
+
+    /* ---------------------- if UserInfo is Exists ----------------- */
+
+
+    var role_id = $("#role_id").kendoComboBox({
+        placeholder: "Select Role...",
+        dataTextField: "role_name",
+        dataValueField: "role_id",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCustomerRole", "Customer")?companyId="+'@companyId',
+                type: "GET"
+            }
+        }
+      },
+        optionLabel: "Select Role"
+
+    }).data("kendoComboBox");
+
+    function loadAllDropdownList() {
+        $("#country_id, #shipping_country_id, #billing_country_id").kendoDropDownList({
+            autoBind: true,
+            dataTextField: "country_name",
+            dataValueField: "country_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCountries", "Country")"
+                    }
+                }
+            },
+            optionLabel: "--Select Country--"
+        });
+
+        $("#city_id").kendoDropDownList({
+            autoBind: true,
+            cascadeFrom: "country_id",
+            dataTextField: "city_name",
+            dataValueField: "city_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCities", "City")"
+                    }
+                }
+            },
+            optionLabel: "--Select City--"
+        });
+
+        $("#shipping_city_id").kendoDropDownList({
+            autoBind: true,
+            cascadeFrom: "shipping_country_id",
+            dataTextField: "city_name",
+            dataValueField: "city_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCities", "City")"
+                    }
+                }
+            },
+            optionLabel: "--Select City--"
+        });
+
+        $("#billing_city_id").kendoDropDownList({
+            autoBind: true,
+            //cascadeFrom: "billing_country_id",
+            dataTextField: "city_name",
+            dataValueField: "city_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCities", "City")"
+                    }
+                }
+            },
+            optionLabel: "--Select City--"
+        });
+
+        $("#sales_person").kendoDropDownList({
+            autoBind: true,
+            dataTextField: "emp_name",
+            dataValueField: "emp_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllEmployees", "Employee")?company_id="+'@companyId'
+                    }
+                }
+            },
+            optionLabel: "--Select Sales Person--"
+        });
+
+        $("#invoicing_type").kendoComboBox({
+            placeholder: "-- Select --",
+            dataTextField: "invoicing_type_name",
+            dataValueField: "invoicing_type_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllInvoicingTypes", "InvoicingType")",
+                        type: "GET"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        $("#payment_terms").kendoComboBox({
+            placeholder: "-- Select --",
+            dataTextField: "payment_terms_name",
+            dataValueField: "payment_terms_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPaymentTerms", "PaymentTerms")?company_id=" + '@companyId',
+                        type: "GET"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        $("#payment_method").kendoComboBox({
+            placeholder: "-- Select --",
+            dataTextField: "payment_method_name",
+            dataValueField: "payment_method_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPaymentMethod", "PaymentMethod")?company_id=" + '@companyId',
+                        type: "GET"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        $("#chart_of_account").kendoDropDownList({
+            autoBind: true,
+            dataTextField: "fieldName",
+            dataValueField: "fieldId",
+            dataSource: [
+                { fieldName: "Chart Of Account 1", fieldId: "1" },
+                { fieldName: "Chart Of Account 2", fieldId: "2" }
+            ],
+            optionLabel: "--Select Chart Of Account--"
+        });
+
+        $("#businees_posting_group").kendoComboBox({
+            placeholder: "-- Select --",
+            dataTextField: "business_posting_group_name",
+            dataValueField: "business_posting_group_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetBusinessPostingGroups", "BussinessPostingGroup")?company_id=" + '@companyId',
+                        type: "GET"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        $("#bill_to_customer").kendoComboBox({
+            placeholder: "-- Select --",
+            dataTextField: "customer_name",
+            dataValueField: "customer_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCustomers", "Customer")",
+                        type: "GET"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+    }
+
+    $(function () {
+        Loading(true);
+        __customer_id = '@ViewBag.customer_id';
+        customerTab = $("#customerTab").kendoTabStrip({}).data("kendoTabStrip");
+
+        $("#sameAddress").click(function () {
+            $("#billing_country_id").data("kendoDropDownList").select(function (dataItem) {
+                if (+$("#shipping_country_id").val() == 0) {
+                    return dataItem.city_id === "";
+                }
+                return dataItem.country_id === +$("#shipping_country_id").val();
+            });
+
+            $("#billing_city_id").data("kendoDropDownList").select(function (dataItem) {
+                if (+$("#shipping_city_id").val() == 0) {
+                    return dataItem.city_id === "";
+                }
+                return dataItem.city_id === +$("#shipping_city_id").val();
+            });
+
+            $("#billing_zip_code").val($("#shipping_zip_code").val());
+            $("#billing_address_1").val($("#shipping_address_1").val());
+            $("#billing_address_2").val($("#shipping_address_2").val());
+            $("#billing_email").val($("#shipping_email").val());
+            $("#billing_phone").val($("#shipping_phone").val());
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+
+        loadCustomerContactsGrid();
+        loadCustomerBankGrid();
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetCustomerById", "Customer")",
+            dataType: 'json',
+            data: {
+                customer_id: __customer_id
+            },
+            success: function (data) {
+                Loading(false);
+                console.log(data);
+
+                loadAllDropdownList();
+
+                $("#customer_name").val(data.customer_name);
+                $("#country_id").val(data.country_id);
+                $("#city_id").val(data.city_id);
+                $("#zip_code").val(data.zip_code);
+                $("#address_1").val(data.address_1);
+                $("#address_2").val(data.address_2);
+                $("#phone").val(data.phone);
+                $("#mobile").val(data.mobile);
+                $("#fax").val(data.fax);
+                $("#email").val(data.email);
+                $("#web").val(data.web);
+                if (data.is_active) {
+                    $("#is_active").prop('checked', true);
+                }
+
+                __shipping_address_id = data.shipping_address_id;
+                __billing_address_id = data.billing_address_id;
+                $("#shipping_country_id").val(data.shipping_country_id);
+                $("#shipping_city_id").val(data.shipping_city_id);
+                $("#shipping_zip_code").val(data.shipping_zip_code);
+                $("#shipping_address_1").val(data.shipping_address_1);
+                $("#shipping_email").val(data.shipping_email);
+                $("#shipping_address_2").val(data.shipping_address_2);
+                $("#shipping_phone").val(data.shipping_phone);
+                $("#billing_country_id").val(data.billing_country_id);
+                $("#billing_city_id").val(data.billing_city_id);
+                $("#billing_zip_code").val(data.billing_zip_code);
+                $("#billing_address_1").val(data.billing_address_1);
+                $("#billing_email").val(data.billing_email);
+                $("#billing_address_2").val(data.billing_address_2);
+                $("#billing_phone").val(data.billing_phone);
+
+                //factory location
+                $("#factory_location").val(data.factory_location);
+
+                //product capacity
+                $("#major_product").val(data.major_product);
+                $("#major_brand").val(data.major_brand);
+                $("#total_capacity").val(data.total_capacity);
+                $("#total_employment").val(data.total_employment);
+
+                //Other information
+                $("#sister_concerns").val(data.sister_concerns);
+                $("#special_instruction").val(data.special_instruction);
+                $("#client_history").val(data.client_history);
+
+
+                $("#sales_person").val(data.sales_person);
+                $("#invoicing_type").val(data.invoicing_type);
+                //$("#invoicing_type").data("kendoDropDownList").select(function (dataItem) {
+                //    return dataItem.fieldId == data.invoicing_type;
+                //});
+
+                $("#payment_terms").val(data.payment_terms);
+                //$("#payment_terms").data("kendoDropDownList").select(function (dataItem) {
+                //    return dataItem.fieldId == data.payment_terms;
+                //});
+
+                $("#payment_method").val(data.payment_method);
+                //$("#payment_method").data("kendoDropDownList").select(function (dataItem) {
+                //    return dataItem.fieldId == data.payment_method;
+                //});
+                $("#credit_limit").val(data.credit_limit);
+                
+                //$("#chart_of_account").val(data.chart_of_account);
+                $("#chart_of_account").data("kendoDropDownList").select(function (dataItem) {
+                    return dataItem.fieldId == data.chart_of_account;
+                });
+
+                $("#businees_posting_group").val(data.businees_posting_group);
+                //$("#businees_posting_group").data("kendoDropDownList").select(function (dataItem) {
+                //    return dataItem.fieldId == data.businees_posting_group;
+                //});
+
+                $("#bill_to_customer").val(data.bill_to_customer);
+                //$("#bill_to_customer").data("kendoDropDownList").select(function (dataItem) {
+                //    return dataItem.fieldId == data.bill_to_customer;
+                //});
+            }
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+
+        $("#customerAddSubmit").click(function () {
+            var formData = $("#frmCustomerInformation").serializeArray();
+
+            var oCustomer = {};
+            oCustomer["customer_id"] = __customer_id;
+            $.each(formData, function (key, val) {
+                if (val.name == "is_active") {
+                    oCustomer[val.name] = 1;
+                } else {
+                    oCustomer[val.name] = val.value;
+                }
+            });
+
+            console.log(oCustomer);
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("Put", "Customer")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oCustomer),
+                success: function (data) {
+                    Loading(false);
+                    if (data.output === "success") {
+                       
+                        data.msg = "Customer Update Successfully";
+                        NotificationMessage(data);
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        //KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+        });
+
+
+        $("#frmLoginInfoSubmit").click(function () {
+            var user_name = $("#user_name").val();
+            var password = $("#password").val();
+            var retype_password = $("#retype_password").val();
+            var role_id = $("#role_id").val();
+            var customer_id = __customer_id;
+            console.log(__customer_id);
+
+            //return false;
+
+            if (password !== retype_password) {
+                sweetAlert("Sorry.....", "Password mismatched", "warning");
+            } else {
+                $.post('@UrlConfig.Action("SaveCustomerUserInfo", "Customer")', { 'user_name': user_name, 'password': password, 'role_id': role_id, 'company_id': '@companyId', 'customer_id': customer_id }, function (returnData) {
+                    NotificationMessage(returnData);
+
+                });
+            }
+
+        });
+
+
+        //Product and Capacity
+        $("#save_product_capacity").click(function () {
+            var formData = $("#frmCustomerProductCapacity").serializeArray();
+            var oProductCapcity = {};
+            oProductCapcity["customer_id"] = __customer_id;
+            $.each(formData, function (key, val) {
+                if (val.name == "is_active") {
+                    oProductCapcity[val.name] = 1;
+                } else {
+                    oProductCapcity[val.name] = val.value;
+                }
+            });
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("InsertProductCapacity", "Customer")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oProductCapcity),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        data.msg = "Product and Capacity Update Successfully";
+                        NotificationMessage(data);
+                        
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        //KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+        });
+
+        //others
+        $("#other_information").click(function () {
+            var formData = $("#save_others").serializeArray();
+            var oOthers = {};
+            oOthers["customer_id"] = __customer_id;
+            $.each(formData, function (key, val) {
+                if (val.name == "is_active") {
+                    oOthers[val.name] = 1;
+                } else {
+                    oOthers[val.name] = val.value;
+                }
+            });
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("InsertOtherInformation", "Customer")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oOthers),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        data.msg = "Others information Update Successfully";
+                        NotificationMessage(data);
+                        return false;
+                    } else {
+                        // KendoWindowFunction(data.msg, "error", "");
+                        NotificationMessage(data);
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $("#customerAddressSubmit").click(function () {
+            var formData = $("#frmCustomerAddress").serializeArray();
+
+            var oCustomerAddress = {};
+            oCustomerAddress["customer_id"] = __customer_id;
+            oCustomerAddress["shipping_address_id"] = __shipping_address_id;
+            oCustomerAddress["billing_address_id"] = __billing_address_id;
+            $.each(formData, function (key, val) {
+                oCustomerAddress[val.name] = val.value;
+            });
+
+            console.log(oCustomerAddress);
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("UpdateCustomerAddress", "Customer")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oCustomerAddress),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        data.msg = "Address Update Successfully";
+                        NotificationMessage(data);
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                       // KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $("#customerSalesSubmit").click(function () {
+            var formData = $("#frmCustomerSales").serializeArray();
+
+            var oCustomerSales = {};
+            oCustomerSales["customer_id"] = __customer_id;
+            $.each(formData, function (key, val) {
+                oCustomerSales[val.name] = val.value;
+            });
+
+            console.log(oCustomerSales);
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("InsertCustomerSales", "Customer")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oCustomerSales),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        data.msg = "Sales Update Successfully";
+                        NotificationMessage(data);
+                        return false;
+                    } else {
+                        KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $("#customerPaymentSubmit").click(function () {
+            var formData = $("#frmCustomerPayment").serializeArray();
+
+            var oCustomerPayment = {};
+            oCustomerPayment["customer_id"] = __customer_id;
+            $.each(formData, function (key, val) {
+                oCustomerPayment[val.name] = val.value;
+            });
+
+            console.log(oCustomerPayment);
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("InsertCustomerPayment", "Customer")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oCustomerPayment),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        data.msg = "Payment Update Successfully";
+                        NotificationMessage(data);
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        //KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+        });
+
+        $("#customerAccountsSubmit").click(function () {
+            var formData = $("#frmCustomerAccounts").serializeArray();
+
+            var oCustomerAccounts = {};
+            oCustomerAccounts["customer_id"] = __customer_id;
+            $.each(formData, function (key, val) {
+                oCustomerAccounts[val.name] = val.value;
+            });
+
+            console.log(oCustomerAccounts);
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("InsertCustomerAccounts", "Customer")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oCustomerAccounts),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        data.msg = "Customer Account Update Successfully";
+                        NotificationMessage(data);
+                        return false;
+                    } else {
+                        NotificationMessage(data);
+                        //KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+        });
+
+        Loading(false);
+    });
+
+    function loadCustomerContactsGrid() {
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetCustomerContactsByCustomerId", "CustomerContacts")?customer_id=" + __customer_id,
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "CustomerContacts")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#contact_person_grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "CustomerContacts")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "CustomerContacts")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#contact_person_grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        //KendoWindowFunction(e.msg, "error", "");
+                        NotificationMessage(e);
+                        this.cancelChanges();
+                    }
+                },
+                model: {
+                    id: "contact_id",
+                    fields: {
+                        contact_id: { editable: false, nullable: true },
+                        source_id: { editable: false, type: "number", defaultValue: __customer_id },
+                        contact_name: { type: "string" },
+                        designation: { type: "string" },
+                        department: { type: "string" },
+                        phone: { type: "string" },
+                        mobile: { type: "string" },
+                        email: { type: "string" }
+                    }
+                }
+            }
+        });
+        jQuery("#contact_person_grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            scrollable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Customer Contact" }],
+            columns: [
+                 { field: "department", title: "Department" },
+                { field: "contact_name", title: "Contact Name" },
+                { field: "designation", title: "Designation" },
+                { field: "phone", title: "Phone" },
+                { field: "mobile", title: "Mobile" },
+                { field: "email", title: "Email" },
+                { command: ["edit", "destroy"], title: "Action", width: "200px" }
+            ],
+            editable: "inline"
+        });
+    }
+
+    function loadCustomerBankGrid() {
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetCustomerBankByCustomerId", "CustomerBank")?customer_id=" + __customer_id,
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "CustomerBank")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#bank_grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "CustomerBank")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "CustomerBank")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#bank_grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        NotificationMessage(e);
+                        //KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+                model: {
+                    id: "bank_id",
+                    fields: {
+                        bank_id: { editable: false, nullable: true },
+                        source_id: { editable: false, type: "number", defaultValue: __customer_id },
+                        bank_name: { type: "string" },
+                        bank_acc_no: { type: "string" },
+                        bank_acc_id: { type: "string" },
+                        bank_branch_name: { type: "string" }
+                    }
+                }
+            }
+        });
+        jQuery("#bank_grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            scrollable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Customer Bank" }],
+            columns: [
+                { field: "bank_name", title: "Bank Name" },
+                { field: "bank_acc_no", title: "Bank Account No" },
+                { field: "bank_acc_id", title: "Bank Account ID" },
+                { field: "bank_branch_name", title: "Branch Name" },
+                { command: ["edit", "destroy"], title: "Action", width: "200px" }
+            ],
+            editable: "inline"
+        });
+    }
+</script>

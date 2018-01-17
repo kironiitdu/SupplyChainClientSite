@@ -1,0 +1,103 @@
+﻿@*Author:Farzana Islam
+Date:14/8/2016*@
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Parent Location Setup</h4></div>
+    <div class="panel-body">
+        
+        <div id="grid"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $('#context').addClass('animated rollIn');
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllParentLocations", "ParentLocation")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "ParentLocation")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                //swal("Success", e.msg, "success");
+                               
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "ParentLocation")",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        },
+                        create: {
+                            url: "@UrlConfig.Action("Post", "ParentLocation")",
+                            type: "POST",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                                //console.log(e.responseJSON.msg);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                            }
+                        },
+
+                        model: {
+                            id: "parent_location_id",
+                            fields: {
+                                parent_location_id: { editable: false, nullable: true },
+                                parent_location_name: { type: "string", validation: { required: true } },
+
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+                    toolbar: [{ name: "create", text: "Add Parent Location" }],
+                    columns: [
+                        { field: "parent_location_name", title: "Parent Location Name", width: "150px" },
+                        { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+                    editable: "inline"
+                });
+
+            });
+
+
+</script>
+
+<div id="kWindow"></div>
+
+

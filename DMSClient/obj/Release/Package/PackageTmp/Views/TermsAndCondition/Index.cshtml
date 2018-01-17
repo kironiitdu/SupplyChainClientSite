@@ -1,0 +1,116 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Terms And Condition List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/TermsAndCondition/EditTermsAndCondition?terms_and_condition_id=#= terms_and_condition_id #" class="k-button k-grid-even">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("AddTermsAndCondition", "TermsAndCondition")">
+                    <span class="k-icon k-add"></span>
+                    Add Terms And Condition
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllTermsAndCondition", "TermsAndCondition")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "TermsAndCondition")",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "terms_and_condition_id",
+                            fields: {
+                                terms_and_condition_id: { editable: false, nullable: true },
+                                terms_and_condition_description: { type: "string" },
+                                terms_condition_header: { type: "string" },                      
+                                is_active: { type: "boolean" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "terms_condition_header", title: "Terms And Conditions Reference", width: "150px" },
+                        { field: "terms_and_condition_description", title: "Terms And Conditions Description", width: "100px" },                 
+                        { field: "is_active", title: "is_active", width: "80px" },
+                        {
+                            title: "Action", width: "100px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                        { command: ["destroy"], title: "Action", width: "100px" }],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

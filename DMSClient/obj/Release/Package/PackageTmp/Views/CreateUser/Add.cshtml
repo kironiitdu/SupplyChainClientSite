@@ -1,0 +1,159 @@
+﻿@*
+    Page: Create User Form
+    Author: Farzana Islam
+
+*@
+
+@{
+    ViewBag.Title = "Add";
+
+
+}
+@{
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+}
+<div class="row">
+    <div class="panel panel-success">
+        <div class="panel-heading">&nbsp;&nbsp;Create User</div>
+        <div class="panel-body">
+            <form id="CompanyAdd" enctype="multipart/form-data">
+                <div class="row">
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Employee Code:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="employee_id" id="employee_id" style="width:80%;">
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">User Name:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="user_name" id="user_name" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Password:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="password" class="k-textbox" name="password" id="password" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_location">Confirm Password:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="password" name="confirm_password" id="confirm_password" class="k-textbox" style="width:80%;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="" id="UserAddSubmit" value="Save Information" style="" />
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+                <input type="hidden" id="companyid" value="@companyId" />
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    @*var employee_id = '@companyId'*@
+
+    $(document).ready(function () {
+
+        var user = $("#employee_id").kendoComboBox({
+            placeholder: "Select Employee Code...",
+            dataTextField: "emp_info",
+            dataValueField: "employee_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllEmployeeCodes", "CreateUser")?fake_params=" + 1,
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#UserAddSubmit").click(function () {
+            Loading(true);
+
+            var employee_id = $("#employee_id").val();
+            var user_name = $("#user_name").val();
+            var password = $("#password").val();
+            var confirm_password = $("#confirm_password").val();
+            var company_id = $("#companyid").val();
+            //Role ID now hard coded but to be collected from form soon
+            //Role type id hard coded but to be collected from form soon
+
+            var role_id = 50;
+            var role_type_id = 4;
+
+            var oUser = {
+                employee_id: employee_id,
+                user_name: user_name,
+                password: password,
+                confirm_password: confirm_password,
+                company_id: company_id,
+                role_id: role_id,
+                role_type_id: role_type_id
+
+            };
+
+            console.log(oUser);
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "CreateUser")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oUser),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        KendoWindowFunction(data.msg, "success", "");
+                        return false;
+                    } else {
+                        KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+
+        });
+    });
+
+</script>

@@ -1,0 +1,200 @@
+﻿@{
+    ViewBag.Title = "RFD List";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+}
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Ready For Delivery List</div>
+        <div class="panel-body">
+            <script id="confirm-delivery-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Delivery/ConfirmDelivery?delivery_master_id=#= delivery_master_id #" class="k-button k-grid courierUpdate">Confirm Delivery</a>
+            </script>
+            <script id="Report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Delivery/GetDeliveryReport?delivery_master_id=#= delivery_master_id#" target="_blank" class="k-button k-grid-even">Challan PDF</a>
+            </script>
+            <script id="Excel-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Delivery/GetDeliveryExcelReportByDeliveryMasterId?delivery_master_id=#= delivery_master_id#" target="_blank" class="k-button k-grid-even">Excel</a>
+            </script>
+
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            var userId = '@userId';
+            var partyTypeId = '@partyTypeId';
+            var partyId = '@partyId';
+
+            $(document).ready(function () {
+              
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllDeliveryByPartyId", "Delivery")?party_id=" + partyId + "",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("", "")",
+                            type: "DELETE"
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "delivery_master_id",
+                            fields: {
+                                delivery_master_id: { editable: false, nullable: true },
+                                delivery_no: { type: "string" },
+                                delivery_date: { type: "string" },
+                                party_id: { type: "string" },
+                                party_name: { type: "string" },
+                                total_amount: { type: "string" },
+                                courier_slip_no: { type: "string" },
+                                receive_date: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                function verifyDelivery(e) {
+                    e.preventDefault();
+                    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+                    var deliveryMasterId = dataItem.delivery_master_id;
+                    //var userId = userId;
+                    //alert(requisitionMasterId);
+                    //alert(dataItem.requisition_code);
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("UpdateApproveStatus", "Delivery")",
+                        data: { delivery_master_id: deliveryMasterId, userid: userId },//Passing parameter
+                        dataType: "json",
+                        //contentType: "application/json",
+                        success: function (data) {
+                            Loading(false);
+                            console.log(data);
+                            if (data.output === "success") {
+
+
+                                swal("Success", data.msg, "success");
+                                window.location.href = '/Delivery/Index';
+                                return false;
+                            } else {
+                                swal("Exception", data.msg, "error");
+                                return false;
+                            }
+                        }
+                    });
+
+                }
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    overflow: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50, 100]
+                    },
+
+                    sortable: true,
+                    //groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "delivery_no", title: "Delivery No", id: "delivery_master_id", width: "90px" },
+                        { field: "party_name", title: "Party", width: "150px" },
+                        { field: "requisition_code", title: "Requisition No", width: "100px" },
+                        {
+                            field: "created_date", title: "Requisition Date", width: "100px" ,
+                            template: "#= kendo.toString(kendo.parseDate(created_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                        },
+                        { field: "status", title: "Status", width: "100px" },
+                        {
+                            field: "receive_date",
+                            title: "Receive Date", width: "120px",
+                            template: "#= kendo.toString(kendo.parseDate(receive_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                        },
+                        {
+                            title: "Challan", width: "120px", template: kendo.template($("#Report-template").html())
+                        },
+                        {
+                            title: "Confirm", width: "120px", template: kendo.template($("#confirm-delivery-template").html())
+                        },
+                        { command: { text: "Cancel delivery", click: verifyDelivery }, title: "Cancel", width: "100px" }
+                        
+                    ],
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+
+                            var receiveButton = $(currenRow).find(".k-grid-Receive");
+                            var courierUpdate = $(currenRow).find(".courierUpdate");
+
+                            //  console.log(xxx);
+                            if (gridData[i].status === "Received") {
+
+                                receiveButton.hide();
+
+
+                            } else {
+                                //editButtonReport.hide();
+                            }
+                         
+                            // MD-DBIS-Retailer Won't see Courier Update Added By Kiron : 16-11-16
+                            if (partyTypeId == 8 || partyTypeId == 2 || partyTypeId == 3) {
+                                courierUpdate.hide();
+                            }
+                            else {
+                                courierUpdate.show();
+                            }
+                           
+                        }
+                    },
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

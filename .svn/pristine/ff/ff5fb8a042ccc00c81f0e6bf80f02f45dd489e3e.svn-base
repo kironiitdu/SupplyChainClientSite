@@ -1,0 +1,65 @@
+﻿using System.Web.Mvc;
+using DMSClient.Models;
+
+namespace DMSClient.Controllers
+{
+    public class EmployeeController : Controller
+    {
+        // GET: Employee
+        public ActionResult Index()
+        {
+            string roleid = (string)Session["user_role_id"];
+            string userid = (string)Session["user_au_id"];
+
+            string ConName = "Employee";
+            string ActionName = "Index";
+
+            if (string.IsNullOrEmpty(roleid) && string.IsNullOrEmpty(userid))
+            {
+                Response.Redirect("/Login/Index");
+            }
+            bool permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            if (!permission)
+                Response.Redirect("/Error/Index");
+            return View();
+        }
+        public ActionResult Add()
+        {
+            string roleid = (string)Session["user_role_id"];
+            string userid = (string)Session["user_au_id"];
+
+            string ConName = "Employee";
+            string ActionName = "Add";
+
+            if (string.IsNullOrEmpty(roleid) && string.IsNullOrEmpty(userid))
+            {
+                Response.Redirect("/Login/Index");
+            }
+            bool permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            if (!permission)
+                Response.Redirect("/Error/Index");
+            return View();
+        }
+        public ActionResult Edit(int employee_id)
+        {
+            string roleid = (string)Session["user_role_id"];
+            string userid = (string)Session["user_au_id"];
+
+            if (string.IsNullOrEmpty(roleid) && string.IsNullOrEmpty(userid))
+            {
+                Response.Redirect("/Login/Index");
+            }
+
+            ViewBag.employeeId = employee_id;
+            return View();
+        }
+        public ActionResult AutoComplete()
+        {
+            return View();
+        }
+        public ActionResult GridWithDropdown()
+        {
+            return View();
+        }
+    }
+}

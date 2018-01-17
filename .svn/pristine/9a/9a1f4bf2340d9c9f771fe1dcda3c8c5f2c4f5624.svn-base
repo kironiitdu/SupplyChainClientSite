@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var partyId = @partyId;
+
+    $(document).ready(function () {
+      
+    });
+</script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Party Journal Report</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="from_date">From Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="to_date">To Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="to_date" name="to_date" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="party_id">Party Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="party_id" name="party_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnPartyJournalReport" name="btnPartyJournalReport" value="Generate Report" />
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+
+        // party list
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Partyn Name ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+
+        });
+        if (partyId != 1) {
+            $("#party_id").data("kendoComboBox").value(partyId);
+            $("#party_id").kendoComboBox({ enable: false });
+        }
+
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy/MM/dd');
+        //$("#from_date").val(todayDate);
+        //$("#to_date").val(todayDate);
+        $("#from_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+        $("#to_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+        $("#btnPartyJournalReport").click(function () {
+            Loading(false);
+            var from_date = $("#from_date").val();
+            var to_date = $("#to_date").val();
+            var party_id = $("#party_id").val();
+
+
+            if (from_date == '') {
+                Loading(false);
+                sweetAlert("Sorry...", "Select From Date", "warning");
+                return false;
+            }
+            else if (to_date == '') {
+                Loading(false);
+                sweetAlert("Sorry...", "Select To Date", "warning");
+                return false;
+            }
+
+            if (party_id == '') {
+                Loading(false);
+                sweetAlert("Sorry...", "Select Party", "warning");
+                return false;
+            }
+            var partyJournalReport = {
+                party_id: party_id,
+                from_date: from_date,
+                to_date: to_date,
+
+            };
+
+            var url = "/PartyJournalReport/GetPartyJournalReport?party_id=" + party_id + "&from_date=" + from_date + "&to_date=" + to_date;
+            window.open(url, '_blank');
+
+
+        });
+    });
+
+
+
+
+
+</script>

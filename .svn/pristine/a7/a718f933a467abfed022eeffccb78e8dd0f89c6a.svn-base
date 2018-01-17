@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-success">
+    <div class="panel-heading">Receiving List</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="ReceiveingList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        //alert("As");
+        $("#ReceiveingList").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetReceivingMaster", "Receiving")",
+                        type: "GET",
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            receive_master_id: { type: "number" },
+                            receive_code: { type: "string", editable: false },
+                            po_master_id: { type: "number", editable: false },
+                            order_date: { type: "date", editable: false },
+                            receive_date: { type: "date", editable: false },
+                            company_id: { type: "number", editable: false },
+                            status: { type: "string" },
+                            supplier_name: { type: "string" }
+                        }
+                    }
+                },
+                pageSize: 10
+            },
+            //sortable: {
+            //    mode: "single",
+            //    allowUnsort: false
+            //},
+            pageable: true,
+            filterable: true,
+            columns: [
+                {
+                    field: "receive_master_id",
+                    hidden: true
+                },
+                {
+                    field: "receive_code",
+                    title: "Code"
+                },
+                {
+                    field: "supplier_name",
+                    title: "Supplier Name"
+                },
+                {
+                    field: "po_master_id",
+                    title: "PO Id"
+                },
+                {
+                    field: "order_date",
+                    title: "Order Date",
+                    template: "#= kendo.toString(kendo.parseDate(order_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+                {
+                    field: "receive_date",
+                    title: "Receive Date",
+                    template: "#= kendo.toString(kendo.parseDate(receive_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+                },
+
+                {
+                    field: "status",
+                    title: "Status"
+
+                },
+                {
+                    template: kendo.template($("#del-template").html()),
+                    title: "&nbsp",
+                    width: "198px"
+                }
+            ]
+        });
+    });
+</script>
+
+<script id="del-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="Add?receive_master_id=#= receive_master_id #" class="k-button k-button-icontext k-grid-edit"><span class="k-icon k-edit"></span>Edit</a>
+
+</script>

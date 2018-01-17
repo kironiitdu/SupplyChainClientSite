@@ -1,0 +1,106 @@
+﻿@{
+    ViewBag.Title = "Add Payment Terms";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+
+<div class="row">
+    <form id="frmPaymentTermsAdd">
+        <div class="panel panel-success">
+            <div class="panel-heading">&nbsp;&nbsp;Add Payment Terms</div>
+            <div id="kWindow"></div>
+            <div class="panel-body">
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="payment_terms_name">Payment Terms Name</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" class="k-textbox" name="payment_terms_name" id="payment_terms_name" style="width: 80%;">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="payment_terms_details">Payment Terms Details</label>
+                    </div>
+                    <div class="col-md-8">
+                        <textarea class="k-textbox" name="payment_terms_details" id="payment_terms_details" style="width: 80%;"></textarea>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+                <br />
+
+                <div class="col-md-6">
+                    <input type="checkbox" id="is_active" name="is_active" class="k-checkbox" checked="checked">
+                    <label class="k-checkbox-label" for="is_active">Is Active</label>
+                </div>
+
+                <div class="clearfix"></div>
+                <br />
+
+                <div class="col-md-6">
+                    <input type="button" class="k-button" id="frmPaymentTermsAddSubmit" value="Save Information" />
+                </div>
+
+                <div class="clearfix"></div>
+                <br />
+            </div>
+        </div>
+    </form>
+    </div>
+
+    <!--Javascript and Ajax to Submit the Form-->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#frmPaymentTermsAddSubmit").click(function () {
+                Loading(true);
+
+                var payment_terms_name = $("#payment_terms_name").val();
+                var payment_terms_details = $("#payment_terms_details").val();
+                var is_active = $("#is_active").is(":checked");
+                var user_id = '@userId';
+                var company_id = '@companyId';
+
+                var payment_terms = {
+                    payment_terms_name: payment_terms_name,
+                    payment_terms_details: payment_terms_details,
+                    is_active: is_active,
+                    created_by: user_id,
+                    company_id: company_id
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "@UrlConfig.Action("Post", "PaymentTerms")",
+                    data: JSON.stringify(payment_terms),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        if (data.output === "success") {
+                            KendoWindowFunction(data.msg, "success", "");
+                            return false;
+                        } else {
+                            KendoWindowFunction(data.msg, "error", "");
+                            return false;
+                        }
+                    }
+                });
+            });
+        });
+    </script>

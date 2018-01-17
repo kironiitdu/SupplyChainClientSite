@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Inventory Adjustment List";
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Inventory Adjustment List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/InventoryAdjustment/AccessoriesEdit?inventory_adjustment_id=#= inventory_adjustment_id #" class="k-button k-grid-even edit">Edit</a>
+        </script>
+
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Accessories", "InventoryAdjustment")">
+                    <span class="k-icon k-add"></span>
+                    Add Inventory Adjustment
+                </a>
+                <a class="k-button k-button-icontext k-grid-add" id="btnExportExcel">
+                    <span class="k-icon k-add"></span>
+                    Export Full Excel
+                </a>
+            </div>
+        </div>
+
+        <div id="grid"></div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                $("#btnExportExcel").click(function () {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllInventoryAdjustment", "InventoryAdjustment")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "InventoryAdjustment")",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                            }
+
+                        },
+
+                        model: {
+                            id: "inventory_adjustment_id",
+                            fields: {
+                                inventory_adjustment_id: { editable: false, nullable: true },
+                                adjustment_type: { type: "string" },
+                                warehouse_name: { type: "string" },
+                                contra_warehouse_name: { type: "string" },
+                                product_name: { type: "string" },
+                                color_name: { type: "string" },
+                                product_version_name: { type: "string" },
+                                system_quantity: { type: "string" },
+                                physical_quantity: { type: "string" },
+                                adjustment_quantity: { type: "string" },
+                                status: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                var d = new Date();
+                var dateTime = d.toJSON();
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    excel: {
+                        fileName: "Inventory_Adjustment_List_" + dateTime + ".xlsx",
+                        allPages: true
+                    },
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "adjustment_type", title: "Adjustment Type", id: "inventory_adjustment_id", width: "50px" },
+                        { field: "warehouse_name", title: "Warehouse", width: "50px" },
+                        { field: "contra_warehouse_name", title: "Contra Warehouse", width: "50px" },
+                        { field: "product_name", title: "Product", width: "50px" },
+                        { field: "color_name", title: "Color", width: "50px" },
+                        { field: "product_version_name", title: "Version", width: "50px" },
+                        { field: "system_quantity", title: "QOH In System", width: "50px" },
+                        { field: "physical_quantity", title: "Physical Count ", width: "50px" },
+                        { field: "adjustment_quantity", title: "Adjustment Quantity", width: "50px" },
+                        { field: "status", title: "Status", width: "50px" },
+                        {
+                            title: "Action", width: "30px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                        {
+                            command: { name: "destroy" }, title: "Action", width: "50px"
+                        }],
+
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                            var editButtonApproved = $(currenRow).find(".edit");
+                            var deleteButton = $(currenRow).find(".k-grid-delete");
+
+                            if (gridData[i].status == "Approved" || gridData[i].status == "Cancelled") {
+                                editButtonApproved.hide();
+                                deleteButton.hide();
+                            }
+                        }
+                    },
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

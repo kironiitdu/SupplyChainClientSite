@@ -1,0 +1,396 @@
+﻿@{
+    ViewBag.Title = "Edit Warehouse";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#reset_pass").hide();
+
+        var warehouse_id = '@ViewBag.warehouse_id';
+        Loading(false);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetWarehouseById", "Warehouse")?warehouse_id=" + warehouse_id,          
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(data.warehouse_id);
+                $("#warehuse_id").val(data.warehuse_id);
+                $("#warehouse_name").val(data.warehouse_name);
+                $("#warehouse_code").val(data.warehouse_code);
+                $('#warehouse_address').val(data.warehouse_address);
+                $('#warehouse_type').val(data.warehouse_type);
+                $("#region_id").data("kendoComboBox").value(data.region_id);
+                $("#area_id").data("kendoComboBox").value(data.area_id);
+                $("#territory_id").data("kendoComboBox").value(data.territory_id);
+                $('#is_active').val(data.is_active);
+                var kkk = data.is_active;
+                if (kkk === true) {
+                    $('#is_active').prop('checked', true);
+                }
+                else {
+                    $('#is_active').prop('checked', false);
+                }
+                //$('#employee_id').data("kendoComboBox").value(data.warehouse_incharge);
+                //$('#party_id').data("kendoComboBox").value(data.party_id);
+                //$('#party_type_id').data("kendoComboBox").value(data.party_type_id);
+
+              
+
+            }
+        });
+
+        var data = [
+               { text: "Physical", value: "Physical" },
+               { text: "Virtual", value: "Virtual" }
+
+        ];
+
+        // create DropDownList from input HTML element
+        $("#warehouse_type").kendoComboBox({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: data,
+            index: 0,
+            //change: onChange
+        });
+
+
+    });
+    
+  
+    @*$("#employee_id").kendoComboBox({
+        autoBind: true,
+        placeholder: "--- Select Incharge ---",
+        dataTextField: "employee_name",
+        dataValueField: "employee_id",
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetEmplyieesForDropdown", "Employee")"
+            }
+        }
+    }
+
+    });*@
+</script>
+
+
+<div class="panel panel-success">
+    <div class="panel-heading">Warehouse Edit</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="warehouse_name">Warehouse Name</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="warehouse_name" name="warehouse_name" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="warehouse_code">Warehouse Code</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="warehouse_code" name="warehouse_code" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="warehouse_address">Warehouse Address</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="warehouse_address" name="warehouse_address" class="k-textbox" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="warehouse_type">Warehouse Type</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="warehouse_type" name="warehouse_type" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="region_id">Region:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="region_id" id="region_id" class="dropdown">
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="area_id">Area:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="area_id" id="area_id" class="dropdown">
+                </div>
+
+
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="territory_id">Territory:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="territory_id" id="territory_id" class="dropdown">
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="is_active">Is Active</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" id="is_active" value="1" checked="checked" name="is_active" />
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+       
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnSaveWarehouse" name="btnSaveWarehouse" value="Update Warehouse" />
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        //$('#chk_pass').click(function () {
+        //    if ($(this).is(':checked')) {
+        //        $("#reset_pass").show(500);
+        //    }
+        //    else {
+        //        $("#reset_pass").hide(500);
+        //        $("#password").val("");
+        //        $("#confirm_password").val("");
+        //    }
+        //});
+
+        // role list
+        // Region
+        $("#region_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        //Area
+        $("#area_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+        //On Change Territory
+        $('#area_id').change(function () {
+            var area_id = $('#area_id').val();            
+            $("#territory_id").kendoComboBox({
+                autoBind: true,
+                placeholder: "--- Select Territory ---",
+                dataTextField: "territory_name",
+                dataValueField: "territory_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllTerritoryByAreaId", "Territory")",
+                        data: { area_id: area_id }
+                    }
+                }
+            }
+            });
+
+    });
+
+        //Territory
+
+        $("#territory_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "area_id",
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        $("#employee_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Incharge ---",
+            dataTextField: "employee_name",
+            dataValueField: "employee_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetEmplyieesForDropdown", "Employee")"
+                    }
+                }
+            }
+
+        });
+             
+
+        //branch list
+        $("#party_type_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Party Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPartyType", "PartyType")"
+                }
+            }
+        }
+
+    });
+
+    //party list
+    $("#party_id").kendoComboBox({
+        autoBind: true,
+        placeholder: "--- Select Party ---",
+        dataTextField: "party_name",
+        dataValueField: "party_id",
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllParty", "Party")"
+                }
+            }
+        }
+
+    });
+    var data = [
+        { text: "Physical", value: "Physical" },
+        { text: "Virtual", value: "Virtual" }
+
+    ];
+
+    // create DropDownList from input HTML element
+    $("#warehouse_type").kendoComboBox({
+        dataTextField: "text",
+        dataValueField: "value",
+        dataSource: data,
+        index: 0,
+        //change: onChange
+    });
+
+ 
+
+
+    $("#btnSaveWarehouse").click(function() {
+        Loading(true);
+
+        var warehouse_id = '@ViewBag.warehouse_id';
+        var warehouse_name = $("#warehouse_name").val();
+        var warehouse_code = $("#warehouse_code").val();
+        var warehouse_address = $("#warehouse_address").val();
+        var warehouse_type = $("#warehouse_type").val();
+        var region_id = $("#region_id").val();
+        var area_id = $("#area_id").val();
+        var territory_id = $("#territory_id").val();
+        var updated_by=@userId;
+        var is_active = false;
+        if ($("#is_active").is(":checked")) {
+            is_active = true;
+        }
+
+
+
+        var warehouse = {
+            warehouse_id: warehouse_id,
+            warehouse_name: warehouse_name,
+            region_id: region_id,
+            area_id: area_id,
+            territory_id:territory_id,
+            warehouse_code: warehouse_code,
+            warehouse_address: warehouse_address,
+            warehouse_type: warehouse_type,
+            updated_by:updated_by,
+            is_active: is_active,
+
+        };
+        $.ajax({
+            type: "PUT",
+            url: "@UrlConfig.Action("Put", "Warehouse")",
+            data: JSON.stringify(warehouse),
+            dataType: "json",
+            contentType: "application/json",
+            success: function(data) {
+                Loading(false);
+                console.log(data);
+
+                if (data.output === "success") {
+                    sweetAlert("Yes...", data.msg, "success");
+                    window.location.href = '/Warehouse/index';
+                    return false;
+
+                } else {
+                    sweetAlert("Sorry...", data.msg, "error");
+                    return false;
+                }
+            }
+        });
+    });
+
+
+    });
+
+
+
+</script>

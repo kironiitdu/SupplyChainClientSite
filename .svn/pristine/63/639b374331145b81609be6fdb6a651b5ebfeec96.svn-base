@@ -1,0 +1,199 @@
+﻿@{
+    ViewBag.Title = "Daily Sales Report";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var partyId = @partyId;
+
+    $(document).ready(function () {
+        $('#base').addClass('animated zoomIn');
+    });
+</script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Daily Sales Report</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="to_date" name="to_date" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="party_id">Party Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="party_id" name="party_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnDailySalesReport" name="btnDailySalesReport" value="Generate Report"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" id="reportArea" style="height: 350px;overflow: scroll">
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+
+        // party list
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Partyn Name ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+
+        });
+        if (partyId != 1) {
+            $("#party_id").data("kendoComboBox").value(partyId);
+            $("#party_id").kendoComboBox({ enable: false });
+        }
+
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+        $("#from_date").val(todayDate);
+        $("#to_date").val(todayDate);
+        $("#from_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            }
+        });
+        $("#to_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            }
+        });
+
+        $("#btnDailySalesReport").click(function () {
+            Loading(false);
+            var fromDate = $("#from_date").val();
+            var toDate = $("#to_date").val();
+            var partyId = $("#party_id").val();
+
+            if (!partyId) {
+                //Loading(false);
+                //sweetAlert("Sorry...", "Select Party", "warning");
+                //return false;
+                partyId = 0;
+               
+            }
+
+            //var url = "/PartyJournalReport/GetPartyJournalReport?party_id=" + party_id + "&from_date=" + from_date +
+
+           //"&to_date=" + to_date;
+            //var url = "/DailySalesReport/GetDailySalesReport?party_id=" + party_id + "&from_date=" + from_date + "&to_date=" + to_date;
+            //window.open(url, '_blank');
+            
+            Loading(true);
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetDailySalesReport", "DailySales")",
+                data: {  party_id: partyId, from_date: fromDate, to_date: toDate },
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    if (data) {
+                        var strData = '<table border="1"><tr><td>Customer Name</td><td>Cust.Type</td><td>CustId</td><td>Responsible</td><td>Zone</td><td>Area</td><td>Inv.No</td><td>Inv.Date</td><td>Model</td><td>Color</td><td>Qty</td><td>Price</td><td>Bill.Amt</td><td>Rebate</td><td>LiveDummy</td><td>Adjust</td><td>Net Amt</td><td>Gross Total</td><td>Bank</td><td>Deposit Date</td><td>DC/CheckNo.</td><td>Deposit Amt.</td><td>Total Received</td><td>Balance</td><td>Balance Status</td><td>Return Quantity</td><td>Return Value</td><td>Return Total</td><td>Balance After Return</td><td>Return Date</td></tr>';
+                        var invoiceNoList = $.unique(data.map(function(d) { return d.invoice_no; }));
+                        invoiceNoList.forEach(function(invoiceNo) {
+                            var invDetails = data.filter(function (el) { return (el.invoice_no == invoiceNo) ;});
+                            var invRowCount = invDetails.length;
+                            var grossTotal = 0;
+                            for (var j = 0; j < invRowCount; j++) {
+                                grossTotal += invDetails[j]["net_amount"];
+                            }
+                            for (var i = 0; i < invRowCount; i++) {
+                                if (i == 0) {
+                                    strData += '<tr><td>'+invDetails[i]["customer_name"]+'</td><td>'+invDetails[i]["cust_type"]+'</td><td>'+invDetails[i]["cust_id"]+'</td><td>#</td><td>'+invDetails[i]["zone_name"]+'</td><td>'+invDetails[i]["area_name"]+'</td><td>'+invoiceNo+'</td><td>'+invDetails[i]["invoice_date"]+'</td><td>'+invDetails[i]["product_name"]+'</td><td>'+invDetails[i]["color_name"]+'</td><td>'+invDetails[i]["qty"]+'</td><td>'+invDetails[i]["price"]+'</td><td>'+invDetails[i]["billing_Amt"]+'</td><td>'+invDetails[i]["rebate"]+'</td><td>'+invDetails[i]["live_dummy"]+'</td><td>'+invDetails[i]["adjust"]+'</td><td>'+invDetails[i]["net_amount"]+'</td><td rowspan="'+invRowCount+'">' + grossTotal + '</td><td>'+invDetails[i]["bank_name"]+'</td><td>'+invDetails[i]["deposite_date"]+'</td><td>'+invDetails[i]["dc_or_chqno"]+'</td><td>'+invDetails[i]["deposit_amt"]+'</td><td>'+invDetails[i]["total_received"]+'</td><td>'+invDetails[i]["balance_amt"]+'</td><td>'+invDetails[i]["balance_status"]+'</td><td>'+invDetails[i]["return_qty"]+'</td><td>'+invDetails[i]["return_date"]+'</td><td>'+invDetails[i]["return_value"]+'</td><td>'+invDetails[i]["return_total"]+'</td><td>'+invDetails[i]["balance_afterreturn"]+'</td></tr>';
+                                } else {
+                                    strData += '<tr><td>'+invDetails[i]["customer_name"]+'</td><td>'+invDetails[i]["cust_type"]+'</td><td>'+invDetails[i]["cust_id"]+'</td><td>#</td><td>'+invDetails[i]["zone_name"]+'</td><td>'+invDetails[i]["area_name"]+'</td><td>'+invoiceNo+'</td><td>'+invDetails[i]["invoice_date"]+'</td><td>'+invDetails[i]["product_name"]+'</td><td>'+invDetails[i]["color_name"]+'</td><td>'+invDetails[i]["qty"]+'</td><td>'+invDetails[i]["price"]+'</td><td>'+invDetails[i]["billing_Amt"]+'</td><td>'+invDetails[i]["rebate"]+'</td><td>'+invDetails[i]["live_dummy"]+'</td><td>'+invDetails[i]["adjust"]+'</td><td>'+invDetails[i]["net_amount"]+'</td><td>'+invDetails[i]["bank_name"]+'</td><td>'+invDetails[i]["deposite_date"]+'</td><td>'+invDetails[i]["dc_or_chqno"]+'</td><td>'+invDetails[i]["deposit_amt"]+'</td><td>'+invDetails[i]["total_received"]+'</td><td>'+invDetails[i]["balance_amt"]+'</td><td>'+invDetails[i]["balance_status"]+'</td><td>'+invDetails[i]["return_qty"]+'</td><td>'+invDetails[i]["return_date"]+'</td><td>'+invDetails[i]["return_value"]+'</td><td>'+invDetails[i]["return_total"]+'</td><td>'+invDetails[i]["balance_afterreturn"]+'</td></tr>';
+                                }
+                                
+                            }
+                        });
+                        
+                        
+                        //-----------------------------
+                        
+                        //for (var i = 0; i < data.length; i++) {
+                        //    var invoiceNo = data[i]["invoice_no"];
+
+                        //    strData += '<tr><td>'+data[i]["customer_name"]+'</td><td>'+data[i]["cust_type"]+'</td><td>'+data[i]["cust_id"]+'</td><td>#</td><td>'+data[i]["zone_name"]+'</td><td>'+data[i]["area_name"]+'</td><td>'+invoiceNo+'</td><td>'+data[i]["invoice_date"]+'</td><td>'+data[i]["product_name"]+'</td><td>'+data[i]["color_name"]+'</td><td>'+data[i]["qty"]+'</td><td>'+data[i]["price"]+'</td><td>'+data[i]["billing_Amt"]+'</td><td>'+data[i]["rebate"]+'</td><td>'+data[i]["live_dummy"]+'</td><td>'+data[i]["adjust"]+'</td><td>'+data[i]["net_amount"]+'</td><td>'+data[i]["grand_total"]+'</td><td>'+data[i]["bank_name"]+'</td><td>'+data[i]["deposite_date"]+'</td><td>'+data[i]["dc_or_chqno"]+'</td><td>'+data[i]["deposit_amt"]+'</td><td>'+data[i]["total_received"]+'</td><td>'+data[i]["balance_amt"]+'</td><td>'+data[i]["balance_status"]+'</td><td>'+data[i]["return_qty"]+'</td><td>'+data[i]["return_date"]+'</td><td>'+data[i]["return_value"]+'</td><td>'+data[i]["return_total"]+'</td><td>'+data[i]["balance_afterreturn"]+'</td></tr>';
+                        //}
+                        strData+='</table>';
+                        $("#reportArea").html(strData);
+                    }
+                    // console.log("Hello Data:");
+                    // console.log(data);
+                return false;
+            }
+
+        });
+
+        });
+    });
+
+</script>

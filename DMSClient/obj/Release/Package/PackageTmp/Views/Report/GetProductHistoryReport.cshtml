@@ -1,0 +1,446 @@
+﻿@{
+    ViewBag.Title = "GetProductHistoryReport";
+    var userId = "";
+    var partyTypeId = "";
+    var roleId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        roleId = Session["user_role_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+}
+<div class="panel panel-success">
+    <div class="panel-heading"><h4> Product History Report</h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="from_date">From Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="to_date">To Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="to_date" name="to_date" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="productCategoryId">Product Category&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="productCategoryId" name="productCategoryId" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="productId">Product&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="productId" name="productId" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="colorId">Product Color</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="colorId" name="colorId" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <br />
+                <div class="col-md-3" style="margin-left: 925px;">
+                    <input type="button" class="k-button" id="btnSearch" name="btnSearch" style="width: 49%; margin-left: 1px;" value="Search" />&nbsp;
+                    <input type="button" class="k-button" id="btnReset" name="btnReset" style="width: 49%" value=" Reset " />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="grid" style="overflow-y: scroll;"></div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-2">
+
+        </div>
+        <div class="col-md-3">
+
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+
+        </div>
+        <br />
+        <div class="col-md-3" style="margin-left:937px;">
+            <input type="button" class="k-button" id="btnExcel" name="btnSearch" style="width: 49%; margin-left: 1px;" value="Excel" />&nbsp;
+            <input type="button" class="k-button" id="btnPrint" name="btnReset" style="width: 49%" value=" Print " />
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var roleId = @roleId;
+    var partyId = @partyId;
+    var product_version_id = 0;
+    $(document).ready(function () {
+        $("#btnExcel").hide();
+        $("#btnPrint").hide();
+
+        //Reset
+        $("#btnReset").click(function() {
+            var productCategoryId = $("#productCategoryId").data("kendoComboBox");
+            productCategoryId.dataSource.data([]);
+            productCategoryId.text("");
+
+            var productId = $("#productId").data("kendoComboBox");
+            productId.dataSource.data([]);
+            productId.text("");
+
+            var colorId = $("#colorId").data("kendoComboBox");
+            colorId.dataSource.data([]);
+            colorId.text("");
+            $("#from_date").val();
+            $("#to_date").val();
+
+
+            // alert("Kiron");
+
+        });
+        $("#btnSearch").click(function () {
+            $("#btnExcel").show();
+            var productCategoryId = $("#productCategoryId").val();
+            var productId = $("#productId").val();
+            var colorId = $("#colorId").val();
+            var from_date = $("#from_date").val();
+            var to_date= $("#to_date").val();
+
+
+            if (productCategoryId == "" || productCategoryId == null) {
+                productCategoryId = 0;
+            }
+            if (productId == "" || productId == null) {
+                productId = 0;
+            }
+            if (colorId == "" || colorId == null) {
+                colorId = 0;
+            }
+
+            if (from_date == "" || from_date == null) {
+                from_date = 0;
+            }
+
+
+            if (to_date == "" || to_date == null) {
+                to_date = 0;
+
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("GetProductHistoryReport", "Report")?fromDate=" + from_date +"&toDate=" + to_date + "&productCategoryId=" + productCategoryId +"&productId=" + productId + "&colorId=" + colorId +"",
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    var sampleData = [];
+
+                    if (data != '') {
+
+                        for (var i = 0; i < data.length; i++) {
+                            var gridDataModel =
+                                {
+                                    inventory_id : data[i].inventory_id ,
+                                    transaction_date: data[i].transaction_date,
+                                    transaction_type: data[i].transaction_type,
+                                    document_code: data[i].document_code,
+                                    product_category_name: data[i].product_category_name,
+                                    product_name: data[i].product_name,
+                                    color_name: data[i].color_name,
+                                    product_version_name:data[i].product_version_name,
+                                    product_id:data[i].product_id,
+                                    color_id:data[i].color_id,
+                                    product_version_id:data[i].product_version_id,
+                                    quantity: data[i].quantity,
+                                    territory_name: data[i].territory_name,
+                                    area_name: data[i].area_name,
+                                    region_name:data[i].region_name,
+                                    warehouse_name:data[i].warehouse_name,
+                                    party_name:data[i].party_name,
+                                    party_type_name:data[i].party_type_name
+                                };
+
+                            sampleData.push(gridDataModel);
+
+                        }
+
+                        //Report Data Source Grid---------------------
+                        var dataSource = new kendo.data.DataSource({
+                            pageSize: 20,
+                            transport: {
+                                read: function (e) {
+                                    // on success
+                                    e.success(sampleData);
+                                }
+                            },
+                            //    code: "Ok",
+                            autoSync: false,
+                            schema: {
+                                errors: function (e) {
+                                    console.log(e.errors);
+                                    //alert(e.error);
+                                    if (e.output === "error") {
+                                        console.log(e.output);
+                                        //KendoWindowFunction(e.msg, "error", "");
+                                        // this.cancelChanges();
+                                    }
+
+                                },
+
+                                model: {
+                                    id: "inventory_id",
+                                    fields: {
+                                        inventory_id: { editable: false, nullable: true },
+                                        transaction_date: { type: "date" },
+                                        transaction_type: { type: "string", editable: false },
+                                        document_code: { type: "string", editable: false },
+                                        product_category_name: { type: "string", editable: false },
+                                        product_name: { type: "string", editable: false },
+                                        color_name: { type: "string", editable: false },
+                                        product_version_name: { type: "string", editable: false },
+                                        product_id:{ type: "number", editable: false },
+                                        color_id:{ type: "number", editable: false },
+                                        product_version_id:{ type: "number", editable: false },
+                                        quantity: { type: "number", editable: false },
+                                        territory_name: { type: "string" },
+                                        area_name: { type: "string" },
+                                        region_name: { type: "string" },
+                                        warehouse_name: { type: "string" },
+                                        party_name: { type: "string" },
+                                        party_type_name: { type: "string" }
+
+                                    }
+
+                                }
+                            }
+
+                        });
+
+                        var d = new Date();
+                        var dateTime = d.toJSON();
+
+                        jQuery("#grid").kendoGrid({
+                            excel: {
+                                fileName: "Product_History_Report_" + dateTime + ".xlsx",
+                                allPages: true
+                            },
+                            dataSource: dataSource,
+                            filterable: true,
+                            pageable: {
+                                refresh: true,
+                                input: true,
+                                pageSize: 20,
+                                numeric: false,
+                                pageSizes: [10, 20, 50]
+                            },
+                            sortable: true,
+                            groupable: true,
+                            resizable: true,
+                            columns: [
+                               { field: "transaction_date", title: "Transaction Date", width: "150px" , format: "{0:dd-MM-yyyy}" },
+                               { field: "transaction_type", title: "Transaction Type", width: "150px"},
+                               { field: "document_code", title: "REF No", width: "150px" },
+                               { field: "product_category_name", title: "Category", width: "150px" },
+                               { field: "product_name", title: "Product Name", width: "150px" },
+                               { field: "color_name", title: "Color", width: "150px" },
+                               { field: "product_version_name", title: "Version", width: "150px" },
+                               { field: "quantity", title: "Quantity", width: "150px" },
+                               { field: "region_name", title: "Region", width: "150px" },
+                               { field: "territory_name", title: "Territory", width: "150px" },
+                               { field: "area_name", title: "Area", width: "150px" },
+                               { field: "warehouse_name", title: "Warehouse", width: "250px" },
+                               { field: "party_name", title: "Channel", width: "250px" },
+                               { field: "party_type_name", title: "Channel Type", width: "150px" }
+                            ],
+                            editable: "inline"
+                        });
+                        $("#btnExcel").show();
+                        $("#btnPrint").show();
+
+                    } else {
+                        swal("Opps", "No Matched Data Found!!", "warning");
+                        $("#grid").data("kendoGrid").dataSource.data([]);
+                        $("#btnExcel").hide();
+                        $("#btnPrint").hide();
+                        return false;
+                    }
+                }
+            });
+
+
+
+
+        });
+        //Excel Export
+        $("#btnExcel").click(function () {
+            var grid = $("#grid").data("kendoGrid");
+            grid.saveAsExcel();
+        });
+        //Print btn
+        $("#btnPrint").click(function () {
+
+            Loading(false);
+
+            var productCategoryId = $("#productCategoryId").val();
+            var productId = $("#productId").val();
+            var colorId = $("#colorId").val();
+            var from_date = $("#from_date").val();
+            var to_date= $("#to_date").val();
+
+            if (productCategoryId == "" || productCategoryId == null) {
+                productCategoryId = 0;
+            }
+            if (productId == "" || productId == null) {
+                productId = 0;
+            }
+            if (colorId == "" || colorId == null) {
+                colorId = 0;
+            }
+            if (from_date == "" || from_date == null) {
+                from_date = 0;
+            }
+
+
+            if (to_date == "" || to_date == null) {
+                to_date = 0;
+
+            }
+
+            var dataModel = {
+                productCategoryId: productCategoryId,
+                productId: productId,
+                fromDate:from_date,
+                toDate:to_date
+
+            };
+
+
+            {
+                var url = "/Report/GetProductHistoryPdfReport?fromDate=" + from_date + "&toDate=" + to_date+"&productId="+productId+"&productCategoryId="+productCategoryId+"&colorId="+colorId;
+                window.open(url, '_blank');
+            }
+
+
+
+        });
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy-MM-dd');
+
+        $("#from_date").val(todayDate);
+        $("#to_date").val(todayDate);
+        //From
+        $("#from_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy-MM-dd"
+        });
+        //To date
+        $("#to_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy-MM-dd"
+        });
+        //Category dropdown
+        $("#productCategoryId").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product Category ---",
+            dataTextField: "product_category_name",
+            dataValueField: "product_category_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductCategories", "ProductCategory")"
+                    }
+                }
+            }
+        });
+
+        //Product Dropdown
+        $("#productId").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "productCategoryId",
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetProductCategorywiseProduct", "Product")"
+                    }
+                }
+            }
+        });
+
+        $("#colorId").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "productId",
+            placeholder: "--- Select Color ---",
+            dataTextField: "color_name",
+            dataValueField: "color_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllColorMapping", "ProductColorMapping")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+    });
+</script>
+
+
+
+
+
+
+
+

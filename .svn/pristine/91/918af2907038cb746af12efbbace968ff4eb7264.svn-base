@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Add Territory</h4></div>
+    <div class="panel-body">
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllTerritory", "Territory")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Territory")?updated_by=" + userId,
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Territory")?updated_by=" + userId,
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "Territory")?created_by=" + userId,
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "territory_id",
+                    fields: {
+                        region_id: { type: "number" },
+                        region_name: { type: "string" },
+                        area_id: { type: "number" },
+                        area_name: { type: "string" },
+                        territory_id: { editable: false },
+                        territory_name: { type: "string" },
+                        territory_code: { type: "string" },
+                        is_active: { type: "boolean"}
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add New Territory" }],
+            columns: [
+                { field: "territory_name", title: "Territory Name", id: "territory_id", width: "120px" },
+                { field: "territory_code", title: "Territory Code", width: "50px" },
+                { field: "region_id", title: "Region", editor: regionDropDownEditor, template: "#= region_name #", width: "100px" },
+                { field: "area_id", title: "Area", editor: areaDropDownEditor, template: "#= area_name #", width: "100px" },
+                { field: "is_active", title: "Is Active", width: "50px" },
+                { command: ["edit", "destroy"], title: "Action", width: "100px" }],
+            editable: "inline"
+        });
+
+
+        function regionDropDownEditor(container, options) {
+            jQuery('<input id="regionId" required data-text-field="region_name" data-value-field="region_id" data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                autoBind: false,
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllRegions", "Region")",
+                            type: "GET"
+                        }
+                    }
+                },
+                optionLabel: "Select Region"
+            });
+        }
+
+        function areaDropDownEditor(container, options) {
+            jQuery('<input id="areaId" required data-text-field="area_name" data-value-field="area_id" data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                autoBind: false,
+                cascadeFrom: "regionId",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllArea", "Area")",
+                            type: "GET"
+                        }
+                    }
+                },
+                optionLabel: "Select Area"
+            });
+        }
+    });
+</script>
+
+
+<div id="kWindow"></div>
+
+
+

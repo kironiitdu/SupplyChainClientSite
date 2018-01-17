@@ -1,0 +1,124 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Mail Receiver Setting</h4></div>
+    <div class="panel-body">
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+            jQuery(document).ready(function () {
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetMailReceiverSettings", "MailReceiverSetting")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "MailReceiverSetting")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "MailReceiverSetting")",
+                            type: "DELETE"
+                        },
+                        create: {
+                            url: "@UrlConfig.Action("Post", "MailReceiverSetting")",
+                            type: "POST",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                swal("Warning", e.msg, "warning");
+                                this.cancelChanges();
+                            }
+                        },
+
+                        model: {
+                            id: "mail_receiver_setting_id",
+                            fields: {
+                                mail_receiver_setting_id: { editable: false, nullable: true },
+                                process_wise_mail_setting_id: { type: "number" },
+                                process_code_id: { type: "number" },
+                                process_code_name: { type: "string" },
+                                receiver_name: { type: "string" },
+                                receiver_email: { type: "string" },
+                                is_active: { type: "boolean"}
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+                    toolbar: [{ name: "create", text: "New" }],
+                    columns: [
+                        { field: "receiver_name", title: "Receiver Name", id: "mail_receiver_setting_id", width: "100px" },
+                        { field: "receiver_email", title: "Receiver Email", width: "100px" },
+                        { field: "process_code_id", title: "Process Code", editor: processDropDownEditor, template: "#= process_code_name #", width: "50px" },
+                        { field: "is_active", title: "Is Active", width: "20px" },
+                        { command: ["edit", "destroy"], title: "Action", width: "100px" }],
+                        editable: "inline"
+                });
+
+
+                function processDropDownEditor(container, options) {
+                    jQuery('<input required data-text-field="process_code_name" data-value-field="process_code_id" data-bind="value:' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoDropDownList({
+                                autoBind: false,
+                                dataSource: {
+                                    transport: {
+                                        read: {
+                                            url: "@UrlConfig.Action("GetAllProcessCode", "ProcessWiseEmailSetting")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+                                optionLabel: "Select Process Code"
+                });
+            }
+
+            });
+
+//Added By Kiron: 26/11/2016
+</script>
+
+
+<div id="kWindow"></div>
+
+
+
+

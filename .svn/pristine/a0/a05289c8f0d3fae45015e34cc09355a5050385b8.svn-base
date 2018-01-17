@@ -1,0 +1,1590 @@
+﻿@{
+    ViewBag.Title = "Add Requisition";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var partyId = @partyId;
+
+    $(document).ready(function () {
+        //$('#base').addClass('animated zoomIn');
+
+        //var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+        //$("#requisition_date").val(todayDate);
+
+        @* function lineBreaker (str, isXhtml) {
+            var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
+            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
+        }
+
+        Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetAvailablePromotions", "PromotionActivity")",
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                //console.log(data);
+
+                var listData = "";
+
+                $.each(data, function (key, obj) {
+                    listData += '<div class="row">';
+                    listData += '<div class="panel panel-info">';
+                    listData += '<div class="panel-heading">'+obj.titel+'</div>';
+                    listData += '<div class="panel-body">';
+                    listData += '<p>'+lineBreaker(obj.promotion_description)+'</p>';
+                    listData += '</div>';
+                    listData += '</div>';
+                    listData += '</div>';
+                });
+
+                $("#available_promotions").append(listData);
+
+                $("#available_promotions").hide();
+                $("#available_promotions").slideDown(800);
+            }
+
+        });
+
+        function yourfunction() {
+
+            $("#available_promotions").empty();
+
+            function lineBreaker (str, isXhtml) {
+                var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
+                return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
+            }
+
+            Loading(true);
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetAvailablePromotions", "PromotionActivity")",
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    //console.log(data);
+
+                    var listData = "";
+
+                    $.each(data, function (key, obj) {
+                        listData += '<div class="row">';
+                        listData += '<div class="panel panel-info">';
+                        listData += '<div class="panel-heading">'+obj.titel+'</div>';
+                        listData += '<div class="panel-body">';
+                        listData += '<p>'+lineBreaker(obj.promotion_description)+'</p>';
+                        listData += '</div>';
+                        listData += '</div>';
+                        listData += '</div>';
+                    });
+
+                    $("#available_promotions").append(listData);
+
+                    $("#available_promotions").hide();
+                    $("#available_promotions").slideUp(800);
+                    $("#available_promotions").slideDown(800);
+                }
+
+            });
+        }
+
+        window.setInterval(yourfunction, 60000);*@
+    });
+</script>
+
+<div class="col-md-12 widget-body" id="context">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">B2B Requisition</div>
+                <div class="panel-body">
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="requisition_code">Requistion No</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="requisition_code" name="requisition_code" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="requisition_date">Requistion Date&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="requisition_date" name="requisition_date" style="width: 245px;"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="reference_no">PO. No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="reference_no" name="reference_no" class="k-textbox"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="warehouse_from">From Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="warehouse_from" name="warehouse_from"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="expected_receiving_date">Expected Receiving Date</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="expected_receiving_date" name="expected_receiving_date"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="party_type_id">Channel Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="party_type_id" name="party_type_id"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="party_id">Channel Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="party_id" name="party_id"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="region_id">Region&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="region_id" name="region_id" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="area_id">Area&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="area_id" name="area_id" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="territory_id">Territory&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="territory_id" name="territory_id" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="address">Online Billing Address</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="address" name="address" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="contact_person_mobile">Contact Person Mobile&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="contact_person_mobile" name="contact_person_mobile" class="k-textbox" disabled=""/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="remarks">Remarks</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="remarks" name="remarks" class="k-textbox"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="amount">Order Amount</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="amount" name="amount" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="opening_balance">Opening Balance</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="opening_balance" name="opening_balance" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="price_type">Price Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="price_type" style="width: 100%;" name="price_type">
+                                <option value="">--- Select ---</option>
+
+                                <option value="manual">Manual Price</option>
+                                <option value="dealer_cost">Dealer Price</option>
+                                <option value="mrp_cost">MRP Price</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row" style="visibility: hidden;">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="available_credit_limit">Available Credit Limit</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="available_credit_limit" name="available_credit_limit" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row" style="visibility: hidden;">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="credit_term">Credit Term(In Days)&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="credit_term" name="credit_term"/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row" style="visibility: hidden;">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="credit_limit">Credit Limit</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="credit_limit" name="credit_limit" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+                <div class="row" style="visibility: hidden;">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <input id="txtpId" name="txtpId" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+
+                        </div>
+                        <div class="col-md-3">
+                            <input id="txtcId" name="txtcId" class="k-textbox" disabled/>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-success">
+                    <div class="panel-heading">Product List</div>
+                    <div class="panel-body">
+                        <div id="RequisitionDetailsGrid"></div>
+
+                    </div>
+                </div>
+            </div>
+            @*<div class="row">
+                    <div class="col-md-6" id="divRebate">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">Rebate</div>
+                            <div class="panel-body">
+                                <table class="table table-hover table-bordered" id="tblRebate">
+                                    <tr>
+                                        <th>Rebate for</th>
+                                        <th>Qty</th>
+                                        <th>Amount</th>
+                                        <th>Rebate</th>
+                                        <th>Type</th>
+                                        <th>Rebate Amount</th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="divGift">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">Gift</div>
+                            <div class="panel-body">
+                                <table class="table table-hover table-bordered" id="tblGift">
+                                    <tr>
+                                        <th>Gift for</th>
+                                        <th>Qty</th>
+                                        <th>Gift</th>
+                                        <th>Gift Qty</th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+
+        <div class="col-md-3" style="visibility: hidden">
+            <div class="panel panel-success">
+                <div class="panel-heading">Available Promotions</div>
+                <div class="panel-body" id="available_promotions">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnSaveRequisition" name="btnSaveRequisition" value="Save Requisition" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<p>&nbsp;</p>
+<script type="text/javascript">
+
+    //date time picker
+    //requisition date
+    $(document).ready(function () {
+        $("#price_type").kendoComboBox();
+
+        var pId;
+        var cId;
+
+        $("#contact_person_mobile").keyup(function () {
+            this.value = this.value.replace(/[^0-9\.]/g,'');
+
+        });
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy/MM/dd');
+        $("#requisition_date").val(todayDate);
+
+
+
+        ///////////////////////////15.02.2017////////////////////////////////////
+        //get last date for cerdit terms
+        var today = new Date();
+        //var lastofpreviews = new Date( today.getUTCFullYear(), today.getUTCMonth()    , 0 );
+        var lastofthis     = new Date( today.getUTCFullYear(), today.getUTCMonth() + 1, 1 );
+        $("#credit_term").val(lastofthis.toISOString().substring(0, 10));
+
+        ///////////////////////////15.02.2017////////////////////////////////////
+        //$('#context').addClass('animated zoomIn');
+
+        $("#requisition_date").kendoDateTimePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            value:new Date(),
+            format: "yyyy/MM/dd hh:mm tt"
+            //format: "yyyy/MM/dd"
+        });
+        if (partyTypeId != 1) {
+            $('#requisition_date').data('kendoDateTimePicker').enable(false);
+        }
+        //expected receiving date
+        $("#expected_receiving_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            //value:new Date(),
+            //format: "yyyy/MM/dd hh:mm tt"
+            format: "yyyy/MM/dd"
+        });
+
+        //credit_term
+        $("#credit_term").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+        //warehouse list
+        $("#warehouse_from").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAdaWarehouse", "Warehouse")"
+                    }
+                }
+            }
+
+        });
+
+        $("#warehouse_from").data("kendoComboBox").value(1);
+
+        //load party type
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPartyType", "PartyType")"
+                    }
+                }
+            }
+        });
+        var PTypeId=$("#party_type_id").val();
+
+        //load party
+        @*$("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetDealer", "PartyType")"
+                }
+            }
+        }
+        });*@
+
+        $("#party_type_id").data("kendoComboBox").value(5);
+        $("#party_type_id").data("kendoComboBox").enable(false);
+
+        $("#party_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Channel Name ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPartyTypewisePartyForDropdown", "Party")",
+                        data: { party_type_id: 5 }
+                    }
+                }
+            }
+        });
+
+        //region dropdown
+        $("#region_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        });
+
+        //area dropdown
+        $("#area_id").kendoComboBox({
+            autoBind: false,
+            //cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        });
+        //load territory
+        $("#territory_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        });
+        //$("#territory_id").data("kendoComboBox").enable(false);
+        //region change event will load region wise area
+        @*$("#area_id").data("kendoComboBox").enable(false);
+        $('#region_id').change(function () {
+            var regionId = $('#region_id').val();
+            $("#area_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Area ---",
+                dataTextField: "area_name",
+                dataValueField: "area_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetRegionwiseAreaForDropdown", "Area")",
+                            data: { region_id: regionId }
+                        }
+                    }
+                }
+            });
+            $("#area_id").data("kendoComboBox").enable(true);
+        });*@
+
+        //area change event will load area wise party
+        @*$('#area_id').change(function () {
+            var partytypeId=$('#party_type_id').val();
+            var areaId = $('#area_id').val();
+            $("#party_id").kendoComboBox({
+                autoBind: false,
+                placeholder: "--- Select Channel ---",
+                dataTextField: "party_name",
+                dataValueField: "party_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAreaNPartyTypewiseParty", "Party")",
+                            data: { party_type_id: partytypeId, area_id: areaId }
+                        }
+                    }
+                }
+            });
+            $("#party_id").data("kendoComboBox").enable(true);
+        });*@
+
+        @*$('#party_id').change(function() {
+            var partId=$('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyCreditLimit", "Party")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+
+                    $("#credit_limit").val(data);
+                }
+            });
+        });*@
+        /////////////28.01.2017////////////////
+        function getopeningBalance(partId) {
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyOpeningBalance", "PartyJournal")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    $("#opening_balance").val(data);
+                    if (data > 0) {
+                        $("#available_credit_limit").val(data);
+                    } else {
+                        var openingBalance = parseFloat(data);
+                        var credit_limit = $("#credit_limit").val();
+                        var currentLimit = parseFloat(credit_limit) - parseFloat(openingBalance);
+                        $("#available_credit_limit").val(currentLimit);
+                    }
+                }
+            });
+
+        }
+
+
+        $('#party_id').change(function() {
+            var partId=$('#party_id').val();
+            //$("#territory_id").data("kendoComboBox").enable(true),
+
+            @*$.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyCreditLimit", "Party")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+
+                    $("#credit_limit").val(data);
+                    getopeningBalance(partId);
+                }
+            });*@
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("PartyBillingAddress", "Party")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    $("#address").val(data);
+                    getopeningBalance(partId);
+                }
+            });
+            //territory
+            $.ajax({
+
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyWiseTerritory", "Territory")",
+                data: { party_id: partId },//Passing parameter
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    var rrr = data.region_id;
+                    var aaa = data.area_id;
+                    var ttt = data.territory_id;
+
+                    $("#region_id").data("kendoComboBox").value(rrr);
+                    $("#area_id").data("kendoComboBox").value(aaa);
+                    $("#territory_id").data("kendoComboBox").value(ttt);
+                    $("#contact_person_mobile").val(data.mobile);
+
+                    //$("#region_id").kendoComboBox({enable: false});
+                    //$("#area_id").kendoComboBox({enable: false});
+                    //$("#territory_id").kendoComboBox({enable: false});
+                }
+            });
+
+        });
+
+        //productList Grid---------------------
+        var sampleData = [];
+        var sampleDataNextID = sampleData.length + 1;
+
+        function getIndexById(id) {
+            var idx,
+                l = sampleData.length;
+
+            for (var j = 0; j < l; j++) {
+                if (sampleData[j].requisition_details_id == id) {
+                    return j;
+                }
+            }
+            return null;
+        }
+
+        // custom logic end
+
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: function (e) {
+                    e.success(sampleData);
+                },
+                create: function (e) {
+
+                    // assign an ID to the new item
+                    e.data.requisition_details_id = sampleDataNextID++;
+                    // save data item to the original datasource
+
+                    var gridData = sampleData;
+                    var totalNumber = gridData.length;
+                    var count = 0;
+
+                    for (var i = 0; i < totalNumber; i++) {
+                        var productId = gridData[i].product_id;
+                        var colorId = gridData[i].color_id;
+                        var productVersionId=gridData[i].product_version_id;
+                        //var isLiveDummy= gridData[i].is_live_dummy;
+                        //if (e.data.product_id === productId && e.data.color_id === colorId && e.data.is_live_dummy===isLiveDummy && e.data.product_version_id === productVersionId) {
+                        if (e.data.product_id === productId && e.data.color_id === colorId && e.data.product_version_id === productVersionId) {
+                            count++;
+                        }
+                    }
+
+                    ////////////////13.02.2017/////////////////////////////
+                    //if (e.data.price == 0) {
+                    //    sweetAlert("Sorry...", "selected version not available !!!", "warning");
+                    //    return false;
+                    //}
+                    //var priceCheck = e.data.price;
+                    //var priceCheck = e.data.price;
+                    var mmm = e.data.quantity;
+                    var checkNumeric= $.isNumeric(mmm);
+                    if (checkNumeric == false ) {
+                        sweetAlert("Sorry...", "not valid requisition quantity !!!", "warning");
+                        return false;
+                    }
+                    if (mmm % 1 != 0) {
+                        sweetAlert("Sorry...", "requisition quantity decimal not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == 0) {
+
+                        sweetAlert("Sorry...", "requisition quantity zero not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == null) {
+                        sweetAlert("Sorry...", "requisition quantity is required !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity < 0) {
+                        sweetAlert("Sorry...", "negative requisition quantity not allowed !!!", "warning");
+                        return false;
+                    }
+                    ////////////07.03.2017
+                    //var checkNumericPrice= $.isNumeric(priceCheck);
+                    //if (checkNumericPrice == false ) {
+                    //    sweetAlert("Sorry...", "not valid price !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price == null) {
+                    //    sweetAlert("Sorry...", "price is required !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price < 0) {
+                    //    sweetAlert("Sorry...", "negative price not allowed !!!", "warning");
+                    //    return false;
+                    //}
+                    //////////07.03.2017
+                    if ($("#requisition_date").data("kendoDateTimePicker").value()==null) {
+                        alert("please select requisition date");
+                        return false;
+                    }
+
+                    if ($("#party_id").data("kendoComboBox").value()=="") {
+                        alert("please select party");
+                        return false;
+                    }
+                    if ($("#reference_no").val()=="") {
+                        alert("please type PO No.");
+                        return false;
+                    }
+                   
+
+                    //////////////13.02.2017 end///////////////////////////
+
+                    if (count > 0) {
+                        sweetAlert("Sorry...", "Selected Product is Duplicate !!!", "warning");
+                        //e.preventDefault();
+                        return false;
+                    } else {
+                        sampleData.push(e.data);
+                        e.success(e.data);
+                        //console.log(sampleData);
+                        // getRebateAndGiftInfo();
+                        return true;
+                    }
+
+
+                },
+                update: function (e) {
+                    // locate item in original datasource and update it
+                    //sampleData[getIndexById(e.data.requisition_details_id)] = e.data;
+                    //e.success();
+                    ///////////////////////13.02.2017//////////////////////////
+                    //if (e.data.price == 0) {
+                    //    sweetAlert("Sorry...", "selected version not available !!!", "warning");
+                    //    return false;
+                    //}
+
+                    //var priceCheck = e.data.price;
+                    var mmm = e.data.quantity;
+                    var checkNumeric= $.isNumeric(mmm);
+
+                    if (checkNumeric == false ) {
+                        sweetAlert("Sorry...", "not valid requisition quantity !!!", "warning");
+                        return false;
+                    }
+
+                    if (mmm % 1 != 0) {
+                        sweetAlert("Sorry...", "requisition quantity decimal not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == 0) {
+                        sweetAlert("Sorry...", "requisition quantity zero not allowed !!!", "warning");
+                        return false;
+                    }
+                    if (e.data.quantity == null) {
+                        sweetAlert("Sorry...", "requisition quantity is required !!!", "warning");
+                        return false;
+                    }
+
+                    if (e.data.quantity < 0) {
+                        sweetAlert("Sorry...", "negative requisition quantity not allowed !!!", "warning");
+                        return false;
+                    }
+                    ////////////07.03.2017
+                    //var checkNumericPrice= $.isNumeric(priceCheck);
+                    //if (checkNumericPrice == false ) {
+                    //    sweetAlert("Sorry...", "not valid price !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price == null) {
+                    //    sweetAlert("Sorry...", "price is required !!!", "warning");
+                    //    return false;
+                    //}
+                    //if (e.data.price < 0) {
+                    //    sweetAlert("Sorry...", "negative price not allowed !!!", "warning");
+                    //    return false;
+                    //}
+                    //////////07.03.2017
+                    if ($("#party_id").data("kendoComboBox").value()=="") {
+                        alert("please select party");
+                        return false;
+                    }
+                    if ($("#reference_no").val()=="") {
+                        alert("please type PO No.");
+                        return false;
+                    }
+                    else {
+                        sampleData[getIndexById(e.data.requisition_details_id)] = e.data;
+                        e.success();
+                    }
+                    ///////////////////////13.02.2017//////////////////////////
+                    //getRebateAndGiftInfo();
+
+                },
+                destroy: function (e) {
+                    // locate item in original datasource and remove it
+                    sampleData.splice(getIndexById(e.data.requisition_details_id), 1);
+                    // on success
+                    e.success();
+                    var entityGrid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                    var gridData = entityGrid.dataSource.data();
+                    //getRebateAndGiftInfo();
+                    var totalNumber = gridData.length;
+
+
+                }
+            },
+            error: function (e) {
+                // handle data operation error
+                alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+            },
+            pageSize: 10,
+            batch: false,
+            schema: {
+                model: {
+                    id: "requisition_details_id",
+                    fields: {
+                        requisition_details_id: { editable: false, nullable: true },
+                        product_id: { field: "product_id", type: "integer" },
+                        product_name: { type: "string" },
+                        product_category_id: { field: "product_category_id", type: "integer" },
+                        product_category_name: { type: "string" , editable: false},
+                        unit_id: { field: "unit_id", type: "integer" },
+                        unit_name: { type: "string" },
+                        brand_id: { field: "brand_id", type: "integer" },
+                        brand_name: { type: "string", editable: false },
+                        quantity: { type: "string" },
+                        color_id: { field: "color_id", type: "integer" },
+                        color_name: { type: "string" },
+                        product_version_id: { field: "product_version_id", type: "integer" },
+                        product_version_name: { type: "string" },
+                        //price_ori: { type: "number" },
+                        price: { type: "string" },
+                        ////////////////22.02.2017///////////////
+                        mrp_cost: { type: "string" },
+                        b2b_cost: { type: "string" },
+                        dealer_cost: { type: "string" },
+                        ////////////////////////////////////////
+                        line_total: { type: "string" }
+                        //is_live_dummy: {type: "boolean"}
+                    }
+                }
+            }
+        });
+
+        @*function getRebateAndGiftInfo() {
+            var is_active_promo = true;
+            var requisitionDetailsList = [];
+            var requisitionDetailsGrid = $("#RequisitionDetailsGrid").data("kendoGrid").dataSource.data();
+
+            console.log(requisitionDetailsGrid);
+            for (var i = 0; i < requisitionDetailsGrid.length; i++) {
+                var requisitionDetails = {
+                    requisition_master_id: '@ViewBag.requisition_master_id',
+                    requisition_details_id: requisitionDetailsGrid[i].requisition_details_id,
+                    product_id: requisitionDetailsGrid[i].product_id,
+                    product_name: requisitionDetailsGrid[i].product_name,
+                    unit_id: requisitionDetailsGrid[i].unit_id,
+                    brand_id: requisitionDetailsGrid[i].brand_id,
+                    product_category_id: requisitionDetailsGrid[i].product_category_id,
+                    price: requisitionDetailsGrid[i].price,
+                    quantity: requisitionDetailsGrid[i].quantity,
+                    color_id: requisitionDetailsGrid[i].color_id,
+                    line_total: requisitionDetailsGrid[i].line_total,
+                    is_live_dummy: requisitionDetailsGrid[i].is_live_dummy
+                };
+                requisitionDetailsList.push(requisitionDetails);
+            }
+            Loading(true);
+
+            var getRebateAndGiftInfoModel = {
+                RequisitionDetailsList: requisitionDetailsList,
+                IsActivePromo: is_active_promo
+            };
+
+
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("GetRebateAndGiftInfo", "Requisition")",
+                //data: JSON.stringify(getRebateAndGiftInfoModel),
+                async:true,
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    $('#tblRebate tr').has('td').remove();
+                    $('#tblGift tr').has('td').remove();
+
+                    //display for rebate table
+                    $.each(data.rebateList, function(value, obj) {
+                        var rebateData = "";
+                        rebateData += "<tr id='"+obj.rebate_for+"'>";
+                        rebateData += "<td>"+obj.rebate_for+"</td>";
+                        rebateData += "<td>"+obj.quantity+"</td>";
+                        rebateData += "<td>"+obj.amount+"</td>";
+                        rebateData += "<td>"+obj.rebate+"</td>";
+                        rebateData += "<td>"+obj.rebate_type+"</td>";
+                        rebateData += "<td>"+obj.rebate_amount+"</td>";
+                        rebateData += "</tr>";
+
+                        $("#tblRebate tr:last").after(rebateData);
+
+
+                    });
+
+                    //display for gift table
+                    $.each(data.giftList, function(value, obj) {
+                        var giftData = "";
+
+                        giftData += "<tr id='"+obj.gift_for.split(' ').join('_')+"'>";
+                        giftData += "<td>" + obj.gift_for + "</td>";
+                        giftData += "<td>" + obj.gift_quantity_for + "</td>";
+                        giftData += "<td>" + obj.gift_for + "</td>";
+                        giftData += "<td>" + obj.gift_quantity + "</td>";
+                        giftData += "</tr>";
+
+                        $("#tblGift tr:last").after(giftData);
+
+
+                    });
+                }
+            });
+        }*@
+
+        $("#RequisitionDetailsGrid").kendoGrid({
+            dataSource: dataSource,
+            pageable: true,
+            toolbar: ["create"],
+            selectable: true,
+            save: function(data) {
+
+                var amount = 0;
+                //var tempAmount = +data.model.quantity * +data.model.price;
+                var tempAmount = 0;
+                //maruf: 28.Nov.2016
+                //if (data.model.is_live_dummy) {
+                //    var discountedPrice = data.model.price * 60 / 100; // 40% less
+                //    data.model.set("price", discountedPrice);
+                //    tempAmount = data.model.quantity * (discountedPrice);
+                //} else {
+               
+               
+                //data.model.set("price", data.model.price);
+                /////////////////////////22.02.2017//////////////////////////
+                var costType = $("#price_type").val();
+                if (costType == "mrp_cost") {
+                    data.model.set("price", data.model.mrp_cost);
+                }
+                if (costType == "dealer_cost") {
+                    data.model.set("price", data.model.dealer_cost);
+                }
+                if (costType == "manual") {
+                    //data.model.set("price", 0);
+                } else {
+                    data.model.set("price", data.model.b2b_cost);
+                }
+                //alert(p);
+                /////////////////////////22.02.2017//////////////////////////
+                tempAmount = data.model.quantity * data.model.price;
+                //}
+                data.model.set("line_total", tempAmount);
+
+                //var lineTotal = +data.model.vat_amount + +data.model.tax_amount;
+
+                var entityGrid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                var gridData = entityGrid.dataSource.data();
+                var totalNumber = gridData.length;
+
+                for (var i = 0; i < totalNumber; i++) {
+                    amount += +parseFloat(gridData[i].line_total).toFixed(2);
+                }
+
+                $("#amount").val(amount);
+            },
+            edit: function (e) {
+                if ($("#price_type").val() != "manual") {
+                    $('input[name="price"]').attr('readonly', 'readonly');
+                }
+            },
+            cancel: function(data) {
+                var tempAmount = +data.model.quantity * +data.model.price;
+                data.model.set("line_total", tempAmount);
+
+                var gridData = sampleData;
+                var totalNumber = gridData.length;
+                console.log(sampleData);
+
+            },
+            columns: [
+                { field: "product_id", title: "Product", template: "#= product_name #", editor: productDropDownEditor, width: "130px" },
+                { field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditor, width: "100px" },
+                { field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionDropDownEditor, width: "100px" },
+                { field: "quantity", title: "Quantity", width: "50px" },
+                //{ field: "is_live_dummy", title: "Live Dummy?", width: "50px" },
+                { field: "price", title: "B2B Price", width: "50px" },
+                { field: "line_total", title: "Total Amount", width: "70px" },
+                { command: ["edit", "destroy"], title: "&nbsp;", width: "110px" }
+            ],
+            editable: "inline"
+        });
+
+
+        //template for product comboBox
+        function productDropDownEditor(container, options) {
+            jQuery('<input id="productId" required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: false,
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                                type: "GET"
+                            }
+                        }
+
+                    },
+
+                    change: function(e) {
+                        var dataItem = this.dataItem(e.item);
+                        pId = dataItem.product_id;
+
+                        console.log(dataItem.product_name);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+                        gridData[sel_idx].product_id = dataItem.product_id,
+                            gridData[sel_idx].product_name = dataItem.product_name;
+                        gridData[sel_idx].unit_id = dataItem.unit_id;
+                        gridData[sel_idx].unit_name = dataItem.unit_name;
+                        gridData[sel_idx].brand_id = dataItem.brand_id;
+                        gridData[sel_idx].brand_name = dataItem.brand_name;
+                        gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                        gridData[sel_idx].product_category_name = dataItem.product_category_name;
+
+                        ////////////////////////////15.02.2017////////////////////////////
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetProductsWiseFirstColorVersionForB2b", "Product")",
+                            data: {
+                                product_id: pId
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                gridData[sel_idx].color_id =data.color_id;
+                                $("#colorId").data("kendoComboBox").value(gridData[sel_idx].color_id);
+                                gridData[sel_idx].color_name = data.color_name;
+                                gridData[sel_idx].product_version_id =data.product_version_id;
+                                gridData[sel_idx].product_version_name = data.product_version_name;
+                                $("#productversionId").data("kendoComboBox").value(gridData[sel_idx].product_version_id);
+                                /////////////////////22.02.2017/////////////////////
+                                qq = $("#price_type").val();
+                                if (qq == "dealer_cost") {
+                                    gridData[sel_idx].price =data.dealer_cost;
+                                    gridData[sel_idx].retailer_cost =data.dealer_cost;
+                                    gridData[sel_idx].b2b_cost =data.dealer_cost;
+                                    gridData[sel_idx].mrp_cost =data.dealer_cost;
+                                }
+                                if (qq == "mrp_cost") {
+                                    gridData[sel_idx].price =data.mrp_cost;
+                                    gridData[sel_idx].retailer_cost =data.mrp_cost;
+                                    gridData[sel_idx].b2b_cost =data.mrp_cost;
+                                    gridData[sel_idx].mrp_cost =data.mrp_cost;
+                                }
+                                if (qq == "manual") {
+                                    //gridData[sel_idx].price = 0;
+                                    //gridData[sel_idx].retailer_cost =0;
+                                    //gridData[sel_idx].b2b_cost =0;
+                                    //gridData[sel_idx].mrp_cost =0;
+                                } 
+                                if (qq == ""){
+                                    gridData[sel_idx].price =data.b2b_cost;
+                                    gridData[sel_idx].retailer_cost =data.b2b_cost;
+                                    gridData[sel_idx].b2b_cost =data.b2b_cost;
+                                    gridData[sel_idx].mrp_cost =data.b2b_cost;
+                                }
+                               /////////////////////22.02.2017/////////////////////
+                                //gridData[sel_idx].price =data.dealer_cost;
+                            }
+                        });
+                        ////////////////////////15.02.2017/////////////////////////////////
+                    }
+                });
+        }
+
+        //template for color comboBox
+        function colorDropDownEditor(container, options) {
+            jQuery('<input id="colorId" required data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    cascadeFrom: "productId",
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetProductwiseColor", "ProductPriceing")",
+                                type: "GET"
+                            }
+                        }
+
+                    },
+
+                    change: function(e) {
+                        var dataItem = this.dataItem(e.item);
+                        cId = dataItem.color_id;
+
+                        console.log(dataItem.product_name);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+
+                        var vId=gridData[sel_idx].product_version_id;
+                        gridData[sel_idx].color_id = dataItem.color_id,
+                        gridData[sel_idx].color_name = dataItem.color_name;
+                        /////////////////15.02.2017////////////////////
+                        var pid = $("#party_type_id").val();
+                        //alert(vId);
+                        $.ajax({
+                            type: "GET",
+                            @*url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",*@
+                            url: "@UrlConfig.Action("GetProductColorVersionwiseB2BPrice", "ProductPriceing")",
+                            data: {
+                                party_type_id: pid,
+                                product_id: pId,
+                                color_id: cId,
+                                product_version_id: vId
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (data) {
+                                //gridData[sel_idx].price =data.;
+                                //gridData[sel_idx].price_ori =data;
+
+                                ///////////22.02.2017////////////
+                                gg = $("#price_type").val();
+                                if (gg == "dealer_cost") {
+                                    gridData[sel_idx].price =data.dealer_cost;
+                                    gridData[sel_idx].retailer_cost =data.dealer_cost;
+                                    gridData[sel_idx].b2b_cost =data.dealer_cost;
+                                    gridData[sel_idx].mrp_cost =data.dealer_cost;
+
+                                }
+                                if (gg == "mrp_cost") {
+                                    gridData[sel_idx].price =data.mrp_cost;
+                                    gridData[sel_idx].retailer_cost =data.mrp_cost;
+                                    gridData[sel_idx].b2b_cost =data.mrp_cost;
+                                    gridData[sel_idx].mrp_cost =data.mrp_cost;
+                                }
+                                if (gg == "manual") {
+                                    //gridData[sel_idx].price =0;
+                                    //gridData[sel_idx].retailer_cost =0;
+                                    //gridData[sel_idx].b2b_cost =0;
+                                    //gridData[sel_idx].mrp_cost =0;
+
+                                } 
+                                if (qq == "") {
+                                    gridData[sel_idx].price =data.b2b_cost;
+                                    gridData[sel_idx].retailer_cost =data.b2b_cost;
+                                    gridData[sel_idx].b2b_cost =data.b2b_cost;
+                                    gridData[sel_idx].mrp_cost =data.b2b_cost;
+                                }
+                                ///////////22.02.2017////////////
+                              
+                            }
+                        });
+                        //////////////15.02.2017/////////////////////
+                        //load version dropdown by product && color wise
+                        $("#productversionId").kendoComboBox({
+                            autoBind: true,
+                            placeholder: "--- Select Version ---",
+                            dataTextField: "product_version_name",
+                            dataValueField: "product_version_id",
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetProductColorwiseVersion", "ProductPriceing")",
+                                        data:{aa:pId,bb:cId}
+                                    }
+                                }
+                            },
+                            change: function (e) {
+
+                                var dataItem = this.dataItem(e.item);
+
+                                //////////////////////23.01.2017 start//////////////////////
+                                //to get party type, product, color and version wise price
+                                var partyTypeId=($("#party_type_id").val());
+                                $.ajax({
+                                    type: "GET",
+                                    @*url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",*@
+                                    url: "@UrlConfig.Action("GetProductColorVersionwiseB2BPrice", "ProductPriceing")",
+                                    data: {
+                                        party_type_id:partyTypeId,
+                                        product_id: pId,
+                                        color_id: cId,
+                                        product_version_id: dataItem.product_version_id
+                                    },
+                                    dataType: "json",
+                                    contentType: "application/json",
+                                    success: function (data) {
+                                        //gridData[sel_idx].price =data;
+                                        //gridData[sel_idx].price_ori =data;
+
+                                        ///////////22.02.2017////////////
+                                        zz = $("#price_type").val();
+                                        if (zz == "dealer_cost") {
+                                            gridData[sel_idx].price =data.dealer_cost;
+                                            //gridData[sel_idx].retailer_cost =data.dealer_cost;
+                                            //gridData[sel_idx].b2b_cost =data.dealer_cost;
+                                            //gridData[sel_idx].mrp_cost =data.dealer_cost;
+
+                                        }
+                                        if (zz == "mrp_cost") {
+                                            alert(data.mrp_cost);
+                                            gridData[sel_idx].price =data.mrp_cost;
+                                            gridData[sel_idx].retailer_cost =data.mrp_cost;
+                                            gridData[sel_idx].b2b_cost =data.mrp_cost;
+                                            gridData[sel_idx].mrp_cost =data.mrp_cost;
+
+                                        }
+                                        if (zz == "manual") {
+                                            //gridData[sel_idx].price =0;
+                                            //gridData[sel_idx].retailer_cost =0;
+                                            //gridData[sel_idx].b2b_cost =0;
+                                            //gridData[sel_idx].mrp_cost =0;
+
+                                        } 
+                                        if (zz == "") {
+                                            gridData[sel_idx].price =data.b2b_cost;
+                                            gridData[sel_idx].retailer_cost =data.b2b_cost;
+                                            gridData[sel_idx].b2b_cost =data.b2b_cost;
+                                            gridData[sel_idx].mrp_cost =data.b2b_cost;
+                                        }
+                                        ///////////22.02.2017////////////
+
+                                    }
+                                });
+                                //////////////////////23.01.2017 end//////////////////////
+
+                                var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+                            }
+                        });
+                    }
+                });
+        }
+
+        //load all version
+        function productVersionDropDownEditor(container, options) {
+            jQuery('<input id="productversionId" required data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    placeholder: "-Select-",
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllProductVersionForDropDown", "ProductVersion")",
+
+                                type: "GET"
+                            }
+                        }
+
+                    },
+
+                    change: function (e) {
+                        var dataItem = this.dataItem(e.item);
+                        var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                        var sel = grid.select();
+                        var sel_idx = sel.index();
+                        var gridData = grid.dataSource.data();
+                        gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                        gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+                        //////////////////////19.02.2017 start//////////////////////
+                        //to get party type, product, color and version wise price
+                        var cId=gridData[sel_idx].color_id;
+                        var partyTypeId=($("#party_type_id").val());
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetProductColorVersionwisePrice", "ProductPriceing")",
+                            data: {
+                            party_type_id:partyTypeId,
+                            product_id: pId,
+                            color_id: cId,
+                            product_version_id: dataItem.product_version_id
+                        },
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (data) {
+                            //gridData[sel_idx].price =data;
+                            ww = $("#price_type").val();
+                            if (ww == "dealer_cost") {
+                                gridData[sel_idx].price =data.dealer_cost;
+                                gridData[sel_idx].retailer_cost =data.dealer_cost;
+                                gridData[sel_idx].b2b_cost =data.dealer_cost;
+                                gridData[sel_idx].mrp_cost =data.dealer_cost;
+                            }
+                            if (ww == "mrp_cost") {
+                                alert(data.mrp_cost);
+                                gridData[sel_idx].price =data.mrp_cost;
+                                gridData[sel_idx].retailer_cost =data.mrp_cost;
+                                gridData[sel_idx].b2b_cost =data.mrp_cost;
+                                gridData[sel_idx].mrp_cost =data.mrp_cost;
+
+                            }
+                            if (ww == "retailer_cost") {
+                                gridData[sel_idx].price =data.retailer_cost;
+                                gridData[sel_idx].retailer_cost =data.retailer_cost;
+                                gridData[sel_idx].b2b_cost =data.retailer_cost;
+                                gridData[sel_idx].mrp_cost =data.retailer_cost;
+
+                            }
+                            if (ww == "manual") {
+                                //gridData[sel_idx].price =0;
+                                //gridData[sel_idx].retailer_cost =0;
+                                //gridData[sel_idx].b2b_cost =0;
+                                //gridData[sel_idx].mrp_cost =0;
+
+                            } 
+                            if (ww == "") {
+                                gridData[sel_idx].price =data.b2b_cost;
+                                gridData[sel_idx].retailer_cost =data.b2b_cost;
+                                gridData[sel_idx].b2b_cost =data.b2b_cost;
+                                gridData[sel_idx].mrp_cost =data.b2b_cost;
+                            }
+                        }
+                    });
+                 //////////////////////19.02.2017 end//////////////////////
+
+
+                    }
+                });
+        }
+
+        //productList Grid---------------------
+
+        $("#btnSaveRequisition").click(function () {
+            Loading(false);
+            var requisition_code = $('#requisition_code').val();
+            var requisition_date = $('#requisition_date').val();
+            var warehouse_from = $('#warehouse_from').val();
+            var expected_receiving_date = $('#expected_receiving_date').val();
+            //var payment_method_id=$('#payment_method_id').val();
+            var party_type_id = $('#party_type_id').val();
+            var party_id = $('#party_id').val();
+            var amount=$('#amount').val();
+            var remarks = $('#remarks').val();
+            var region_id = $('#region_id').val();
+            var area_id = $('#area_id').val();
+            var credit_limit = $('#credit_limit').val();
+            var credit_term=$('#credit_term').val();
+            var contact_person_mobile=$('#contact_person_mobile').val();
+            var address=$('#address').val();//Billing address
+            var territory_id=$('#territory_id').val();
+
+            var reference_no=$('#reference_no').val();
+            var price_type=$('#price_type').val();
+
+            var RequisitionMasterData = {
+                party_type_id: party_type_id,
+                party_id: party_id,
+                requisition_code: requisition_code,
+                requisition_date: requisition_date,
+                warehouse_from: warehouse_from,
+                expected_receiving_date: expected_receiving_date,
+                amount: amount,
+                remarks: remarks,
+                region_id: region_id,
+                area_id: area_id,
+                credit_limit: credit_limit,
+                credit_term: credit_term,
+                contact_person_mobile: contact_person_mobile,
+                address: address,
+                territory_id: territory_id,
+                /////////////22.02.2017////////////
+                reference_no: reference_no,
+                price_type: price_type,
+                /////////////22.02.2017////////////
+                requisition_type: 'B2B Requisition',
+                created_by: userId,
+                updated_by: userId
+            };
+
+            var ProductDetailsList = [];
+            var ProductDetailsGrid = $("#RequisitionDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < ProductDetailsGrid.length; i++) {
+                var productDetails = {
+
+                    product_id: ProductDetailsGrid[i].product_id,
+                    unit_id: ProductDetailsGrid[i].unit_id,
+                    brand_id: ProductDetailsGrid[i].brand_id,
+                    product_category_id: ProductDetailsGrid[i].product_category_id,
+                    price: ProductDetailsGrid[i].price,
+                    quantity: ProductDetailsGrid[i].quantity,
+                    color_id: ProductDetailsGrid[i].color_id,
+                    //is_live_dummy: ProductDetailsGrid[i].is_live_dummy, //28.Nov.2016
+                    line_total: ProductDetailsGrid[i].line_total,
+                    product_version_id: ProductDetailsGrid[i].product_version_id
+                };
+                ProductDetailsList.push(productDetails);
+            }
+
+            var RequisitionModel = {
+                RequisitionMasterData: RequisitionMasterData,
+                RequisitionDetailsList: ProductDetailsList
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Requisition")",
+                data: JSON.stringify(RequisitionModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(ProductDetailsGrid);
+                    if (data.output === "success") {
+
+                        swal("Success", data.msg, "success");
+                        var party_type_id = $('#party_type_id').val();
+                        var party_id = $('#party_id').val();
+                        window.location.href = '/PaymentRequest/PaymentRequestForSingleDealer?party_type_id='+party_type_id+'&party_id='+party_id;
+                        //  window.location.href = '/paymentrequest/add';
+                        return false;
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+    });
+
+
+</script>

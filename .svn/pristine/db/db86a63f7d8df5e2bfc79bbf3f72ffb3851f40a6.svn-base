@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+}
+
+<script type="text/javascript">
+    var userId = @userId;
+    var partyId = @partyId;
+</script>
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Retailer List</h4></div>
+    <div class="panel-body">
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Retailer")">
+                    <span class="k-icon k-add"></span>
+                    Add Retailer
+                </a><input type="button" class="k-button " id="btnExportExcel" name="btnExportExcel" value="Export Excel" />
+            </div>
+        </div>
+        <div id="grid"></div>
+
+    </div>
+</div>
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Retailer/edit?party_id=#= party_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        //Excel Export---------
+        $("#btnExportExcel").click(function () {
+            var grid = $("#grid").data("kendoGrid");
+            grid.saveAsExcel();
+        });
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllRetailerByPartyId", "Party")?party_id="+partyId,
+                    type: "GET"
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Party")",
+                    type: "DELETE",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                    }
+                },
+
+                model: {
+                    id: "party_id",
+                    fields: {
+                        party_id: { editable: false, nullable: true },
+                        party_name: { type: "string" },
+                        party_code: { type: "string" },
+                        location_name: { type: "string" },
+                        address: { type: "string" },
+                        proprietor_name: { type: "string" },
+                        phone: { type: "string" },
+                        email: { type: "string" },
+                        party_type_id: { type: "number" },
+                        party_type_name: { type: "string" },
+                        start_date: { type: "string" }
+                    }
+
+                }
+            }
+
+        });
+
+        var d = new Date();
+        var dateTime = d.toJSON();
+
+        jQuery("#grid").kendoGrid({
+            excel: {
+                fileName: "Retailer_Excel_Report_" + dateTime + ".xlsx"
+            },
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+
+            columns: [
+            { field: "party_name", title: "Retailer Name", id: "party_id", width: "200px" },
+            { field: "party_code", title: "Retailer Code", id: "party_code", width: "200px" },
+            { field: "party_type_name", title: "Party Type:(Retailer)", id: "party_type_id", width: "200px" },
+            { field: "proprietor_name", title: "Owner Name", id: "proprietor_name", width: "130px" },
+            { field: "address", title: "Retailer Address", id: "address", width: "200px" },
+            //{ field: "location_name", title: "Retailer Location", id: "location_name", width: "200px" },
+            { field: "start_date", title: "Start Date", id: "start_date", width: "150px" },
+            {
+                title: "Action", width: "100px",
+                template: kendo.template($("#edit-template").html())
+            }],
+            editable: "inline"
+        });
+    });
+</script>
+
+

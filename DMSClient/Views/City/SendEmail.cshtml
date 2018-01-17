@@ -1,0 +1,250 @@
+﻿
+@{
+    ViewBag.Title = "SendEmail";
+}
+
+
+<div class="panel panel-success">
+    <div class="panel-heading">Custom Email Send </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="from_mail">From Mail No</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="from_mail" name="from_mail" class="k-textbox" placeholder="Sender Mail No" value="dotnetkiron@gmail.com" disabled />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="to_mail">To Mail No</label>
+                </div>
+                <div class="col-md-3">
+                    @*<input id="to_mail" name="to_mail" style="width: 100%;" class="k-textbox" placeholder="Receiver Mail No"/>*@
+                    <select id="to_mail" style="margin-left: 5px; margin-right: -5px; " tool></select>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="mail_subject">Subject</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="mail_subject" name="mail_subject" class="k-textbox" placeholder="Mail Subject" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="mail_body">Mail Body</label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="30" rows="3" name="mail_body" id="mail_body" class="k-textbox" placeholder="Enter your mail body here"></textarea>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-2" style="margin-left: 250px">
+                <input type="button" class="k-button" id="popUp" name="popUp" value="Send Mail" />
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <br />
+    <div class="row" id="popup">
+        <div class="col-md-12">
+            <div class="col-md-1">
+
+            </div>
+            <div class="col-md-3">
+                <input id="userName" name="userName" class="k-textbox" placeholder="Enter User Name" />
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1">
+
+            </div>
+            <div class="col-md-3">
+                <input type="password" id="password" name="password" class="k-textbox" placeholder="Enter your password" />
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="col-md-2" style="margin-left: 250px">
+            <input type="button" class="k-button" id="sendMail" name="sendMail" value="Send Mail" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //var userId = @userId;
+        @*$.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetLoginUserMail", "Mrr")",
+            data: { userId: userId }, //Passing parameter
+        dataType: "json",
+        success: function(data) {
+            Loading(false);
+            //
+            alert(data.email_address);
+            $("#from_mail").val(data.email_address);
+
+        }
+    });*@
+        $("#popup").hide();
+        $("#to_mail").kendoMultiSelect({
+            placeholder: "---Select Single/Multipule Email---",
+            dataTextField: "email_address",
+            dataValueField: "employee_id",
+            autoBind: false,
+            dataSource: {
+                type: "json",
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllEmail", "Mrr")"
+                }
+            }
+        }
+        });
+        $("#popUp").click(function () {
+
+
+
+
+            //mail parameter
+            var from_mail = $('#from_mail').val();
+            var to_mail = "dotnetkiron@gmail.com";
+            var mail_subject = $('#mail_subject').val();
+            var mail_body = $('#mail_body').val();
+            var senderName = $('#userName').val();
+            var senderPass = $('#password').val();
+
+
+            $.ajax({
+                type: "POST",
+                url: "/City/SendMail?fromEmail=" + from_mail + "&toEmail=" + to_mail + "&mailSubject=" + mail_subject + "&mailBody=" + mail_body + "&senderName=" + senderName + "&senderPass=" + senderPass,
+                //data: JSON.stringify(internalRequisitionMasterData),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        swal("Success", data.msg, "success");
+                        // window.location.href = '/InternalRequisition/InternalRequisitionRFD';
+                        return false;
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+            //var myWindow = $("#popup"),
+            //            undo = $("#undo");
+
+            //undo.click(function () {
+            //    myWindow.data("kendoWindow").open();
+            //    undo.fadeOut();
+            //});
+
+            //function onClose() {
+            //    undo.fadeIn();
+            //}
+
+            //myWindow.kendoWindow({
+            //    width: "600px",
+            //    title: "Mail Credentials",
+            //    visible: false,
+            //    actions: [
+            //        "Pin",
+            //        "Minimize",
+            //        "Maximize",
+            //        "Close"
+            //    ],
+            //    close: onClose
+            //}).data("kendoWindow").center().open();
+            //$("#popup").show();
+
+
+        });
+        $("#sendMail").click(function () {
+
+
+        //    //mail parameter
+        //    var from_mail = $('#from_mail').val();
+        //    var to_mail = $('#to_mail').val();
+        //    var mail_subject = $('#mail_subject').val();
+        //    var mail_body = $('#mail_body').val();
+        //    var senderName = $('#userName').val();
+        //    var senderPass = $('#password').val();
+
+
+        //    $.ajax({
+        //        type: "POST",
+        //        url:"/City/SendMail?fromEmail=" + from_mail + "&toEmail=" + to_mail + "&mailSubject=" + mail_subject + "&mailBody=" + mail_body + "&senderName=" + senderName + "&senderPass=" + senderPass,
+        //    //data: JSON.stringify(internalRequisitionMasterData),
+        //    dataType: "json",
+        //    contentType: "application/json",
+        //    success: function (data) {
+        //        Loading(false);
+        //        console.log(data);
+        //        if (data.output === "success") {
+        //            swal("Success", data.msg, "success");
+        //            // window.location.href = '/InternalRequisition/InternalRequisitionRFD';
+        //            return false;
+        //        } else {
+        //            swal("Exception", data.msg, "error");
+        //            return false;
+        //        }
+        //    }
+        //});
+
+
+    });
+
+    });
+</script>
+
+
+

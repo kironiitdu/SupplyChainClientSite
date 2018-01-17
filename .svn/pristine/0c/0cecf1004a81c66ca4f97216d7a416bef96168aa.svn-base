@@ -1,0 +1,116 @@
+﻿
+@{
+    ViewBag.Title = "AddTermsAndCondition";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<div class="panel panel-success">
+    <div class="panel-heading">Terms And Conditions Add</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <label for="terms_condition_header">Terms And Conditions Reference:</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="terms_condition_header" name="terms_condition_header" class="k-textbox" placeholder="Enter PO/PI Reference" />
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <label for="terms_conditions">Terms And Conditions:</label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="30" rows="15" name="terms_conditions" id="terms_conditions" class="k-textbox" placeholder="Enter Terms And Conditions Description"></textarea>
+                </div>
+
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnTermsAndConditionSave" name="btnTermsAndConditionSave" value="Save Terms And Conditions" />
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#btnTermsAndConditionSave").click(function() {
+            var terms_condition_header = $("#terms_condition_header").val();
+            var terms_and_condition_description = $("#terms_conditions").val();
+            var user_id=@userId;
+            if (terms_condition_header == "") {
+                sweetAlert("Sorry...", "Terms And Conditions Reference Is Empty!", "warning");
+                return false;
+            }
+            if (terms_conditions == "") {
+                sweetAlert("Sorry...", "Terms And Conditions Is Empty!", "warning");
+                return false;
+            }
+           
+            var termandconsition = {
+                terms_condition_header: terms_condition_header,
+                terms_and_condition_description: terms_and_condition_description,                
+                user_id:user_id
+            };
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("post", "TermsAndCondition")",
+                data: JSON.stringify(termandconsition),
+                dataType: "json",
+                contentType: "application/json",
+                success: function(data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        setTimeout(function() {
+                            window.location.href = '/TermsAndCondition/index';
+                        }, 1000);
+
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+        });
+
+    });
+
+
+ 
+</script>
+

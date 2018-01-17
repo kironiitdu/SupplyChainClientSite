@@ -1,0 +1,98 @@
+﻿@*Author: farzana islam
+    Date: 22/08/2016*@
+@{
+    ViewBag.Title = "Index";
+}
+
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/BankBranch/edit?bank_branch_id=#= bank_branch_id #" class="k-button k-grid-even">Edit</a>
+</script>
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Add Bank Branch</h4></div>
+    <div class="panel-body">
+        <div class="k-toolbar k-grid-toolbar">
+            <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","BankBranch")">
+                <span class="k-icon k-add"></span>
+                Add Bank Info
+            </a>
+        </div>
+        <div id="grid"></div>
+    </div>
+</div>
+<div class="k-grid  k-secondary" data-role="grid">
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllBankBranch", "BankBranch")",
+                    type: "GET"
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "BankBranch")",
+                    type: "DELETE",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                    }
+                },
+
+                model: {
+                    id: "bank_branch_id",
+                    fields: {
+                        bank_branch_id: { editable: false, nullable: true },
+                        bank_branch_name: { type: "string" },
+                        bank_id: { type: "string" },
+                        bank_name: { type: "string" },
+                        account_no: { type: "string" }
+                        //swift_code: { type: "string" },
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+
+            columns: [
+                { field: "bank_name", title: "Bank Name", id: "bank_id", width: "150px" },
+                { field: "bank_branch_name", title: "Branch Name", id: "bank_branch_name", width: "150px" },
+                { field: "account_no", title: "Bank Account No.", id: "account_no", width: "150px" },
+                {
+                    title: "Action", width: "100px",
+                    template: kendo.template($("#edit-template").html())
+                },
+                { command: ["destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+    });
+</script>
+<div id="kWindow"></div>

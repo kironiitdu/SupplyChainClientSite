@@ -1,0 +1,194 @@
+﻿@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var sales_designation_id = '@ViewBag.salesDesignationId';
+        Loading(true);
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("GetDesignationById", "Designation")",
+            data: {
+                sales_designation_id: sales_designation_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(sales_designation_id);
+                $("#sales_designation").val(data.sales_designation);
+                $("#sales_person_type_code").val(data.sales_person_type_code);
+                $("#parent_designation_id").data("kendoComboBox").value(data.parent_designation_id);
+                $("#sales_type_id").data("kendoComboBox").value(data.sales_type_id);
+            }
+        });
+    });
+</script>
+
+<div class="row" id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Designation Add</h4></div>
+        <div class="panel-body">
+            <form id="LocationAdd">
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-3">
+                                <label for="sales_designation">Designation Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="sales_designation" name="sales_designation" class="k-textbox" />
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <label for="sales_person_type_code">Code&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="sales_person_type_code" name="sales_person_type_code" class="k-textbox" />
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <label for="parent_designation_id">Parent Designation</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="parent_designation_id" name="parent_designation_id" />
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <label for="sales_type_id">Sales Type</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="sales_type_id" name="sales_type_id" />
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="button" class="k-button" id="LocationAddSubmit" value="Update Information" style=" margin-left: 5px; " />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $("#LocationAddSubmit").click(function () {
+            Loading(true);
+
+            var sales_designation_id = '@ViewBag.salesDesignationId';
+            var sales_designation = $("#sales_designation").val();
+            var sales_person_type_code = $("#sales_person_type_code").val();
+            var parent_designation_id = $("#parent_designation_id").val();
+            var sales_type_id = $("#sales_type_id").val();
+
+            var oDesignation = {
+                sales_designation_id:sales_designation_id,
+                sales_designation: sales_designation,
+                sales_person_type_code: sales_person_type_code,
+                parent_designation_id: parent_designation_id,
+                sales_type_id: sales_type_id,
+                created_by: userId,
+                updated_by: userId
+            };
+
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("Put", "Designation")",
+                dataType: 'json',
+                contentType: "application/json",
+
+                data: JSON.stringify(oDesignation),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        return false;
+                    } else {
+                        sweetAlert("Sorry!...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+
+        //Parent Location
+        $("#parent_designation_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Parent Designation ---",
+            dataTextField: "sales_designation",
+            dataValueField: "sales_designation_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllDesignation", "Designation")"
+                    }
+                }
+            }
+
+        });
+
+        //Parent Location
+        $("#sales_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Sales Type ---",
+            dataTextField: "sales_type1",
+            dataValueField: "sales_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllSalesType", "SalesType")"
+                    }
+                }
+            }
+
+        });
+
+    });
+</script>

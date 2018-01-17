@@ -1,0 +1,516 @@
+﻿@*Author:Kiron
+    Date:22/01/2017*@
+@{
+    ViewBag.Title = "ProcessPaymentRequest";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+
+<script type="text/javascript">
+    var userId = @userId;
+    var companyId = @companyId;
+    var Pm_id = 0;
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+
+
+
+        var payment_req_id = '@ViewBag.payment_req_id';
+        Loading(false);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("ProcessPaymentRequiest", "Receive")",
+            data: {
+                payment_req_id: payment_req_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                var imgUrl = "@UrlConfig.Action("GetImage", "PaymentRequest")?payment_req_id="+payment_req_id;
+                $("#docImage").attr("src", imgUrl);
+                $("#docImageLink").attr("href", imgUrl);
+                //$("#receive_date").val(data.deposite_date );
+                $("#receive_date").val(kendo.toString(kendo.parseDate(data.deposite_date, "yyyy-MM-dd"), "MM/dd/yyyy"));
+                $("#document_attachment").val(data.document_attachment);
+                $("#last_invoice_balance").val(data.last_invoice_balance);
+                $("#remarks").val(data.remarks);
+                $("#cheque_no").val(data.cheque_no);
+                $("#payment_method_id").val(data.payment_method_id);
+                $("#amount").val(data.amount);
+                $("#party_id").data("kendoComboBox").value(data.party_id);
+                $("#bank_id").data("kendoComboBox").value(data.bank_id);
+                $("#bank_branch_name").val(data.bank_branch_name);
+
+
+                var partyId = data.party_id;
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetInvoiceNumber", "Receive")",
+
+                    data: {party_id:partyId},
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        $('#invoice_no').val(data);
+                    }
+                });
+                // For getting party payment info
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetPartyPaymentAndRequisitionInfo", "PaymentRequest")?party_id=" + partyId,
+                    dataType: "json",
+                success: function (data) {
+                    Loading(false);        
+                    $('#credit_limit').val(data.credit_limit);
+                    $('#requisition_no').val(data.requisition_code);
+                    $('#requisition_line_total').val(data.amount);
+
+                }
+                });
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetPartyAccountNumber", "PaymentRequest")?party_id=" + partyId,
+                    dataType: "json",
+                success: function (data) {
+                    Loading(false);        
+                    $('#account_no').val(data.account_no);     
+                }
+            });
+                $("#party_id").data("kendoComboBox").enable(false);
+                $("#bank_id").data("kendoComboBox").enable(false);             
+                
+                var party_id = data.party_id;             
+                if (party_id != null) {
+                    $.ajax({
+                        type: "GET",
+                        url: "@UrlConfig.Action("GetClousingBalance", "Receive")",
+                        data: {party_id:party_id},
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (data) {                           
+                            $('#last_invoice_balance').val(data);
+                        }
+                    });
+                }
+                var is_varified = data.is_varified;
+                if (is_varified===true) {
+                    $("#is_varified").prop("checked", true);
+                }
+
+       //  console.log(payment_method_id);
+            }
+        });
+    });
+</script>
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Process Payment </h4></div>
+        <div class="panel-body">            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="receipt_no">Money Receipt No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="receipt_no" name="receipt_no" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="invoice_no">Invoice No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="invoice_no" name="invoice_no" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="receive_date">Receipt Date </label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="receive_date" name="receive_date " />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="party_id">Channel Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row" id="check_div">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="cheque_no">Cheque/Slip No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="cheque_no" name="cheque_no" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-2">
+                        <label for="account_no">Account No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="account_no" name="account_no" class="k-textbox" />
+                    </div>
+
+
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row" id="bank_div">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="bank_id">Bank Name: &nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="bank_id" name="bank_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div  id="branchName">
+                        <div class="col-md-2">
+                            <label for="bank_branch_name">Bank Branch Name:</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="k-textbox" name="bank_branch_name" id="bank_branch_name">
+                        </div>
+                    </div>
+
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="last_invoice_balance">Previous Balance</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="last_invoice_balance" name="last_invoice_balance" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="amount">Payment Amount&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="amount" name="amount" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="bank_charge">Bank Charge</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="bank_charge" name="bank_charge" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="remarks">remarks</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="remarks" name="remarks" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="representative">Representative</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="representative" name="representative" class="k-textbox" />
+                    </div>
+                    @*Hidden Payment Method*@
+                    <div class="col-md-1"><input id="payment_method_id" name="payment_method_id" class="k-textbox" type="hidden" /></div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-3">
+
+                        <input type="checkbox" id="is_varified" class="k-checkbox">
+                        <label class="k-checkbox-label" for="is_varified">Is Varified</label>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-3">
+                        <div class="col-md-3">
+                            <input id="document_attachment" name="document_attachment" type="hidden" class="k-textbox" />
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                        <a id="docImageLink" href="" target="_blank"><img id="docImage" height="100" /></a>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-heading"><h4>Channel Requisition Info</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-2">
+                            <label for="credit_limit">Credit Limit</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="credit_limit" name="credit_limit" class="k-textbox" disabled />
+                        </div>
+
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="requisition_no">Requisition Code</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="requisition_no" name="requisition_no" class="k-textbox" disabled />
+                        </div>
+                        <div class="col-md-1"></div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-2">
+                            <label for="requisition_line_total">Last Requisition Amount</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="requisition_line_total" name="requisition_line_total" class="k-textbox" disabled />
+                        </div>
+
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                           
+                        </div>
+                        <div class="col-md-3">
+                          
+                        </div>
+                        <div class="col-md-1"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnProcessPaymentRequest" name="btnProcessPaymentRequest" value="Process Payment Request" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        console.log(payment_method_id);
+
+        $("#receive_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "dd/MM/yyyy"
+        });
+
+
+        // bank_name
+        $("#bank_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Bank ---",
+            dataTextField: "bank_name",
+            dataValueField: "bank_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBank", "Bank")"
+                    }
+                }
+            }
+        });
+
+        //bank_branch_name
+        $("#bank_branch_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Bank Branch ---",
+            dataTextField: "bank_branch_name   ",
+            dataValueField: "bank_branch_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBankBranch", "BankBranch")"
+                    }
+                }
+            }
+
+        });
+
+   
+        // party list
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Party ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+        });
+        //CDDTOTXB
+        $('#party_id').change(function () {
+            var partyId = $('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetClousingBalance", "Receive")",
+
+                data: {party_id:partyId},
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    $('#last_invoice_balance').val(data);
+                }
+            });
+        });
+        //Invoice
+        $('#party_id').change(function () {
+            var partyId = $('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetInvoiceNumber", "Receive")",
+
+                data: {party_id:partyId},
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    $('#invoice_no').val(data);
+                }
+            });
+        });
+
+
+
+
+
+        $("#btnProcessPaymentRequest").click(function() {
+            Loading(false);
+
+            var userId = '@userId';
+            var payment_req_id = '@ViewBag.payment_req_id';
+            var receive_date  = $("#receive_date").val();
+            var party_id = $("#party_id").val();
+            var invoice_no = $("#invoice_no").val();
+            var last_invoice_balance = $("#last_invoice_balance").val();
+            var cheque_no = $("#cheque_no").val();
+            var account_no = $("#account_no").val();
+            var bank_id = $("#bank_id").val();
+            var bank_branch_name = $("#bank_branch_name").val();
+            var amount = $("#amount").val();
+            var payment_method_id =$("#payment_method_id").val();
+            var remarks = $("#remarks").val();
+            var representative = $("#representative").val();
+            var bank_charge = $("#bank_charge").val();
+            var document_attachment = $("#document_attachment").val();
+            var is_varified = false;
+            if ($("#is_varified").is(":checked")) {
+                is_varified = true;
+            }
+            if (is_varified != true) {
+                sweetAlert("Sorry...", "Verify First!", "warning");
+                return false;
+            }
+            if (amount=="" ||amount<0) {
+                sweetAlert("Sorry...", "Invalid Amount!", "warning");
+                return false;
+            }
+            //Json Object
+           // console.log(payment_method_id);
+            var processPaymentRequest = {
+
+                receive_date:receive_date,
+                invoice_no:invoice_no,
+                last_invoice_balance:last_invoice_balance,
+                party_id: party_id,
+                remarks:remarks,
+                payment_req_id:payment_req_id,
+                representative:representative,
+                payment_method_id:payment_method_id,
+                cheque_no:cheque_no,
+                bank_id:bank_id,
+                bank_branch_name:bank_branch_name,
+                amount:amount,
+                account_no:account_no,
+                document_attachment:document_attachment,
+                bank_charge:bank_charge,
+                is_varified:is_varified,
+                created_by:userId
+            };
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("post", "Receive")",
+                data: JSON.stringify(processPaymentRequest),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        window.location.href = '/Receive/index';
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+        });
+
+    });
+</script>

@@ -1,0 +1,814 @@
+﻿@{
+    ViewBag.Title = "To Rfd Transfer";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">TO Delivery Master</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="to_delivery_no">TO Delivery No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_delivery_no" name="to_delivery_no" class="k-textbox" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_delivery_date">TO Delivery Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_delivery_date" name="to_delivery_date" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="from_warehouse_id">From Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="from_warehouse_id" name="from_warehouse_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_warehouse_id">To Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_warehouse_id" name="to_warehouse_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="delivery_method">Delivery Method&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="delivery_method" style="width: 80%;" name="gender">
+                            <option value="">Select Delivery Method</option>
+                            <option value="Courier">Courier</option>
+                            <option value="Logistics">Logistics</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div id="courierPortion">
+                        <div class="col-md-2">
+                            <label for="courier_id">Courier&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="courier_id" name="courier_id" />
+                        </div>
+                    </div>
+                    <div id="logisticsPortion">
+                        <div class="col-md-2">
+                            <label for="to_logistics_delivered_by">Delivered By&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="to_logistics_delivered_by" name="to_logistics_delivered_by" class="k-textbox" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-success">
+        <div class="panel-heading">TO Product Details</div>
+        <div class="panel-body">
+            <div id="poDetailsGrid"></div>
+            <div class="group-box" hidden>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="status">Status</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="status" name="status" class="k-textbox" value="Created" disabled />
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2"> </div>
+                        <div class="col-md-3"></div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-success">
+            <div class="panel-heading">Product List</div>
+            <div class="panel-body">
+                <div id="ReceiveSerialNoDetailsGrid"></div>
+            </div>
+        </div>
+    </div>
+    <div class="group-box" id="btnDiv">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnSaveUser" name="btnSaveUser" value="Transfer" /> | <input type="button" class="k-button" id="btnCancel" name="btnCancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+        $("#delivery_method").kendoDropDownList();
+        $("#courierPortion").hide();
+        $("#logisticsPortion").hide();
+
+
+        $("#delivery_method").change(function(){
+            var xxx=$("#delivery_method").val();
+            if (xxx == 'Courier') {
+                $("#courierPortion").show();
+                $("#logisticsPortion").hide();
+            } else {
+                $("#logisticsPortion").show();
+                $("#courierPortion").hide();
+            }
+        });
+
+        var sampleData = [];
+        var imeiSampleData = [];
+        //get master and details information----------------
+
+        $("#courier_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Courier ---",
+            dataTextField: "courier_name",
+            dataValueField: "courier_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCouriers", "Courier")"
+                    }
+                }
+            }
+        });
+
+        var to_delivery_master_id = '@ViewBag.toDeliveryMasterId';
+        Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetToDeliveryById", "ToDelivery")",
+            data: {
+                to_delivery_master_id: to_delivery_master_id
+            },
+            dataType: "json",
+            success: function(data) {
+                Loading(false);
+
+                console.log(data);
+
+                $("#to_delivery_no").val(data.toDeliveryMasterData.to_delivery_no);
+                $('#to_delivery_date').val(kendo.toString(kendo.parseDate(data.toDeliveryMasterData.to_delivery_date, "yyyy-MM-dd"), "yyyy/MM/dd"));
+                $('#from_warehouse_id').data("kendoComboBox").value(data.toDeliveryMasterData.from_warehouse_id);
+                $('#to_warehouse_id').data("kendoComboBox").value(data.toDeliveryMasterData.to_warehouse_id);
+
+
+
+                for (var i = 0; i < data.toDeliveryDetailsList.length; i++) {
+                    var poDetails = {
+
+                        to_delivery_master_id:data.toDeliveryDetailsList[i].to_delivery_master_id,
+                        to_delivery_details_id:data.toDeliveryDetailsList[i].to_delivery_details_id,
+                        product_id: data.toDeliveryDetailsList[i].product_id,
+                        product_name: data.toDeliveryDetailsList[i].product_name,
+                        color_id: data.toDeliveryDetailsList[i].color_id,
+                        color_name: data.toDeliveryDetailsList[i].color_name,
+                        product_version_id:data.toDeliveryDetailsList[i].product_version_id,
+                        product_version_name:data.toDeliveryDetailsList[i].product_version_name,
+                        unit_id: data.toDeliveryDetailsList[i].unit_id,
+                        unit_name: data.toDeliveryDetailsList[i].unit_name,
+                        delivered_quantity: data.toDeliveryDetailsList[i].delivered_quantity
+
+                    };
+                    sampleData.push(poDetails);
+                }
+                console.log(sampleData);
+
+                for (var i = 0; i < data.receiveSerialNoDetails.length; i++) {
+                    var imeiDetails = {
+
+                        receive_serial_no_details_id:data.receiveSerialNoDetails[i].receive_serial_no_details_id,
+                        to_deliver_master_id:data.receiveSerialNoDetails[i].to_deliver_master_id,
+                        product_id: data.receiveSerialNoDetails[i].product_id,
+                        product_name: data.receiveSerialNoDetails[i].product_name,
+                        color_id: data.receiveSerialNoDetails[i].color_id,
+                        color_name: data.receiveSerialNoDetails[i].color_name,
+                        product_version_id:data.receiveSerialNoDetails[i].product_version_id,
+                        product_version_name:data.receiveSerialNoDetails[i].product_version_name,
+                        imei_no: data.receiveSerialNoDetails[i].imei_no,
+                        imei_no2: data.receiveSerialNoDetails[i].imei_no2
+
+                    };
+                    imeiSampleData.push(imeiDetails);
+                }
+                console.log(imeiSampleData);
+
+                var sampleDataNextID = sampleData.length + 1;
+
+                function getIndexById(id) {
+                    var idx,
+                        l = sampleData.length;
+
+                    for (var j = 0; j < l; j++) {
+                        if (sampleData[j].to_delivery_details_id == id) {
+                            return j;
+                        }
+                    }
+                    return null;
+                }
+
+                // custom logic end
+                var dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: function (e) {
+                            e.success(sampleData);
+                        },
+                        update: function (e) {
+                            var mmm = parseInt(e.data.transfered_quantity);
+                            var xxx = parseInt(e.data.quantity);
+                            var axx= $.isNumeric(mmm);
+
+
+
+                            if (mmm > xxx) {
+                                sweetAlert("Sorry...", "transfer quantity should not be greater then quantity !!!", "warning");
+                                return false;
+                            }
+                            if (axx==false ) {
+                                sweetAlert("Sorry...", "not a valid transfered quantity !!!", "warning");
+                                return false;
+                            }
+                            if (mmm % 1 != 0) {
+                                sweetAlert("Sorry...", "decimal quantity not allowed !!!", "warning");
+                                return false;
+                            }
+                            if (e.data.transfered_quantity == 0) {
+                                sweetAlert("Sorry...", "zero quantity not allowed !!!", "warning");
+                                return false;
+                            }
+                            if (e.data.transfered_quantity == null) {
+                                sweetAlert("Sorry...", "quantity is required !!!", "warning");
+                                return false;
+                            }
+                            if (e.data.transfered_quantity < 0) {
+                                sweetAlert("Sorry...", "negative quantity not allowed !!!", "warning");
+                                return false;
+                            }
+                            else {
+                                sampleData[getIndexById(e.data.to_delivery_details_id)] = e.data;
+                                e.success();
+                                $("#btnDiv").show();
+                                return true;
+                            }
+                        }
+                    },
+
+                    error: function (e) {
+                        alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                    },
+                    pageSize: 10,
+                    batch: false,
+                    schema: {
+                        model: {
+                            id: "to_delivery_details_id",
+                            fields: {
+                                to_delivery_details_id: { editable: false, nullable: true },
+                                product_id: { field: "product_id", type: "integer" },
+                                product_name: { type: "string" },
+                                product_category_id: { field: "product_category_id" },
+                                product_category_name: { type: "string", editable: false },
+                                brand_id: { field: "brand_id", type: "integer" },
+                                brand_name: { type: "string", editable: false },
+                                unit_id: { field: "unit_id", type: "integer" },
+                                unit_name: { type: "string", editable: false },
+                                color_id: { field: "color_id", type: "integer" },
+                                color_name: { type: "string" },
+                                product_version_id: { field: "product_version_id", type: "integer" },
+                                product_version_name: { type: "string" },
+                                last_modified_date:{ type: "string" },
+                                delivered_quantity: { type: "string" },
+                                has_serial: { type: "boolean" },
+                                transfered_quantity: { type: "string" }
+                            }
+                        }
+                    }
+                });
+
+
+
+                $("#poDetailsGrid").kendoGrid({
+                    dataSource: dataSource,
+                    pageable: true,
+                    selectable: true,
+
+                    columns: [
+                        { field: "product_id", title: "Product", template: "#= product_name #", editor: productDropDownEditor, width: "100px" },
+                        { field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditor, width: "100px" },
+                        { field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionDropDownEditor, width: "100px" },
+                        { field: "delivered_quantity", title: "Delivered Quantity", width: "50px" }
+                    ],
+                    editable: "inline"
+                });
+
+
+                function productDropDownEditor(container, options) {
+                    jQuery('<input id="productId" required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+
+                        .kendoComboBox({
+                            autoBind: false,
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_id = dataItem.product_id,
+                                gridData[sel_idx].product_name = dataItem.product_name;
+                                gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                                gridData[sel_idx].product_category_name = dataItem.product_category_name;
+                                gridData[sel_idx].brand_id = dataItem.brand_id;
+                                gridData[sel_idx].brand_name = dataItem.brand_name;
+                                gridData[sel_idx].unit_id = dataItem.unit_id;
+                                gridData[sel_idx].unit_name = dataItem.unit_name;
+
+                            }
+                        });
+                }
+
+
+                //template for color comboBox
+                function colorDropDownEditor(container, options) {
+                    jQuery('<input data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoComboBox({
+                            autoBind: false,
+                            cascadeFrom: "productId",
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllColorMappingForTransection", "ProductColorMapping")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].color_id = dataItem.color_id,
+                                gridData[sel_idx].color_name = dataItem.color_name;
+                            }
+                        });
+                }
+
+                //template for product version comboBox
+                function productVersionDropDownEditor(container, options) {
+                    jQuery('<input data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+
+                        .kendoComboBox({
+                            autoBind: false,
+                            cascadeFrom: "productId",
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetProductwiseVersion", "ProductVersionMapping")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+
+                            }
+                        });
+                }
+
+                // custom logic end
+                var imeiDataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: function (e) {
+                            e.success(imeiSampleData);
+                        },
+                        update: function (e) {
+
+                        }
+                    },
+
+                    error: function (e) {
+                        alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                    },
+                    pageSize: 10,
+                    batch: false,
+                    schema: {
+                        model: {
+                            id: "receive_serial_no_details_id",
+                            fields: {
+                                receive_serial_no_details_id: { editable: false, nullable: true },
+                                to_deliver_master_id: { field: "to_deliver_master_id", type: "integer" },
+                                product_id: { field: "product_id", type: "integer" },
+                                product_name: { type: "string" },
+                                color_id: { field: "color_id", type: "integer" },
+                                color_name: { type: "string" },
+                                product_version_id: { field: "product_version_id", type: "integer" },
+                                product_version_name: { type: "string" },
+                                imei_no:{ type: "string" },
+                                imei_no2: { type: "string" }
+                            }
+                        }
+                    }
+                });
+
+                $("#ReceiveSerialNoDetailsGrid").kendoGrid({
+                    dataSource: imeiDataSource,
+                    pageable: true,
+                    selectable: true,
+
+                    columns: [
+                        { field: "product_name", title: "Product", width: "100px" },
+                        { field: "color_name", title: "Color", width: "100px" },
+                        { field: "product_version_name", title: "Version", width: "100px" },
+                        { field: "imei_no", title: "IMEI1", width: "100px" },
+                        { field: "imei_no2", title: "IMEI2", width: "100px" }
+                    ],
+                    editable: "inline"
+                });
+
+
+
+            }
+        });
+
+
+        $("#to_delivery_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+
+        $("#expected_transfer_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+
+
+        $("#from_warehouse_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select From Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetWarehouseForTransferOrder", "Warehouse")"
+                    }
+                }
+            }
+
+        });
+
+        $("#courier_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select From Courier ---",
+            dataTextField: "courier_name",
+            dataValueField: "courier_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCouriers", "Courier")"
+                    }
+                }
+            }
+
+        });
+
+        $("#to_warehouse_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select To Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetWarehouseForTransferOrder", "Warehouse")"
+                    }
+                }
+            }
+
+        });
+
+        //Meraj this for IMEI Scan and load grid------------------------
+
+        var sampleDataForProductInfo = [];
+
+
+        function checkDuplicateImei(hayStack, imei_no) {
+            if (!hayStack) {
+                return false;
+            } else {
+                for (var i = 0; i < hayStack.length; i++) {
+                    if (hayStack[i].imei_no == imei_no) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+
+
+        $("#btnSaveUser").click(function () {
+            Loading(true);
+
+            var to_delivery_no = $('#to_delivery_no').val();
+            var to_delivery_date = $('#to_delivery_date').val();
+            var from_warehouse_id = $('#from_warehouse_id').val();
+            var to_warehouse_id = $('#to_warehouse_id').val();
+            var delivery_method = $('#delivery_method').val();
+            var courier_id = '';
+            var to_logistics_delivered_by = '';
+
+            if (delivery_method=='') {
+                swal("Sorry","Please Select Delivery Method !!", "error");
+                Loading(false);
+                return false;
+            }
+
+
+            if (delivery_method=='Courier') {
+                 courier_id = $('#courier_id').val();
+                if (courier_id=='') {
+                    swal("Sorry","Please Select Courier !!", "error");
+                    Loading(false);
+                    return false;
+                }
+            }
+
+            if (delivery_method=='Logistics') {
+                 to_logistics_delivered_by = $('#to_logistics_delivered_by').val();
+                if (to_logistics_delivered_by=='') {
+                    swal("Sorry","Delivered By is empty !!", "error");
+                    Loading(false);
+                    return false;
+                }
+            }
+
+
+
+            var toDeliveryMasterData = {
+                to_delivery_master_id :'@ViewBag.toDeliveryMasterId',
+                to_delivery_no: to_delivery_no,
+                to_delivery_date: to_delivery_date,
+                from_warehouse_id: from_warehouse_id,
+                to_warehouse_id: to_warehouse_id,
+                delivery_method:delivery_method,
+                courier_id:courier_id,
+                to_logistics_delivered_by:to_logistics_delivered_by,
+                created_by: userId,
+                updated_by: userId
+            };
+
+
+            var toDetailsList = [];
+            var toDetailsGrid = $("#poDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < toDetailsGrid.length; i++) {
+                var poDetails = {
+                    to_delivery_master_id :'@ViewBag.toDeliveryMasterId',
+                    to_delivery_details_id: toDetailsGrid[i].to_delivery_details_id,
+                    product_id: toDetailsGrid[i].product_id,
+                    color_id: toDetailsGrid[i].color_id,
+                    product_version_id: toDetailsGrid[i].product_version_id,
+                    delivered_quantity: toDetailsGrid[i].delivered_quantity
+                };
+                toDetailsList.push(poDetails);
+            }
+
+
+            var receiveSerialNoDetails = [];
+            var receiveSerialNoDetailsGrid = $("#ReceiveSerialNoDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < receiveSerialNoDetailsGrid.length; i++) {
+                var toDetails = {
+                    receive_serial_no_details_id: receiveSerialNoDetailsGrid[i].receive_serial_no_details_id,
+                    to_deliver_master_id: receiveSerialNoDetailsGrid[i].to_deliver_master_id,
+                    product_id: receiveSerialNoDetailsGrid[i].product_id,
+                    product_name: receiveSerialNoDetailsGrid[i].product_name,
+                    color_id: receiveSerialNoDetailsGrid[i].color_id,
+                    color_name: receiveSerialNoDetailsGrid[i].color_name,
+                    product_version_id: receiveSerialNoDetailsGrid[i].product_version_id,
+                    product_version_name: receiveSerialNoDetailsGrid[i].product_version_name,
+                    imei_no: receiveSerialNoDetailsGrid[i].imei_no,
+                    imei_no2: receiveSerialNoDetailsGrid[i].imei_no2
+                };
+                receiveSerialNoDetails.push(toDetails);
+            }
+
+
+            var toDeliveryModel = {
+                ToDeliveryMasterData: toDeliveryMasterData,
+                ToDeliveryDetailsList: toDetailsList,
+                ReceiveSerialNoDetails: receiveSerialNoDetails
+            };
+
+            console.log(toDeliveryModel);
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("RfdDelivery", "ToDelivery")",
+                data: JSON.stringify(toDeliveryModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        swal("Success", data.msg, "success");
+
+                        setTimeout(function () {
+                            window.location.href = '/TransferOrder/ToRfd';
+                        }, 1000);
+
+                        return false;
+
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+
+        $("#btnCancel").click(function () {
+            Loading(true);
+
+            var to_delivery_no = $('#to_delivery_no').val();
+            var to_delivery_date = $('#to_delivery_date').val();
+            var from_warehouse_id = $('#from_warehouse_id').val();
+            var to_warehouse_id = $('#to_warehouse_id').val();
+
+
+
+            var toDeliveryMasterData = {
+                to_delivery_master_id :'@ViewBag.toDeliveryMasterId',
+                to_delivery_no: to_delivery_no,
+                to_delivery_date: to_delivery_date,
+                from_warehouse_id: from_warehouse_id,
+                to_warehouse_id: to_warehouse_id,
+                created_by: userId,
+                updated_by: userId
+            };
+
+
+            var toDetailsList = [];
+            var toDetailsGrid = $("#poDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < toDetailsGrid.length; i++) {
+                var poDetails = {
+                    to_delivery_master_id :'@ViewBag.toDeliveryMasterId',
+                    to_delivery_details_id: toDetailsGrid[i].to_delivery_details_id,
+                    product_id: toDetailsGrid[i].product_id,
+                    color_id: toDetailsGrid[i].color_id,
+                    product_version_id: toDetailsGrid[i].product_version_id,
+                    delivered_quantity: toDetailsGrid[i].delivered_quantity
+                };
+                toDetailsList.push(poDetails);
+            }
+
+
+            var receiveSerialNoDetails = [];
+            var receiveSerialNoDetailsGrid = $("#ReceiveSerialNoDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < receiveSerialNoDetailsGrid.length; i++) {
+                var toDetails = {
+                    receive_serial_no_details_id: receiveSerialNoDetailsGrid[i].receive_serial_no_details_id,
+                    to_deliver_master_id: receiveSerialNoDetailsGrid[i].to_deliver_master_id,
+                    product_id: receiveSerialNoDetailsGrid[i].product_id,
+                    product_name: receiveSerialNoDetailsGrid[i].product_name,
+                    color_id: receiveSerialNoDetailsGrid[i].color_id,
+                    color_name: receiveSerialNoDetailsGrid[i].color_name,
+                    product_version_id: receiveSerialNoDetailsGrid[i].product_version_id,
+                    product_version_name: receiveSerialNoDetailsGrid[i].product_version_name,
+                    imei_no: receiveSerialNoDetailsGrid[i].imei_no,
+                    imei_no2: receiveSerialNoDetailsGrid[i].imei_no2
+                };
+                receiveSerialNoDetails.push(toDetails);
+            }
+
+
+            var toDeliveryModel = {
+                ToDeliveryMasterData: toDeliveryMasterData,
+                ToDeliveryDetailsList: toDetailsList,
+                ReceiveSerialNoDetails: receiveSerialNoDetails
+            };
+
+            console.log(toDeliveryModel);
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("CancelToDelivery", "ToDelivery")",
+                data: JSON.stringify(toDeliveryModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        swal("Success", data.msg, "success");
+
+                        setTimeout(function () {
+                            window.location.href = '/TransferOrder/ToRfd';
+                        }, 1000);
+
+                        return false;
+
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+    });
+
+
+</script>

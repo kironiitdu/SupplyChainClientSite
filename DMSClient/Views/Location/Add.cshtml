@@ -1,0 +1,202 @@
+﻿@*
+    Page: Location Add Form
+    Author: Kiron
+
+*@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Add";
+}
+
+
+
+<div class="row" id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Location Setup</h4></div>
+        <div class="panel-body">
+            <form id="LocationAdd">
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-3">
+                                <label for="location_name">Location Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="location_name" name="location_name" class="k-textbox" />
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <label for="employee_id">Area Head&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="employee_id" name="employee_id" />
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                         
+                                <div class="col-md-3">
+                                    <label for="parent_location_id">Parent Location&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="parent_location_id" name="parent_location_id" />
+                                </div>
+                         
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                               
+                            </div>
+                            <div class="col-md-3">
+                                <input type="checkbox" id="is_leaf" class="k-checkbox">
+                                <label class="k-checkbox-label" for="is_leaf">Is Leaf</label>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6 ">
+                            <input type="button" class="k-button" id="LocationAddSubmit" value="Save Information" />
+                        </div>
+
+                        <div id="kWindow"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+        $("#LocationAddSubmit").click(function () {
+            Loading(true);
+
+
+            var location_name = $("#location_name").val();
+            var parent_location_id = $("#parent_location_id").val();
+            var employee_id = $("#employee_id").val();
+            var is_leaf = false;
+            if ($("#is_leaf").is(":checked")) {
+                is_leaf = true;
+            }
+            var oLocation = {
+                parent_location_id: parent_location_id,
+                location_name: location_name,
+                employee_id: employee_id,
+                is_leaf: is_leaf
+
+            };
+
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Location")",
+                dataType: 'json',
+                contentType: "application/json",
+
+                data: JSON.stringify(oLocation),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                  
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        window.location.href = '/Location/index';
+
+                        //$("#location_name").val("");
+                        //var parent_location_id = $("#parent_location_id").data("kendoComboBox");
+                        //parent_location_id.dataSource.data([]);
+                        //parent_location_id.text("");
+                        //$("#employee_id").val("");
+                        //var employee_id = $("#employee_id").data("kendoComboBox");
+                        //employee_id.dataSource.data([]);
+                        //employee_id.text("");
+                       
+
+                        return false;
+                    } else {
+                        sweetAlert("Sorry!...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+        //Employee
+        $("#employee_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Area Head ---",
+            dataTextField: "employee_name",
+            dataValueField: "employee_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllEmployees", "Employee")"
+                    }
+                }
+            }
+
+        });
+
+
+        //Parent Location
+        $("#parent_location_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Parent Location ---",
+            dataTextField: "location_name",
+            dataValueField: "parent_location_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllLocationByParent", "Location")"
+                    }
+                }
+            }
+
+        });
+
+
+
+
+
+
+
+
+
+
+    });
+
+
+    
+
+
+</script>
+
+

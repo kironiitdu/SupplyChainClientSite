@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewBag.Title = "PartyUserIndex";
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">User List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/User/Edit?user_id=#= user_id #" class="k-button k-grid-even">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","User")">
+                    <span class="k-icon k-add"></span>
+                    Add User
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+            $('#context').addClass('animated rollIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllPartyUsers", "User")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "User")",
+                            type: "DELETE"
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "user_id",
+                            fields: {
+                                user_id: { editable: false, nullable: true },
+                                full_name: { type: "string" },
+                                password: { type: "string" },
+                                login_name: { type: "string" },
+                                role_name: { type: "string" },
+                                branch_name: { type: "string" },
+                                party_name: { type: "string" },
+                                party_type_name: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50,100,200,300,400,500,1000]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "full_name", title: "Name", id: "user_id", width: "150px" },
+                        { field: "login_name", title: "Login Name", width: "80px" },
+                        { field: "role_name", title: "Role", width: "80px" },
+                        { field: "branch_name", title: "Branch", width: "100px" },
+                        { field: "party_name", title: "Party", width: "150px" },
+                        { field: "party_type_name", title: "Party Type", width: "150px" },
+                        {
+                            title: "Action", width: "100px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                        { command: ["destroy"], title: "Action", width: "100px" }],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>
+
+

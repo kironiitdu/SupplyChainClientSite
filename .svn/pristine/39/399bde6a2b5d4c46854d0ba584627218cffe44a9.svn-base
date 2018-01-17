@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "SCM Dashboard";
+    var userId = "";
+    var partyTypeId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+    }
+
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+
+    $(document).ready(function() {
+        Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetPoStatus", "Dashboard")",
+            dataType: "json",
+            success: function(datax) {
+                Loading(false);
+                google.charts.load("current", { packages: ["corechart", 'bar'] });
+                google.charts.setOnLoadCallback(drawChartPie);
+
+                function drawChartPie() {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'name');
+                    data.addColumn('number', 'value');
+                    $.each(datax, function(key, obj) {
+                        data.addRows([[obj.name + ' (' + obj.value + ')', obj.value]]);
+                    });
+
+                    var options = {
+                        title: 'PO Status Sample Pie',
+                        titleTextStyle: {
+                            fontSize: 18
+                        },
+                        is3D: true,
+                        backgroundColor: 'transparent'
+                    };
+                    var chart = new google.visualization.PieChart(document.getElementById('po_status'));
+                    chart.draw(data, options);
+                }
+            }
+        });
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetRequisitionStatus", "Dashboard")",
+            dataType: "json",
+            success: function(datax) {
+                Loading(false);
+                google.charts.load("current", { packages: ["corechart", 'bar'] });
+                google.charts.setOnLoadCallback(drawChartBar);
+
+                function drawChartBar() {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Month');
+                    data.addColumn('number', 'Requisition');
+
+                    $.each(datax, function(key, obj) {
+                        data.addRows([[obj.requisitionMonth + '-' + obj.requisitionYear, obj.requisitionQuantity]]);
+                    });
+
+                    var options = {
+                        chart: {
+                            title: 'Requisition Status Sample Bar',
+                            subtitle: ''
+                        }
+                    };
+
+                    var chart = new google.charts.Bar(document.getElementById('requisition_status'));
+
+                    chart.draw(data, google.charts.Bar.convertOptions(options));
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetRequisitionStatusLine", "Dashboard")",
+            dataType: "json",
+            success: function (datax) {
+                Loading(false);
+                google.charts.load("current", { packages: ["corechart", 'bar'] });
+                google.charts.setOnLoadCallback(drawChartLine);
+
+                function drawChartLine() {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Month');
+                    data.addColumn('number', 'Requisition');
+
+                    $.each( datax, function( key, obj ) {
+                        data.addRows([[obj.requisitionMonth+'-'+obj.requisitionYear,obj.requisitionQuantity]]);
+                    });
+
+                    var options = {
+                        title: 'Requisition Status Sample Line',
+                        curveType: 'function'
+                    };
+
+                    var chart = new google.visualization.LineChart(document.getElementById('requisition_status_line'));
+                    chart.draw(data, options);
+                }
+            }
+        });
+    });
+</script>
+
+<div class="row " style="text-align: center; padding-bottom: 20px; color: #ed1b24; font-weight: 800;">
+    <h3>WELCOME TO AAMRA SCM</h3>
+    <hr />
+</div>
+<div class="col-md-12">
+    <div class="col-md-6">
+        <div id="po_status" style="height: 400px;"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="requisition_status" style="height: 400px;"></div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="col-md-6">
+        <div id="requisition_status_line" style=" height: 400px;"></div>
+    </div>
+    <div class="col-md-6">
+        
+    </div>
+</div>

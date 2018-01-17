@@ -1,0 +1,109 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h5>Sales Type</h5></div>
+    <div class="panel-body">
+
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllSalesType", "SalesType")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "SalesType")",
+                    type: "PUT",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "SalesType")",
+                    type: "DELETE",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "SalesType")",
+                    type: "POST",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                        swal("", e.responseJSON.msg, e.responseJSON.output);
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function(e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "sales_type_id",
+                    fields: {
+                        sales_type_id: { editable: false, nullable: true },
+                        sales_type1: { type: "string", validation: { required: true } },
+                        is_active: { type: "boolean" }
+                    }
+
+                }
+
+            }
+
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50,100,200,500,1000]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+            update: true,
+            destroy: true,
+
+            toolbar: [{ name: "create", text: "Add New " }],
+            columns: [
+                { field: "sales_type1", title: "Sales Type Name", id: "sales_type_id", width: "150px" },
+                { field: "is_active", title: "Is Active", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+
+    });
+</script>

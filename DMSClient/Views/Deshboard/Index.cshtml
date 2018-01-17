@@ -1,0 +1,596 @@
+﻿@{
+    ViewBag.Title = "SCM Dashboard";
+    var userId = "";
+    var partyTypeId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+    }
+
+
+}
+@*po status panel for Pie chart*@
+@*<script type="text/javascript">
+        var userId = @userId;
+        var partyTypeId = @partyTypeId;
+
+        $(document).ready(function() {
+            Loading(true);
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPoStatus", "Dashboard")",
+                dataType: "json",
+                success: function(datax) {
+                    Loading(false);
+                    google.charts.load("current", { packages: ["corechart", 'bar'] });
+                    google.charts.setOnLoadCallback(drawChartPie);
+
+                    function drawChartPie() {
+                        var data = new google.visualization.DataTable();
+                        data.addColumn('string', 'name');
+                        data.addColumn('number', 'value');
+                        $.each(datax, function(key, obj) {
+                            data.addRows([[obj.name + ' (' + obj.value + ')', obj.value]]);
+                        });
+
+                        var options = {
+                            title: 'PO Status Sample Pie',
+                            titleTextStyle: {
+                                fontSize: 18
+                            },
+                            is3D: true,
+                            backgroundColor: 'transparent'
+                        };
+                        var chart = new google.visualization.PieChart(document.getElementById('po_status'));
+                        chart.draw(data, options);
+                    }
+                }
+            });
+
+        });
+    </script>*@
+
+
+@*User Info status panel*@
+<script type="text/javascript">
+    $(document).ready(function() {
+        Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetUserInfoStatusPanel", "Dashboard")",
+            dataType: "json",
+            success: function(data) {
+
+                var dynamicString = '';
+                dynamicString += '<div class="panel-3d animated" style="visibility: visible;">';
+                dynamicString += '<div class="front">';
+                dynamicString += '<div class="widget text-center">';
+                dynamicString += '<div class="widget-body padding-none">';
+                dynamicString += '<div>';
+                dynamicString += '<div class="innerAll bg-inverse lead strong margin-none">';
+                dynamicString += ' <table style="width: 100%; margin: 0; padding: 0;">';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h4>TOTAL</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff; ">';
+                dynamicString += '<h4>ACTIVE</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; width: 33.33%;">';
+                dynamicString += '<h4>INACTIVE</h4>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[0].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[1].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px;">';
+                dynamicString += '<h2>' + data[2].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '</table>';
+                dynamicString += '</div>';
+                dynamicString += '<div class="innerAll">';
+                dynamicString += '<a href="/employee/Index" class="btn btn-inverse" style=" margin-bottom: -6%; " role="button">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USER STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                $("#user_info_status_panel").append(dynamicString);
+            }
+        });
+    });
+</script>
+
+@*po status panel*@
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+
+    $(document).ready(function() {
+        //Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetPoStatusPanel", "Dashboard")",
+            dataType: "json",
+            success: function(data) {
+
+                var dynamicString = '';
+                dynamicString += '<div class="panel-3d animated" style="visibility: visible;">';
+                dynamicString += '<div class="front">';
+                dynamicString += '<div class="widget text-center">';
+                dynamicString += '<div class="widget-body padding-none">';
+                dynamicString += '<div>';
+                dynamicString += '<div class="innerAll bg-default lead strong margin-none">';
+                dynamicString += ' <table style="width: 100%; margin: 0; padding: 0;">';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h4>TOTAL</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff; ">';
+                dynamicString += '<h4>APPROVED</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; width: 33.33%;">';
+                dynamicString += '<h4>UNAPPROVED</h4>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[0].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[1].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px;">';
+                dynamicString += '<h2>' + data[2].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '</table>';
+                dynamicString += '</div>';
+                dynamicString += '<div class="innerAll">';
+                dynamicString += '<a href="/PurchaseOrder/Index" class="btn btn-inverse" style=" margin-bottom: -6%; " role="button">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PO STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                $("#po_status_panel").append(dynamicString);
+            }
+        });
+    });
+</script>
+
+@*PI status panel*@
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetPiStatusPanel", "Dashboard")",
+            dataType: "json",
+            success: function(data) {
+
+                var dynamicString = '';
+                dynamicString += '<div class="panel-3d animated" style="visibility: visible;">';
+                dynamicString += '<div class="front">';
+                dynamicString += '<div class="widget text-center">';
+                dynamicString += '<div class="widget-body padding-none">';
+                dynamicString += '<div>';
+                dynamicString += '<div class="innerAll bg-success lead strong margin-none">';
+                dynamicString += ' <table style="width: 100%; margin: 0; padding: 0;">';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h4>TOTAL</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff; ">';
+                dynamicString += '<h4>APPROVED</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; width: 33.33%;">';
+                dynamicString += '<h4>UNAPPROVED</h4>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>'+data[0].value+'</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>'+data[1].value+'</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px;">';
+                dynamicString += '<h2>'+data[2].value+'</h2>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '</table>';
+                dynamicString += '</div>';
+                dynamicString += '<div class="innerAll">';
+                dynamicString += '<a href="/PurchaseOrder/Index" class="btn btn-inverse" style=" margin-bottom: -6%; " role="button">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PI STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                $("#pi_status_panel").append(dynamicString);
+            }
+        });
+    });
+</script>
+
+@*Grn status panel*@
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetGrnStatusPanel", "Dashboard")",
+            dataType: "json",
+            success: function(data) {
+
+                var dynamicString = '';
+                dynamicString += '<div class="panel-3d animated" style="visibility: visible;">';
+                dynamicString += '<div class="front">';
+                dynamicString += '<div class="widget text-center">';
+                dynamicString += '<div class="widget-body padding-none">';
+                dynamicString += '<div>';
+                dynamicString += '<div class="innerAll bg-inverse lead strong margin-none">';
+                dynamicString += ' <table style="width: 100%; margin: 0; padding: 0;">';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h4>TOTAL</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff; ">';
+                dynamicString += '<h4>RECEIVED</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; width: 33.33%;">';
+                dynamicString += '<h4>RECEIVABLE</h4>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[0].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[1].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px;">';
+                dynamicString += '<h2>' + data[2].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '</table>';
+                dynamicString += '</div>';
+                dynamicString += '<div class="innerAll">';
+                dynamicString += '<a href="/Grn/Index" class="btn btn-inverse" style=" margin-bottom: -6%; " role="button">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GRN STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                $("#grn_status_panel").append(dynamicString);
+            }
+        });
+    });
+</script>
+
+
+@*TO status panel*@
+<script type="text/javascript">
+    $(document).ready(function() {
+       // Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetToStatusPanel", "Dashboard")",
+            dataType: "json",
+            success: function(data) {
+
+                var dynamicString = '';
+                dynamicString += '<div class="panel-3d animated" style="visibility: visible;">';
+                dynamicString += '<div class="front">';
+                dynamicString += '<div class="widget text-center">';
+                dynamicString += '<div class="widget-body padding-none">';
+                dynamicString += '<div>';
+                dynamicString += '<div class="innerAll bg-default lead strong margin-none">';
+                dynamicString += ' <table style="width: 100%; margin: 0; padding: 0;">';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h4>TOTAL</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff; ">';
+                dynamicString += '<h4>PENDING</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; width: 33.33%;">';
+                dynamicString += '<h4>DELIVERED</h4>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[0].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[1].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px;">';
+                dynamicString += '<h2>' + data[2].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '</table>';
+                dynamicString += '</div>';
+                dynamicString += '<div class="innerAll">';
+                dynamicString += '<a href="/TransferOrder/Index" class="btn btn-inverse" style=" margin-bottom: -6%; " role="button">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TO STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                $("#to_status_panel").append(dynamicString);
+            }
+        });
+    });
+</script>
+
+@*Stock status panel*@
+<script type="text/javascript">
+    $(document).ready(function() {
+        Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetStockStatusPanel", "Dashboard")",
+            dataType: "json",
+            success: function(data) {
+
+                var dynamicString = '';
+                dynamicString += '<div class="panel-3d animated" style="visibility: visible;">';
+                dynamicString += '<div class="front">';
+                dynamicString += '<div class="widget text-center">';
+                dynamicString += '<div class="widget-body padding-none">';
+                dynamicString += '<div>';
+                dynamicString += '<div class="innerAll bg-success lead strong margin-none">';
+                dynamicString += ' <table style="width: 100%; margin: 0; padding: 0;">';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h4>TOTAL</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff; ">';
+                dynamicString += '<h4>SELLABLE</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; width: 33.33%;">';
+                dynamicString += '<h4 style=" font-size: 16px; ">NON-SELLABLE</h4>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[0].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[1].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px;">';
+                dynamicString += '<h2>' + data[2].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '</table>';
+                dynamicString += '</div>';
+                dynamicString += '<div class="innerAll">';
+                dynamicString += '<a href="/inventory/loadgriddata" class="btn btn-inverse" style=" margin-bottom: -6%; " role="button">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STOCK STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                $("#stock_status_panel").append(dynamicString);
+            }
+        });
+    });
+</script>
+
+@*Approval Requisition Status panel*@
+<script type="text/javascript">
+    $(document).ready(function() {
+        Loading(true);
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetApprovalRequisitionStatus", "Dashboard")",
+            dataType: "json",
+            success: function(data) {
+                var dynamicString = '';
+                dynamicString += '<div class="panel-3d animated" style="visibility: visible;">';
+                dynamicString += '<div class="front">';
+                dynamicString += '<div class="widget text-center">';
+                dynamicString += '<div class="widget-body padding-none">';
+                dynamicString += '<div>';
+                dynamicString += '<div class="innerAll bg-inverse lead strong margin-none">';
+                dynamicString += ' <table style="width: 100%; margin: 0; padding: 0;">';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h4>ACC</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding-left: 15px; padding-right: 15px; padding-top: 0px; width: 33.33%; border-right: 3px solid #ffffff; ">';
+                dynamicString += '<h4>HOS</h4>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; width: 33.33%;">';
+                dynamicString += '<h4>HOP</h4>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '<tr>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[0].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px; border-right: 3px solid #ffffff;">';
+                dynamicString += '<h2>' + data[1].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '<td style="padding: 15px;">';
+                dynamicString += '<h2>' + data[2].value + '</h2>';
+                dynamicString += '</td>';
+                dynamicString += '</tr>';
+                dynamicString += '</table>';
+                dynamicString += '</div>';
+                dynamicString += '<div class="innerAll">';
+                dynamicString += '<a href="/requisition/index" class="btn btn-inverse" style=" margin-bottom: -6%; " role="button">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PENDING STATUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                dynamicString += '</div>';
+                $("#requisition_status_panel").append(dynamicString);
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetRequisitionStatus", "Dashboard")",
+            dataType: "json",
+            success: function(datax) {
+                Loading(false);
+                google.charts.load("current", { packages: ["corechart", 'bar'] });
+                google.charts.setOnLoadCallback(drawChartBar);
+
+                function drawChartBar() {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Month');
+                    data.addColumn('number', 'Requisition');
+
+                    $.each(datax, function(key, obj) {
+                        data.addRows([[obj.requisitionMonth + '-' + obj.requisitionYear, obj.requisitionQuantity]]);
+                    });
+
+                    var options = {
+                        chart: {
+                            title: 'Requisition Status Sample Bar',
+                            subtitle: ''
+                        }
+                    };
+
+                    var chart = new google.charts.Bar(document.getElementById('requisition_status'));
+
+                    chart.draw(data, google.charts.Bar.convertOptions(options));
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Loading(true);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetRequisitionStatusLine", "Dashboard")",
+            dataType: "json",
+            success: function (datax) {
+                Loading(false);
+                google.charts.load("current", { packages: ["corechart", 'bar'] });
+                google.charts.setOnLoadCallback(drawChartLine);
+
+                function drawChartLine() {
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Month');
+                    data.addColumn('number', 'Requisition');
+
+                    $.each( datax, function( key, obj ) {
+                        data.addRows([[obj.requisitionMonth+'-'+obj.requisitionYear,obj.requisitionQuantity]]);
+                    });
+
+                    var options = {
+                        title: 'Requisition Status Sample Line',
+                        curveType: 'function'
+                    };
+
+                    var chart = new google.visualization.LineChart(document.getElementById('requisition_status_line'));
+                    chart.draw(data, options);
+                }
+            }
+        });
+    });
+</script>
+
+<div class="row " style="text-align: center; padding-bottom: 20px; color: #ed1b24; font-weight: 800;">
+    <h3>WELCOME TO AAMRA SCM</h3>
+    <hr />
+</div>
+
+<div class="col-md-12">
+    @*<div class="col-md-3">
+            <div class="panel-3d animated" style="visibility: visible;">
+                <div class="front">
+                    <div class="widget text-center">
+                        <div class="widget-body padding-none">
+                            <div>
+                                <div class="innerAll bg-inverse" style=" padding: 12px; ">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <th>Total PO</th>
+                                            <th>Approved PO</th>
+                                            <th>Unapproved PO</th>
+                                        </tr>
+                                        <tr>
+                                            <td>100</td>
+                                            <td>50</td>
+                                            <td>50</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="innerAll">
+                                    <button class="btn btn-inverse">View PO Status</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <div class="col-md-4" id="user_info_status_panel"></div>
+    <div class="col-md-4" id="po_status_panel"></div>
+    <div class="col-md-4" id="pi_status_panel"></div>
+</div>
+<div class="col-md-12">
+    <div class="col-md-4" id="grn_status_panel"></div>
+    <div class="col-md-4" id="to_status_panel"></div>
+    <div class="col-md-4" id="stock_status_panel"></div>
+</div>
+<div class="col-md-12">
+    <div class="col-md-4" id="requisition_status_panel"></div>
+    <div class="col-md-4" id=""></div>
+    <div class="col-md-4" id=""></div>
+</div>
+<div class="col-md-12">
+    <div class="col-md-6">
+        <div id="po_status" style="height: 400px;" hidden=""></div>
+        <div id="requisition_status" style="height: 400px;"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="requisition_status_line" style="height: 400px;"></div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="col-md-6">
+        &nbsp;
+    </div>
+    <div class="col-md-6">
+        &nbsp;
+    </div>
+</div>

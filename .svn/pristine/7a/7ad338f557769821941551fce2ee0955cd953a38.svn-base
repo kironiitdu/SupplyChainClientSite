@@ -1,0 +1,272 @@
+﻿@{
+    ViewBag.Title = "userlog";
+    var userId = "";
+    var partyTypeId = "";
+    var roleId = "";
+    var partyId = "0";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        roleId = Session["user_role_id"].ToString();
+        partyId = Session["party_id"].ToString();
+    }
+}
+<script id="excel-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/Inventory/GetAdaProductInventoryDetailsExcel?product_id=#= product_id#&color_id=#= color_id#&warehouse_id=#= warehouse_id#" class="k-button k-grid-even">Excel</a>
+</script>
+<div class="panel panel-success">
+    <div class="panel-heading"><h4> User Login Information</h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    @*<label for="warehouse_id">&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>*@
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-3">
+                    @*<input id="warehouse_id" name="warehouse_id" />*@
+                    <input id="from_date" name="from_date" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    @*<label for="product_id">Product</label>*@
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-3">
+                    @*<input id="product_id" name="product_id" />*@
+                    <input id="to_date" name="to_date" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="row" hidden>
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="color_id">Product Color</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="color_id" name="color_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnInventoryStockView" name="btnInventoryReport" value="View User Log " />
+        </div>
+    </div>
+</div>
+<div class="panel-body">
+    <input type="button" class="k-button" id="exportExcel" name="exportExcel" value="Export to Excel" />
+    <br />
+    <div id="grid"></div>
+    <script type="text/javascript">
+        var userId = @userId;
+        var partyTypeId = @partyTypeId;
+        var roleId = @roleId;
+        var partyId = @partyId;
+        $(document).ready(function() {
+            $("#from_date").kendoDatePicker({
+                animation: {
+                    close: {
+                        effects: "fadeOut zoom:out",
+                        duration: 300
+                    },
+                    open: {
+                        effects: "fadeIn zoom:in",
+                        duration: 300
+                    }
+                }
+            });
+            $("#to_date").kendoDatePicker({
+                animation: {
+                    close: {
+                        effects: "fadeOut zoom:out",
+                        duration: 300
+                    },
+                    open: {
+                        effects: "fadeIn zoom:in",
+                        duration: 300
+                    }
+                }
+            });
+
+
+            $("#exportExcel").hide();
+            $("#btnInventoryStockView").click(function() {
+                //$("#exportExcel").show();
+                //var warehouse_id = $("#warehouse_id").val();
+                ///var product_id = $("#product_id").val();
+                //var color_id = $("#color_id").val();
+
+                var fromDate = $("#from_date").val();
+                var toDate = $("#to_date").val();
+                if (fromDate == "") {
+                    sweetAlert("Sorry...", "Please Select From Date", "warning");
+                }
+                if (toDate == "") {
+                    sweetAlert("Sorry...", "Please Select to Date", "warning");
+                }
+
+                //if (warehouse_id == "") {
+                //    warehouse_id = 0;
+                //}
+                //if (product_id == "") {
+                //    product_id = 0;
+                //}
+                //if (color_id == "") {
+                //    color_id = 0;
+                //}
+                //if (warehouse_id == "") {
+                //    sweetAlert("Sorry...", "Please Select Warehouse", "warning");
+                //    return false;
+                //}
+
+                //$("#exportExcel").click(function () {
+                //    var grid = $("#grid").data("kendoGrid");
+                //    grid.saveAsExcel();
+                //});
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            @*url: "@UrlConfig.Action("LoadAllInventoryStock", "Inventory")",*@
+                            url: "@UrlConfig.Action("GetUserLogInformation", "LoginLog")",
+                            type: "GET",
+                            data: {
+                                from_date:fromDate,
+                                to_date:toDate
+
+                                //warehouse_id: warehouse_id,
+                                //product_id: product_id,
+                                //color_id: color_id
+                            },
+
+                        },
+
+                        autoSync: false,
+                        schema: {
+                            model: {
+                                id: "inventory_stock_id",
+                                fields: {
+                                    ulogo_id: { editable: false, nullable: true },
+                                    user_id: { type: "string" },
+                                    full_name: { type: "string" },
+                                    login_date: { type: "string" },
+                                    ip_address: { type: "string" },
+                                    logout_date: { type: "string" }
+                                }
+
+                            }
+                        }
+                    }
+                });
+                var d = new Date();
+                var dateTime = d.toJSON();
+                jQuery("#grid").kendoGrid({
+                    //excel: {
+                    //    fileName: "Stock_Inventory_" + dateTime + ".xlsx"
+                    //},
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+
+                        numeric: false,
+
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    columns: [
+                        { field: "full_name", title: "User Name", width: "150px" },
+                        { field: "login_date", title: "Login Time", width: "150px" },
+                        { field: "color_name", title: "Color Name", width: "150px" },
+                        { field: "stock_quantity", title: "Stock Quantity", width: "150px" },
+                        { title: "Action", width: "100px", template: kendo.template($("#excel-template").html()) }
+                    ],
+                    editable: "inline"
+                });
+               
+            });
+        });
+    </script>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#warehouse_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllWarehouses", "Warehouse")"
+                    }
+                }
+            }
+
+        });
+        $("#product_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Product ---",
+            dataTextField: "product_name",
+            dataValueField: "product_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductList", "Product")"
+                    }
+                }
+            }
+
+        });
+        $("#color_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Color ---",
+            dataTextField: "color_name",
+            dataValueField: "color_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllColors", "Color")"
+                    }
+                }
+            }
+
+        });
+
+    });
+
+    //Selected for MD
+
+
+    //Party Stock By Login Party: Kiron : 10-12-2016
+    if (roleId == '4' || roleId == '5 ') {
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetWarehouseByPartyId", "Warehouse")",
+            data: { party_id: partyId },
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                $("#warehouse_id").data("kendoComboBox").value(data[0].warehouse_id);
+                $("#warehouse_id").data("kendoComboBox").enable(false);
+            }
+        });
+
+    }
+</script>

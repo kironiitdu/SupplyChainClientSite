@@ -1,0 +1,394 @@
+﻿@{
+    ViewBag.Title = "View Customer";
+}
+
+<style type="text/css">
+  .customerInfoBlock {
+        /*border: 1px solid gray;
+        padding: 10px 0;*/
+    }
+
+        .customerInfoBlock label {
+            font-weight: normal;
+        }
+
+    .fieldName {
+        width: 15%;
+    }
+
+    .fieldValue {
+        width: 35%;
+    }
+</style>
+
+<div class="row">
+    <div class="panel panel-success">
+    @*<div class="panel-heading">
+            &nbsp;&nbsp;Customer Details
+            <span style="float: right; background: #466baf ; border-color: #466baf; color: #fff;" class="btn btn-xs btn-info" id="printRBO"><i class="fa fa-print"></i> Print Customer Details</span>
+        </div>*@
+        <div class="row">
+            <div class="pull-right">
+                <a href="@Url.Action("GetCustomerInfoReport", "Customer")?customer_id=@ViewBag.customer_id" class="btn btn-primary" id="CustomerReport" target="_blank">Print Customer Report</a>
+            </div>
+        </div>
+        <div id="kWindow"></div>
+        <div class="panel-body">
+            <div class="col-md-12">
+                <h5><b>Customer Information:</b></h5>
+                <div class="customerInfoBlock">
+
+                    <table class="table table-bordered table-striped table-condensed">
+                        <tr>
+                            <td class="fieldName">
+                                <b>Customer Name</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="customer_name"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Country</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="country_name"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>City</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="city_name"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Mobile</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="mobile"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Email</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="email"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Phone</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="phone"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Address 1</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="address_1"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Address 2</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="address_2"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Zip Code</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="zip_code"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Fax</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="fax"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Web</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="web"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Is Active</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="is_active"></span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-12">
+                <br />
+                <h5><b>Shipping Addres:</b></h5>
+                <div id="shippingAddressBlock">
+                    <table class="table table-bordered table-striped table-condensed">
+                        <tr>
+                            <td class="fieldName">
+                                <b>Country</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="shipping_country_name"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>City</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="shipping_city_name"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Zip Code</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="shipping_zip_code"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Email</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="shipping_email"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Phone</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="shipping_phone"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Address 1</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="shipping_address_1"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Address 2</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="shipping_address_2"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>&nbsp;</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span>&nbsp;</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-12">
+                <br />
+                <h5><b>Billing Address:</b></h5>
+                <div id="billingAddressBlock">
+                    <table class="table table-bordered table-striped table-condensed">
+                        <tr>
+                            <td class="fieldName">
+                                <b>Country</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="billing_country_name"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>City</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="billing_city_name"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Zip Code</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="billing_zip_code"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Email</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="billing_email"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Phone</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="billing_phone"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>Address 1</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="billing_address_1"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fieldName">
+                                <b>Address 2</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span id="billing_address_2"></span>
+                            </td>
+                            <td class="fieldName">
+                                <b>&nbsp;</b>
+                            </td>
+                            <td class="fieldValue">
+                                <span>&nbsp;</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-12">
+                <br />
+                <h5><b>Customer Contact(s):</b></h5>
+                <div id="contactsPane">
+
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-12">
+                <br />
+                <h5><b>Customer Bank(s):</b></h5>
+                <div id="bankPane">
+
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        Loading(true);
+        //////////////////////////////////////////////////////////////////
+        var listData = "";
+        var __customer_id = '@ViewBag.customer_id';
+
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetCustomerById", "Customer")",
+            data: {
+                customer_id: __customer_id
+            },
+            dataType: "json",
+            success: function (data) {
+                //console.log(data);
+
+                $("#customer_name").text(data.customer_name);
+                $("#country_name").text(data.country_name);
+                $("#city_name").text(data.city_name);
+                $("#zip_code").text(data.zip_code);
+                $("#address_1").text(data.address_1);
+                $("#address_2").text(data.address_2);
+                $("#phone").text(data.phone);
+                $("#mobile").text(data.mobile);
+                $("#fax").text(data.fax);
+                $("#email").text(data.email);
+                $("#web").text(data.web);
+                if (data.is_active) {
+                    $("#is_active").text("true");
+                } else {
+                    $("#is_active").text("false");
+                }
+
+                $("#shipping_country_name").text(data.shipping_country_name);
+                $("#shipping_city_name").text(data.shipping_city_name);
+                $("#shipping_zip_code").text(data.shipping_zip_code);
+                $("#shipping_address_1").text(data.shipping_address_1);
+                $("#shipping_email").text(data.shipping_email);
+                $("#shipping_address_2").text(data.shipping_address_2);
+                $("#shipping_phone").text(data.shipping_phone);
+                $("#billing_country_name").text(data.billing_country_name);
+                $("#billing_city_name").text(data.billing_city_name);
+                $("#billing_zip_code").text(data.billing_zip_code);
+                $("#billing_address_1").text(data.billing_address_1);
+                $("#billing_email").text(data.billing_email);
+                $("#billing_address_2").text(data.billing_address_2);
+                $("#billing_phone").text(data.billing_phone);
+
+
+                listData = "";
+                listData += '<table class="table table-bordered table-striped table-condensed">';
+                listData += '<thead><tr>';
+                listData += '<th>Contact Name</th>';
+                listData += '<th>Designation</th>';
+                listData += '<th>Department</th>';
+                listData += '<th>Phone</th>';
+                listData += '<th>Mobile</th>';
+                listData += '<th>Email</th>';
+                listData += '</tr></thead>';
+                listData += '<tbody>';
+                $.each(data.customerContacts, function (key, obj) {
+                    //alert(obj.label_type_name);
+                    //listData += '<label class="">' + obj.supplier_name + '</label>';
+
+                    listData += '<tr>';
+                    listData += '<td>' + obj.contact_name + '</td>';
+                    listData += '<td>' + obj.designation + '</td>';
+                    listData += '<td>' + obj.department + '</td>';
+                    listData += '<td>' + obj.phone + '</td>';
+                    listData += '<td>' + obj.mobile + '</td>';
+                    listData += '<td>' + obj.email + '</td>';
+                    listData += '</tr>';
+                });
+                listData += '</tbody>';
+                listData += '</table>';
+                $("#contactsPane").html(listData);
+
+
+                listData = "";
+                listData += '<table class="table table-bordered table-striped table-condensed">';
+                listData += '<thead><tr>';
+                listData += '<th>Bank Name</th>';
+                listData += '<th>Bank Account No</th>';
+                listData += '<th>Bank Account ID</th>';
+                listData += '<th>Branch Name</th>';
+                listData += '</tr></thead>';
+                listData += '<tbody>';
+                $.each(data.customerBanks, function (key, obj) {
+                    //alert(obj.label_type_name);
+                    //listData += '<label class="">' + obj.supplier_name + '</label>';
+
+                    listData += '<tr>';
+                    listData += '<td>' + obj.bank_name + '</td>';
+                    listData += '<td>' + obj.bank_acc_no + '</td>';
+                    listData += '<td>' + obj.bank_acc_id + '</td>';
+                    listData += '<td>' + obj.bank_branch_name + '</td>';
+                    listData += '</tr>';
+                });
+                listData += '</tbody>';
+                listData += '</table>';
+                $("#bankPane").html(listData);
+
+                Loading(false);
+            }
+        });
+        //////////////////////////////////////////////////////////////////
+    });
+</script>

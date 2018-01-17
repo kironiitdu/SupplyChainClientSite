@@ -1,0 +1,256 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+@{
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+}
+
+<div class="widget" id="context">
+    <div class="widget-head">
+       &nbsp;&nbsp; User Permission
+    </div>
+
+    <div class="widget-body">
+        @using (Html.BeginForm())
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="property_length">Role</label><br />
+                    <div class="col-md-10" style="padding-left:0px;">
+                        <input id="Role_Id" name="Role_Id" style="width:80%;" />
+                    </div>
+
+                </div>
+
+                @*<div class="col-md-6">
+                    <label for="property_length">User</label><br />
+                    <div class="col-md-10">
+                        <input id="AU_ID" name="AU_ID" style="width:80%;" />
+                    </div>
+                </div>*@
+                <br />
+                <br />
+                <br />
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        
+
+                        $("#Role_Id").kendoComboBox({
+                            placeholder: "Role Name",
+                            dataTextField: "role_name",
+                            dataValueField: "role_id",
+                            filter: "contains",
+
+                            autoBind: false,
+                            minLength: 3,
+                            change: function (e) {
+                                console.log(e.sender._selectedValue);
+                                var role_id = parseInt(e.sender._selectedValue);
+                               
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@UrlConfig.Action("GetFormPermissionMenuRole", "UserPermissionPartial")",
+                                    data: JSON.stringify({ "role_id": role_id }),
+                                    datatype: "json",
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        $("#CheckBoxContainer").html('');
+                                        var FormDivString = "";
+                                        $(data).each(function (i, ob) {
+                                            console.log(ob);
+                                            if (ob.control_type_id == 1 && ob.control_parent_id == 0) {
+                                                FormDivString += '<div class="clearfix"></div><br /><br /><div id="ctl_div_' + ob.control_id + '">';
+                                                FormDivString += '&nbsp; &nbsp;<input type="checkbox" name="checkmenu"  value="' + ob.control_id + '" ';
+                                                if (ob.control_status == true) {
+                                                    FormDivString += ' checked="checked" ';
+                                                }
+                                                FormDivString += '" /> &nbsp; &nbsp;<span style="color:#C0D876;font-size: 15px;font-weight: 500;">' + ob.control_name + '</div> <hr>';
+                                                FormDivString += '';
+                                                $(data).each(function (x, xob) {
+                                                    if (xob.control_parent_id == ob.control_id && xob.control_type_id == 1) {
+
+                                                        FormDivString += '<div class="col-md-3"><input type="checkbox" name="checkmenu" value="' + xob.control_id + '" ';
+
+                                                        if (xob.control_status == "1") {
+                                                            FormDivString += ' checked="checked" ';
+                                                        }
+
+                                                        FormDivString += '/>';
+                                                        FormDivString += '&nbsp; &nbsp;<span style="font-weight:bold;font-size:11px">' + xob.control_name + '</span>';
+                                                        FormDivString += '</div>';
+                                                        $(data).each(function (y, yob) {
+                                                            if (yob.control_parent_id == xob.control_id && yob.control_type_id == 2) {
+                                                               
+                                                                FormDivString += '<input type="checkbox" name="checkmenu" value="' + yob.control_id + '" ';
+
+                                                                if (yob.control_status == "1") {
+                                                                    FormDivString += ' checked="checked" ';
+                                                                }
+
+                                                                FormDivString += '/> &nbsp; &nbsp;  &nbsp; &nbsp;  &nbsp; &nbsp;';
+                                                                FormDivString += '<span style="color:#C0D876;font-size: 15px;font-weight: 500;">' + yob.control_name + '</span>';
+                                                               
+                                                            }
+                                                        });
+                                                        FormDivString += '';
+                                                    }
+                                                });
+                                                FormDivString += '';
+                                                FormDivString += '</div>';
+                                                $(data).each(function (y, yob) {
+                                                    if (yob.control_parent_id == ob.control_id && yob.control_type_id == 2) {
+
+                                                        FormDivString += '<input type="checkbox" name="checkmenu" value="' + yob.control_id + '" ';
+
+                                                        if (yob.control_status == "1") {
+                                                            FormDivString += ' checked="checked" ';
+                                                        }
+
+                                                        FormDivString += '/> &nbsp; &nbsp;';
+                                                        FormDivString += '<span style="color:#C0D876;font-size: 15px;font-weight: 500;">' + yob.control_name + '</span>';
+
+                                                    }
+                                                });
+                                                FormDivString += '</div>';
+                                                FormDivString += '</div>';
+                                                FormDivString += '<br/>';
+                                                FormDivString += '<br/>';
+                                               
+                                            }
+
+                                        });
+
+                                        $("#CheckBoxContainer").html(FormDivString);
+                                        //console.log(data);
+                                    }
+                                });
+
+                            },
+                            dataSource: {
+                                type: "json",
+                                serverFiltering: true,
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllRoles", "Role")?companyId="+'@companyId'
+                                    }
+                                }
+                            }
+                        });
+
+                        $("#AU_ID").kendoComboBox({
+                            placeholder: "Select User",
+                            dataTextField: "AU_USER_NAME",
+                            dataValueField: "AU_ID",
+                            cascadeFrom: "ADMIN_TYPE_ID",
+                            filter: "contains",
+                            autoBind: false,
+                            change: function () {
+                                console.log("working");
+                            },
+                            minLength: 3,
+                            dataSource: {
+                                type: "json",
+                                serverFiltering: true,
+                                transport: {
+                                    read: {
+                                        @*url: "@Url.Action("GetByFilter", "ABCUser")"*@
+                                    }
+                                }
+                            }
+                        });
+
+                    });
+                </script>
+            </div>
+
+            <div class="row">
+                <br/>
+                <br/>
+                <input type="checkbox" name="chkCheckAll" id="chkCheckAll" style="margin-left:8px;"/> &nbsp; Select All
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $("#chkCheckAll").change(function () {
+                            var checkedFlag = false;
+                            $('#CheckBoxContainer input[type=checkbox]').each(function (i, ob) {
+                                if ($(ob).is(":checked")) {
+                                    checkedFlag = true;
+                                    return;
+                                }
+                            });
+
+                            if (checkedFlag === false) {
+                                $('#CheckBoxContainer input[type=checkbox]').each(function (i, ob) {
+                                    $(ob).prop('checked', true);
+
+                                });
+                            } else {
+                                $('#CheckBoxContainer input[type=checkbox]').each(function (i, ob) {
+                                    $(ob).prop('checked', false);
+
+                                });
+                            }
+
+                        });
+
+                    });
+                </script>
+            </div>
+            <br/>
+            <br/>
+            <div class="row" id="CheckBoxContainer">
+
+            </div>
+            <br/><br/>
+            <a href="javascript:void(0)" id="btnPermission" class="k-button">Save Permission</a>
+
+        }
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#btnPermission").click(function() {
+                var permissions = [];
+                var role_id = $("#Role_Id").val();
+                var user_id = $("#AU_ID").val();
+
+                console.log(role_id);
+                console.log(user_id);
+
+                $("#CheckBoxContainer").find("input:checked").each(function(i, ob) {
+                    permissions.push($(ob).val());
+                });
+                console.log(permissions);
+                var userPermissionModel = {
+                    "user_role_id": role_id,
+                    "permissions": permissions
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "@UrlConfig.Action("Post", "UserPermission")",
+                    data: JSON.stringify(userPermissionModel),
+                    datatype: "json",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        console.log(data);
+                        if (data.output === "error") {
+                            NotificationMessage(data);
+                          //  KendoWindowFunction(data.msg, "error", "");
+                        } else {
+                            NotificationMessageWithRefresh(data);
+                          //  KendoWindowFunction(data.msg, "", "Index");
+                        }
+                    }
+                });
+
+
+            });
+
+        });
+    </script>
+
+</div>
+<div id="kWindow"></div>

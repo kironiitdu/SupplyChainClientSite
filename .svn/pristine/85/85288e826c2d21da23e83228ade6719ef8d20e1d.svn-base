@@ -1,0 +1,164 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Product Pricing</h4></div>
+    <div class="panel-body">
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "ProductPriceing")">
+                    <span class="k-icon k-add"></span>
+                    Add Product Pricing
+                </a>
+                <a class="k-button k-button-icontext k-grid-add" id="btnExportExcel">
+                    <span class="k-icon k-add"></span>
+                    Export Full Excel
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+
+    </div>
+</div>
+
+<script id="edit-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" href="/ProductPriceing/Edit?product_price_mapping_id=#= product_price_mapping_id #" class="k-button k-grid-even">Edit</a>
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        //Excel Export---------
+        //$("#btnExportExcel").click(function () {
+        //    var grid = $("#grid").data("kendoGrid");
+        //    grid.saveAsExcel();
+        //});
+        jQuery(document).ready(function () {
+        
+            $("#btnExportExcel").click(function () {
+                var grid = $("#grid").data("kendoGrid");
+                grid.saveAsExcel();
+            });
+
+            var dataSource = new kendo.data.DataSource({
+                pageSize: 20,
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllProductPriceing", "ProductPriceing")",
+                        type: "GET"
+                    }
+                    @*,
+                    update: {
+                        url: "@UrlConfig.Action("Put", "ProductPriceing")?update_by=" + '@userId',
+                        type: "PUT",
+                        complete: function (e) {
+                            jQuery("#grid").data("kendoGrid").dataSource.read();
+                        }
+                    }*@
+                    @*,
+                    destroy: {
+                        url: "@UrlConfig.Action("Delete", "ProductPriceing")",
+                        type: "DELETE",
+                        complete: function (e) {
+                            jQuery("#grid").data("kendoGrid").dataSource.read();
+                            swal("", e.responseJSON.msg, e.responseJSON.output);
+                        }
+                    }*@
+                },
+                autoSync: false,
+                schema: {
+                    errors: function (e) {
+                        console.log(e.errors);
+                        if (e.output === "error") {
+                            console.log(e.output);
+                        }
+                    },
+
+                    model: {
+                        id: "product_price_mapping_id",
+                        fields: {
+                            product_price_mapping_id: { editable: false, nullable: true },
+                            product_id: { type: "number", editable: false },
+                            color_id: { type: "number", editable: false },
+                            product_version_id: { type: "number", editable: false },
+                            product_name: { type: "string", editable: false },
+                            color_name: { type: "string", editable: false },
+                            product_version_name: { type: "string", editable: false },
+                            dealer_cost: { type: "string" },
+                            b2b_cost: { type: "string" },
+                            telco_cost: { type: "string" },
+                            corporate_cost: { type: "string" },
+                            internal_cost: { type: "string" },
+                            online_cost: { type: "string" },
+                            gift_cost: { type: "string", editable: false },
+                            emi_cost: { type: "string" },
+                            is_active: { type: "boolean" },
+                            last_grn_no: { type: "string" }
+                        }
+
+                    }
+                }
+
+            });
+
+            var d = new Date();
+            var dateTime = d.toJSON();
+            jQuery("#grid").kendoGrid({
+                excel: {
+                    fileName: "Product_Pricing_List_" + dateTime + ".xlsx",
+                    allPages: true
+                },
+                dataSource: dataSource,
+                filterable: true,
+                pageable: {
+                    refresh: true,
+                    input: true,
+                    pageSize: 20,
+                    numeric: false,
+                    pageSizes: [10, 20, 50]
+                },
+                sortable: true,
+                groupable: true,
+                resizable: true,
+
+
+                columns: [
+                    { field: "product_name", title: "Product Name", width: "150px" },
+                    { field: "color_name", title: "Color Name", width: "100px" },
+                    { field: "product_version_name", title: "Version Name", width: "100px" },
+                    { field: "last_grn_no", title: "GRN No", width: "100px" },
+                    { field: "dealer_cost", title: "Dealer Price", width: "100px" },
+                    { field: "b2b_cost", title: "B2B Price", width: "100px" },
+                    { field: "telco_cost", title: "Telco Price", width: "100px" },
+                    { field: "corporate_cost", title: "Corporate Price", width: "100px" },
+                    { field: "internal_cost", title: "Internal Price", width: "100px" },
+                    { field: "online_cost", title: "Online Price", width: "100px" },
+                    { field: "emi_cost", title: "EMI Price", width: "100px" },
+                    { field: "gift_cost", title: "Gift Price", width: "100px" },
+                    { field: "is_active", title: "Is Active", width: "100px" },
+                    {
+                        
+                        title: "Action",
+                        width: "100px",
+                        template: kendo.template($("#edit-template").html())
+                    }
+                ],
+                editable: "inline"
+            });
+        });
+    });
+</script>

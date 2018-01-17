@@ -1,0 +1,405 @@
+﻿@{
+    ViewBag.Title = "AccountDueAdvanceReport";
+    var userId = "";
+    var partyTypeId = "";
+    var roleId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        roleId = Session["user_role_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+}
+<div class="panel panel-success">
+    <div class="panel-heading"><h4> Accounts Due/Advance Report</h4></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="region_id">Region&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="region_id" name="region_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="area_id">Area&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="area_id" name="area_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="party_type_id">Channel Type&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="party_type_id" name="party_type_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="party_id">Channel Name&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="party_id" name="party_id" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+
+                <div class="col-md-3" style="margin-left: 5px;">
+                    <input type="button" class="k-button" id="btnSearch" name="btnSearch" style="width: 49%; margin-left: 1px;" value="Search" />&nbsp;
+                    <input type="button" class="k-button" id="btnReset" name="btnReset" style="width: 49%" value=" Reset " />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="grid"></div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-2">
+
+        </div>
+        <div class="col-md-3">
+
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+
+        </div>
+
+        <div class="col-md-3" style="margin-left:5px;">
+            <input type="button" class="k-button" id="btnExcel" name="btnSearch" style="width: 49%; margin-left: 1px;" value="Excel" />&nbsp;
+            <input type="button" class="k-button" id="btnPrint" name="btnReset" style="width: 49%" value=" Print " />
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var roleId = @roleId;
+    var partyId = @partyId;
+    var product_version_id = 0;
+    $(document).ready(function () {
+        $("#btnExcel").hide();
+        $("#btnPrint").hide();
+
+        //Reset
+        $("#btnReset").click(function() {
+            var regionId = $("#region_id").data("kendoComboBox");
+            regionId.dataSource.data([]);
+            regionId.text("");
+
+            var areaId = $("#area_id").data("kendoComboBox");
+            areaId.dataSource.data([]);
+            areaId.text("");
+
+            var partyTypeId = $("#party_type_id").data("kendoComboBox");
+            partyTypeId.dataSource.data([]);
+            partyTypeId.text("");
+
+            var partyId = $("#party_id").data("kendoComboBox");
+            partyId.dataSource.data([]);
+            partyId.text("");
+            // alert("Kiron");
+            //Empty Grid
+            $("#grid").data("kendoGrid").dataSource.data([]);
+
+        });
+        $("#btnSearch").click(function () {
+            $("#btnExcel").show();
+            var region_id = $("#region_id").val();
+            var area_id = $("#area_id").val();
+            var party_type_id = $("#party_type_id").val();
+            var party_id= $("#party_id").val();
+            if (region_id == "" || region_id == null) {
+                region_id = 0;
+            }
+            if (area_id == "" || area_id == null) {
+                area_id = 0;
+            }
+            if (party_type_id == "" || party_type_id == null) {
+                party_type_id = 0;
+            }
+
+
+            if (party_id == "" || party_id == null) {
+                party_id = 0;
+
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetAccountsDueAdvanceReport", "Report")?partyId=" + party_id +"&regoinId=" + region_id + "&areaId=" + area_id +"&partyTypeId=" + party_type_id + "",
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    var sampleData = [];
+
+                    if (data != '') {
+
+                        for (var i = 0; i < data.length; i++) {
+                            var dueAdvanced = {
+                                party_id : data[i].party_id ,
+                                party_name: data[i].party_name,
+                                party_type_name: data[i].party_type_name,
+                                party_code: data[i].party_code,
+                                region_name: data[i].region_name,
+                                area_name: data[i].area_name,
+                                territory_name: data[i].territory_name,
+                                closing_balance: data[i].closing_balance,
+                                remain_balance_status: data[i].remain_balance_status
+
+                            };
+
+                            sampleData.push(dueAdvanced);
+
+                        }
+
+                        //Report Data Source Grid---------------------
+                        var dataSource = new kendo.data.DataSource({
+                            pageSize: 20,
+                            transport: {
+                                read: function (e) {
+                                    // on success
+                                    e.success(sampleData);
+                                }
+                            },
+                            //    code: "Ok",
+                            autoSync: false,
+                            schema: {
+                                errors: function (e) {
+                                    console.log(e.errors);
+                                    //alert(e.error);
+                                    if (e.output === "error") {
+                                        console.log(e.output);
+                                        //KendoWindowFunction(e.msg, "error", "");
+                                        // this.cancelChanges();
+                                    }
+
+                                },
+
+                                model: {
+                                    id: "party_id",
+                                    fields: {
+                                        party_id: { editable: false, nullable: true },
+                                        party_type_name: { type: "string" },
+                                        party_name: { type: "string" },
+                                        is_active: { type: "boolean" },
+                                        party_code: { type: "string" },
+                                        region_name: { type: "string" },
+                                        area_name: { type: "string" },
+                                        territory_name: { type: "string" },
+                                        closing_balance: {type:"number" },
+                                        remain_balance_status: { type: "string" }
+
+                                    }
+
+                                }
+                            }
+
+                        });
+
+                        var d = new Date();
+                        var dateTime = d.toJSON();
+
+                        jQuery("#grid").kendoGrid({
+                            excel: {
+                                fileName: "Advance_Due_List_" + dateTime + ".xlsx",
+                                allPages: true
+                            },
+                            dataSource: dataSource,
+                            filterable: true,
+                            pageable: {
+                                refresh: true,
+                                input: true,
+                                pageSize: 20,
+                                numeric: false,
+                                pageSizes: [10, 20, 50]
+                            },
+                            sortable: true,
+                            groupable: true,
+                            resizable: true,
+                            columns: [
+                                       { field: "party_type_name", title: "Channel Type", width: "150px" },
+                                       { field: "party_name", title: "Channel Name", width: "250px" },
+                                       { field: "party_code", title: "Channel Code", width: "150px" },
+                                       { field: "region_name", title: "Region Name", width: "150px" },
+                                       { field: "area_name", title: "Area Name", width: "150px" },
+                                       { field: "territory_name", title: "Territory Name", width: "150px" },
+                                       { field: "closing_balance", title: "Closing Balance", width: "150px" },
+                                       { field: "remain_balance_status", title: "Status", width: "150px" }
+
+                            ],
+
+                            editable: "inline"
+                        });
+                        $("#btnExcel").show();
+                        $("#btnPrint").show();
+
+                    } else {
+                        swal("Opps", "Data Not Available !!", "warning");
+                        $("#grid").data("kendoGrid").dataSource.data([]);
+                        $("#btnExcel").hide();
+                        $("#btnPrint").hide();
+                        return false;
+                    }
+                }
+            });
+
+            //Excel Export
+            $("#btnExcel").click(function () {
+                var grid = $("#grid").data("kendoGrid");
+                grid.saveAsExcel();
+            });
+
+            //Print Export
+            $("#btnPrint").click(function () {
+                sweetAlert("Sorry...", "Work Under Progress", "warning");
+                $("#exportExcel").hide();
+                $("#btnPrint").hide();
+                return false;
+            });
+        });
+
+        //region dropdown
+        $("#region_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        });
+
+        //Area Dropdown
+        $("#area_id").kendoComboBox({
+            autoBind: false,
+            cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        });
+        //load party type
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            //cascadeFrom: "area_id",
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPartyTypeByAreaId", "PartyType")"
+                       
+                }
+            }
+        }
+        });
+        //By default party type false
+        //$("#party_type_id").data("kendoComboBox").enable(false);
+
+        //on areaId change load party_type 
+        $('#area_id').change(function () {
+            var area_id = $('#area_id').val();
+            //alert(area_id);
+     //load party type
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            //cascadeFrom: "area_id",
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPartyTypeByAreaId", "PartyType")?areaId=" + area_id
+                       
+                    }
+                }
+            }
+        });
+        $("#party_id").data("kendoComboBox").enable(true);
+
+    });
+   
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            cascadeFrom: "party_type_id",
+            placeholder: "--- Select Party ---",
+            dataTextField: "party_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                }
+            }
+        }
+
+        });
+    $('#party_type_id').change(function () {
+        var partyTypeId = $('#party_type_id').val();
+        var areaId = $('#area_id').val();
+        $("#party_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Party ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPartyByPartyTypeIdAndAreaId", "Party")?partyTypeId="+partyTypeId +"&areaId=" + areaId
+
+                    }
+                }
+            }
+        });
+        $("#party_id").data("kendoComboBox").enable(true);
+
+    });
+    });
+</script>

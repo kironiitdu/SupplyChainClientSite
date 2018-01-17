@@ -1,0 +1,190 @@
+﻿@{
+    ViewBag.Title = "InitialBalance";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<link href="~/Content/kendo/styles/kendo.web.plugins.css" rel="stylesheet" />
+<script src="~/Content/kendo/js/kendo.web.plugins.js"></script>
+<div class="row" id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Set Initial Balance</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="party_type_id">Channel Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_type_id" name="party_type_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="party_id">Channel Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="region_name">Region</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" id="region_name" name="region_name" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="area_name">Area</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" id="area_name" name="area_name" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="territory_name">Territory</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" id="territory_name" name="territory_name" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="initial_balance">Initial Balance&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="k-textbox" id="initial_balance" name="initial_balance" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="group-box">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="button" class="k-button" id="btnSaveInitBalance" name="btnSaveInitBalance" value="Save Initial Balance" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        function TryParseInt(str,defaultValue) {
+            var retValue = defaultValue;
+            if(str !== null) {
+                if(str.length > 0) {
+                    if (!isNaN(str)) {
+                        retValue = parseInt(str);
+                    }
+                }
+            }
+            return retValue;
+        }
+        $("#party_type_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetPartyTypesForInitialBalance", "PartyType")"
+                    }
+                }
+            }
+        });
+
+        $("#party_id").kendoComboBox({
+            autoBind: false,
+            cascadeFrom: "party_type_id",
+            placeholder: "--- Select Channel Name ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPartyWithoutJournal", "Party")"
+
+
+                    }
+                }
+            }
+        });
+
+        $('#party_id').change(function() {
+            var partId = $('#party_id').val();
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyInfoByPartyId", "Party")",
+                data: { party_id: partId }, //Passing parameter
+                dataType: "json",
+                success: function(data) {
+                    Loading(false);
+
+                    $("#region_name").val(data.region_name);
+                    $("#area_name").val(data.area_name);
+                    $("#territory_name").val(data.territory_name);
+
+                }
+            });
+        });
+
+        $("#btnSaveInitBalance").click(function () {
+            Loading(false);
+
+            var party_id = $('#party_id').val();
+            var strBalance =  $('#initial_balance').val();
+            var valBalance = TryParseInt(strBalance,0);
+            if (valBalance == 0 ) {
+                sweetAlert("Sorry...", "Input a valid initial balance", "error");
+                return false;
+            }
+            var party_journal = {
+                party_id: party_id,
+                opening_balance: valBalance,
+                created_by: userId
+            };
+
+
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("SaveInitialBalance", "PartyJournal")",
+                data: JSON.stringify(party_journal),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    if (data.output === "success") {
+
+                        swal("Success", data.msg, "success");
+                        window.location.href = '/party/initialbalance';
+                        return false;
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+    })
+</script>

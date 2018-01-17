@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+ 
+    
+    //Added By Kiron:14-01-2017
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+
+<div class="panel panel-success">
+    <div class="panel-heading">Supplier List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/Supplier/Edit?supplier_id=#= supplier_id #" class="k-button k-grid-even">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Supplier")">
+                    <span class="k-icon k-add"></span>
+                    Add Supplier
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+    $(document).ready(function () {
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllSuppliers", "Supplier")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "Supplier")?updated_by="+userId,
+                            type: "DELETE"
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "supplier_id",
+                            fields: {
+                                supplier_id: { editable: false, nullable: true },
+                                supplier_name: { type: "string" },
+                                supplier_code: { type: "string" },
+                                company_address: { type: "string" },
+                                factory_address: { type: "string" },
+                                phone: { type: "string" },
+                                mobile: { type: "string" },
+                                email: { type: "string" },
+                                contact_person: { type: "string" },
+                                total_debit: { type: "string" },
+                                total_credit: { type: "string" },
+                                balance: { type: "string" },
+                                vat_id: { type: "string" },
+                                tin_no: { type: "string" },
+                                is_active: { type: "boolean" },
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50,100,200,500,1000,5000]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "supplier_name", title: "Name", id: "supplier_id", width: "150px" },
+                        { field: "supplier_code", title: "Code", width: "150px" },
+                        { field: "company_address", title: "Company Address", width: "150px" },
+                        { field: "factory_address", title: "Factory Address", width: "150px" },
+                        { field: "phone", title: "Phone", width: "150px" },
+                        { field: "mobile", title: "Mobile", width: "150px" },
+                        { field: "email", title: "Email", width: "150px" },
+                        { field: "contact_person", title: "Contact Person", width: "150px" },
+                        //{ field: "total_debit", title: "Total Debit", width: "150px" },
+                        //{ field: "total_credit", title: "Total Credit", width: "150px" },
+                       // { field: "balance", title: "Balance", width: "150px" },
+                        { field: "vat_id", title: "Vat Id", width: "150px" },
+                        { field: "tin_no", title: "Tin No", width: "150px" },
+                        { field: "is_active", title: "Activity Status", width: "150px" },
+                        {
+                            title: "Action", width: "100px",
+                            template: kendo.template($("#edit-template").html())
+                        },
+                    { command: ["destroy"], title: "Action", width: "100px" }],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

@@ -1,0 +1,187 @@
+﻿
+@{
+    ViewBag.Title = "product_version_mapping";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    string companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = (string)Session["company_id"];
+    }
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<h2></h2>
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Product Version Mapping</h4></div>
+    <div class="panel-body">
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function KendoWindowFunction(msg, status) {
+
+        var window = jQuery("#kWindow");
+        if (!window.data("kendoWindow")) {
+            window.kendoWindow({
+                actions: ["Close"],
+                title: "Agent Information Entry Error ",
+                modal: true,
+                height: 100,
+                width: 300,
+                position: {
+                    top: 100,
+                    left: 100
+                },
+                visible: false,
+                draggable: false,
+                resizable: false
+            });
+        }
+        window.data("kendoWindow").center().open();
+
+        var okHtml = '';
+        if (status === "error") {
+            okHtml = '<div style="margin-top:10px;text-align:center;"><span style="color:red;font-size:14px;">' + msg + '</span></div>';
+
+        }
+        window.html(okHtml);
+        return false;
+    }
+
+    var userId = '@userId';
+    jQuery(document).ready(function () {
+        $('#context').addClass('animated rollIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 8,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllVersionMapping", "ProductVersionMapping")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "ProductVersionMapping")?update_by="+'@userId',
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "ProductVersionMapping")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "ProductVersionMapping")?create_by="+'@userId',
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        //KendoWindowFunction(e.msg, "error", "");
+                        // this.cancelChanges();
+                    }
+
+                },
+
+                model: {
+                    id: "product_version_mapping_id",
+                    fields: {
+                        product_version_mapping_id: { editable: false, nullable: true },
+                        product_id: { type: "number", validation: { required: true } },
+                        product_version_id: { type: "number", validation: { required: true } },
+                        is_active: { type: "boolean" },
+                        product_name: { type: "string" },
+                        product_version_name: { type: "string" }
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Product Version Map" }],
+            columns: [
+
+                { field: "product_id", title: "Product", editor: ProductDropDownEditor, template: "#= product_name #", width: "150px" },
+                { field: "product_version_id", title: "Version", editor: ColorDropDownEditor, template: "#= product_version_name #", width: "150px" },
+                { field: "is_active", title: "Is Active", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }
+            ],
+            editable: "inline"
+        });
+
+        function ProductDropDownEditor(container, options) {
+            jQuery('<input required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: false,
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                                type: "GET"
+                            }
+                        }
+
+                    },
+                    optionLabel: "Select Product"
+                });
+        }
+
+        function ColorDropDownEditor(container, options) {
+            jQuery('<input required data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: false,
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllProductVersionForDropDown", "ProductVersion")",
+                                type: "GET"
+                            }
+                        }
+
+                    },
+                    optionLabel: "Select Version"
+                });
+        }
+
+    });
+</script>
+<div id="kWindow"></div>
+
+
+
+

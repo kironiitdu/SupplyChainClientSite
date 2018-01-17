@@ -1,0 +1,368 @@
+﻿@{
+    ViewBag.Title = "Edit";
+
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+  
+
+
+            //Added By Kiron:14-01-2017
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var supplier_id = '@ViewBag.supplierId';
+        Loading(true);
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("GetSupplierById", "Supplier")",
+            data: {
+                supplier_id: supplier_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(supplier_id);
+                $("#supplier_name").val(data.supplier_name);
+                $("#supplier_code").val(data.supplier_code);
+                $("#supplier_type_id").val(data.supplier_type_id);
+                $("#company_address").val(data.company_address);
+                $("#factory_address").val(data.factory_address);
+                $("#phone").val(data.phone);
+                $("#mobile").val(data.mobile);
+                $("#email").val(data.email);
+                $("#email2").val(data.email2);              
+                $("#contact_person").val(data.contact_person);
+                $("#contact_person2").val(data.contact_person2);
+                $("#vat_id").val(data.vat_id);
+                $("#tin_no").val(data.tin_no);
+                //$("#we_company").val(data.receiving_company_name);
+                $("#we_contact_person").val(data.receiving_company_person);
+                $("#we_contact_email").val(data.receiving_company_contact_email);
+                $("#is_active").val(data.is_active);
+
+                var kkk = data.is_active;
+                if (kkk === true) {
+                    $('#is_active').prop('checked', true);
+                }
+                else {
+                    $('#is_active').prop('checked', false);
+                }
+
+            }
+        });
+    });
+</script>
+
+<div class="panel panel-success">
+    <div class="panel-heading">Supplier Edit</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="supplier_name">Supplier Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="supplier_name" name="supplier_name" class="k-textbox" placeholder="Enter Supplier Name" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="supplier_code">Code&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="supplier_code" name="supplier_code" class="k-textbox" disabled placeholder="Autometic Code" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="supplier_type_id">Supplier Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="supplier_type_id" name="supplier_type_id" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+    </div>
+    <div class="panel-heading">Supplier Official Information </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="col-md-2">
+                    <label for="company_address">Registered Office Address</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="company_address" name="company_address" class="k-textbox" placeholder="Enter Company Address" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="factory_address">Factory Address</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="factory_address" name="factory_address" class="k-textbox" placeholder="Enter Factory Address" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="phone">Telephone NO</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="phone" name="phone" class="k-textbox" placeholder="Enter Telephone Number" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="mobile">Fax NO&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="mobile" name="mobile" class="k-textbox" placeholder="Enter Fax Number" />
+                </div>
+
+
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="contact_person">Contact Person 1&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="contact_person" name="contact_person" class="k-textbox" placeholder="Enter Contact Person Name" />
+                </div>
+                <div class="col-md-1"></div>
+
+                <div class="col-md-2">
+                    <label for="email">Email 1&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="email" name="email" class="k-textbox" placeholder="Enter Contact Email" />
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="contact_person2">Contact Person 2</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="contact_person2" name="contact_person2" class="k-textbox" placeholder="Enter Contact Person 2 Name" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="email2">Email 2</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="email2" name="email2" class="k-textbox" placeholder="Enter Email 2" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="vat_id">VAT NO</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="vat_id" name="vat_id" class="k-textbox" placeholder="Enter VAT NO" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="tin_no">TIN NO</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="tin_no" name="tin_no" class="k-textbox" placeholder="Enter TIN NO" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-heading">WE Official Information </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="we_company">WE Company</label>
+                </div>
+                <div class="col-md-3">
+                    <input id="we_company" name="we_company" class="k-textbox" value="Aamra Holdings Ltd." disabled />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="we_contact_person">WE Contact Person Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="we_contact_person" name="we_contact_person" class="k-textbox" placeholder="Enter WE Contact Person Name" />
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <label for="we_contact_email">Contact Person Email &nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                </div>
+                <div class="col-md-3">
+                    <input id="we_contact_email" name="we_contact_email" class="k-textbox" placeholder="Enter Contact Email" />
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <label for="is_active">Is Active</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="checkbox" id="is_active">
+
+                </div>
+
+                <div class="col-md-1"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="group-box">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="button" class="k-button" id="btnUpdateSupplier" name="btnUpdateSupplier" value="Update Supplier" />
+        </div>
+    </div>
+</div>
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+
+        $("#supplier_type_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Supplier type ---",
+            dataTextField: "supplier_type_name",
+            dataValueField: "supplier_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetSupplierTypeListForDropDown", "SupplierType")"
+                }
+            }
+        }
+        });
+
+        $("#btnUpdateSupplier").click(function () {
+            Loading(true);
+            
+            $("#supplier_type_id").kendoComboBox({
+                autoBind: true,
+                placeholder: "--- Select Supplier type ---",
+                dataTextField: "supplier_type_name",
+                dataValueField: "supplier_type_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetSupplierTypeListForDropDown", "SupplierType")"
+                    }
+                }
+            }
+            });
+
+            var supplier_id = '@ViewBag.supplierId';
+            var supplier_name = $("#supplier_name").val();
+            var supplier_code = $("#supplier_code").val();
+            var supplier_type_id = $("#supplier_type_id").val();
+            var company_address = $("#company_address").val();
+            var factory_address = $("#factory_address").val();
+            var phone = $("#phone").val();
+            var mobile = $("#mobile").val();
+            var email = $("#email").val();
+            var email2 = $("#email2").val();
+            var contact_person = $("#contact_person").val();
+            var contact_person2 = $("#contact_person2").val();       
+            var vat_id = $("#vat_id").val();
+            var tin_no = $("#tin_no").val();
+            var we_company = $("#we_company").val();  
+            var we_contact_person = $("#we_contact_person").val();  
+            var we_contact_email = $("#we_contact_email").val(); 
+            var updated_by=@userId;
+            var is_active = false;
+            if ($("#is_active").is(':checked')) {
+                is_active = true;
+            }
+
+            var supplier = {
+
+                supplier_id:supplier_id,
+                supplier_name: supplier_name,
+                supplier_code: supplier_code,
+                supplier_type_id:supplier_type_id,
+                company_address: company_address,
+                factory_address: factory_address,
+                phone: phone,
+                mobile: mobile,
+                email: email,
+                email2:email2,
+                contact_person: contact_person,
+                contact_person2:contact_person2,
+                vat_id: vat_id,
+                tin_no: tin_no,
+                receiving_company_name:we_company,
+                receiving_company_person:we_contact_person,
+                receiving_company_contact_email:we_contact_email,
+                is_active: is_active,
+                updated_by:updated_by
+            };
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("Put", "Supplier")",
+                data: JSON.stringify(supplier),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                        setTimeout(function () {
+                            window.location.href = '/Supplier/index';
+                        }, 1000);
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+
+
+
+        });
+    });
+
+
+
+
+
+</script>

@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using DMSClient.Models;
+using DMSClient.Reports.crystal_models;
+using Newtonsoft.Json;
+
+namespace DMSClient.Controllers
+{
+    public class SalesTransactionController : Controller
+    {
+        // Added By Kiron:01/09/2016 For All Sales Transaction Summery
+        public ActionResult Index()
+        {
+            //string roleid = (string)Session["user_role_id"];
+            //string userid = (string)Session["user_au_id"];
+
+            //string ConName = "SalesTransaction";
+            //string ActionName = "Index";
+
+            //if ((roleid == null || roleid == string.Empty) && (userid == null || userid == string.Empty))
+            //{
+            //    Response.Redirect("/Login/Index");
+            //}
+            //bool permission = CoreRules.UserPermission(roleid, userid, ConName, ActionName);
+            //if (!permission)
+            //    Response.Redirect("/Error/Index");
+
+            return View();
+        }
+
+        // Added By Kiron:02/09/2016 For All Sales Transaction Report
+        public void DailySalesTransactionReport(int user_id, string from_date, string to_date)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Inventory/DailySalesTransactionReport?user_id=" + user_id +"&from_date=" + from_date + "&to_date=" + to_date + "";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<DailySalesTransactionModel> objDailySalesTransaction = JsonConvert.DeserializeObject<List<DailySalesTransactionModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/DailySalesTransaction.rpt"));
+
+                reportDocument.SetDataSource(objDailySalesTransaction);
+                reportDocument.ExportToHttpResponse(ExportFormatType.PortableDocFormat, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+        public void DailySalesTransactionExcel(int user_id, string from_date, string to_date)
+        {
+
+            WebClient wbClient = new WebClient();
+            string downloadString = CoreRules.httpRequest() + "Inventory/DailySalesTransactionReport?user_id=" + user_id + "&from_date=" + from_date + "&to_date=" + to_date + "";
+            string apidata = wbClient.DownloadString(downloadString);
+            List<DailySalesTransactionModel> objDailySalesTransaction = JsonConvert.DeserializeObject<List<DailySalesTransactionModel>>(apidata);
+
+
+            using (var reportDocument = new ReportDocument())
+            {
+
+                reportDocument.Load(Server.MapPath("~/Reports/crystal_view/DailySalesTransactionExcel.rpt"));
+
+                reportDocument.SetDataSource(objDailySalesTransaction);
+                reportDocument.ExportToHttpResponse(ExportFormatType.ExcelRecord, System.Web.HttpContext.Current.Response, false, "" + DateTime.Now.ToString("dd-MM-yyyy_hh-mm_tt"));
+            }
+        }
+    }
+}

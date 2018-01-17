@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div id="test">
+    <div class="panel panel-success">
+        <div class="panel-heading">Warehouse List</div>
+        <div class="panel-body">
+            <script id="edit-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Warehouse/Edit?warehouse_id=#= warehouse_id #" class="k-button k-grid-even">Edit</a>
+            </script>
+            @*<div class="k-grid  k-secondary" data-role="grid">
+                <div class="k-toolbar k-grid-toolbar">
+                    <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add","Warehouse")">
+                        <span class="k-icon k-add"></span>
+                        Add Warehouse
+                    </a>
+                </div>
+            </div>*@
+            <div id="grid"></div>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                  
+                    var dataSource = new kendo.data.DataSource({
+                        pageSize: 20,
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllWarehouses", "Warehouse")",
+                                type: "GET"
+                            },
+                            update: {
+                                url: "",
+                                type: "PUT",
+                                complete: function (e) {
+                                    jQuery("#grid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                url: "@UrlConfig.Action("Delete", "User")",
+                                type: "DELETE"
+                            }
+                        },
+                        //    code: "Ok",
+                        autoSync: false,
+                        schema: {
+                            errors: function (e) {
+                                console.log(e.errors);
+                                //alert(e.error);
+                                if (e.output === "error") {
+                                    console.log(e.output);
+                                    //KendoWindowFunction(e.msg, "error", "");
+                                    // this.cancelChanges();
+                                }
+
+                            },
+
+                            model: {
+                                id: "warehouse_id",
+                                fields: {
+                                    warehouse_id: { editable: false, nullable: true },
+                                    warehouse_name: { type: "string" },
+                                    warehouse_code: { type: "string" },
+                                    warehouse_address: { type: "string" },
+                                    warehouse_type: { type: "string" },
+                                    employee_name: { type: "string" },
+                                    party_name: { type: "string" },
+                                    party_type_name: { type: "string" },
+                                    region_name: { type: "string" },
+                                    area_name: { type: "string" },
+                                    territory_name: { type: "string" }
+                                }
+
+                            }
+                        }
+
+                    });
+                    jQuery("#grid").kendoGrid({
+                        dataSource: dataSource,
+                        scrollable: true,
+                        filterable: true,
+                        pageable: {
+                            refresh: true,
+                            input: true,
+                            pageSize: 20,
+                            numeric: false,
+                            pageSizes: [10, 20, 50]
+                        },
+
+                        sortable: true,
+                        groupable: true,
+                        resizable: true,
+
+
+                        columns: [
+                            { field: "warehouse_name", title: "Warehouse Name", id: "warehouse_id", width: "250px" },
+                            { field: "warehouse_code", title: "Code", width: "150px" },
+                            { field: "warehouse_type", title: "Warehouse Type", width: "150px" },
+                            { field: "warehouse_address", title: "Warehouse Address", width: "150px" },
+                            //{ field: "region_name ", title: "Region Name", width: "150px" },
+                            //{ field: "area_name", title: "Area Name", width: "150px" },
+                            //{ field: "territory_name", title: "Territory Name", width: "150px" },
+                            //{ field: "party_type_name", title: "Channels Type", width: "150px" },
+                            //{ field: "party_name", title: "Channels Name", width: "150px" },
+                          
+                            {
+                                title: "Action", width: "100px",
+                                template: kendo.template($("#edit-template").html())
+                            }
+                            //{ command: ["destroy"], title: "Action", width: "100px" }
+                        ],
+                        editable: "inline"
+                    });
+
+
+                });
+            </script>
+
+
+        </div>
+    </div>
+</div>

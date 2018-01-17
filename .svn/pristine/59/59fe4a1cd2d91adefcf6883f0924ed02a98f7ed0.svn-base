@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Add Area</h4></div>
+    <div class="panel-body">
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+            jQuery(document).ready(function () {
+              
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllArea", "Area")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "Area")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "Area")",
+                            type: "DELETE"
+                        },
+                        create: {
+                            url: "@UrlConfig.Action("Post", "Area")",
+                            type: "POST",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                KendoWindowFunction(e.msg, "error", "");
+                                this.cancelChanges();
+                            }
+                        },
+
+                        model: {
+                            id: "area_id",
+                            fields: {
+                                region_id: { type: "number" },
+                                region_name: { type: "string" },
+                                area_id: { editable: false },
+                                area_name: { type: "string", validation: { required: true } },
+                                area_code: { type: "string" },
+                                is_active: { type: "boolean"}
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+                    toolbar: [{ name: "create", text: "Add New Area" }],
+                    columns: [
+                        { field: "area_name", title: "Area Name", id: "area_id", width: "150px" },
+                        { field: "area_code", title: "Area Code", id: "area_code", width: "50px" },
+                        { field: "region_id", title: "Region", editor: regionDropDownEditor, template: "#= region_name #", width: "150px" },
+                        { field: "is_active", title: "Is Active", id: "area_id", width: "100px" },
+                        { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+                        editable: "inline"
+                });
+
+
+                function regionDropDownEditor(container, options) {
+                    jQuery('<input required data-text-field="region_name" data-value-field="region_id" data-bind="value:' + options.field + '"/>')
+                            .appendTo(container)
+                            .kendoDropDownList({
+                                autoBind: false,
+                                dataSource: {
+                                    transport: {
+                                        read: {
+                                            url: "@UrlConfig.Action("GetAllRegions", "Region")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+                        optionLabel: "Select Region"
+                });
+            }
+
+            });
+
+//Added By Kiron: 26/11/2016
+</script>
+
+
+<div id="kWindow"></div>
+
+
+
+

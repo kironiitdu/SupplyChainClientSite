@@ -1,0 +1,673 @@
+﻿@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<link href="~/Content/kendo/styles/kendo.web.plugins.css" rel="stylesheet" />
+<script src="~/Content/kendo/js/kendo.web.plugins.js"></script>
+<div class="row" id="context">
+
+    <div id="transactionTabs">
+        <ul id="ulTabs" style="display: none">
+            <li class="k-state-active">Party</li>
+            @*<li>Warehouse Incharge</li>*@
+            <li>Warehouse</li>
+        </ul>
+        <div id="servicesTab">
+            <div class="panel panel-success">
+                <div class="panel-heading">Add Party </div>
+                <div class="panel-body">
+                    <form id="PartyAdd">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="party_type_id">Party Type:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="party_type_id" id="party_party_type_id" class="dropdown" style="width: 80%;">
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="party_name">Party Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="k-textbox" name="party_name" placeholder="Enter Party Name" id="party_name" style="width: 80%;">
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="credit_limit">Credit Limit:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="k-textbox" name="credit_limit" placeholder="Enter Credit Limit" id="credit_limit" style="width: 80%;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="proprietor_name">Owner Name:</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="k-textbox" name="proprietor_name" placeholder="Enter Owner Name" id="proprietor_name" style="width: 80%;">
+                                </div>
+                            </div>
+
+                            <div class="clearfix"></div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="address">Party Address:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="k-textbox" name="address" id="address" placeholder="Enter Party Address" style="width: 80%;">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="region_id">Region:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="region_id" id="region_id" class="dropdown" style="width: 80%;">
+                                </div>
+                            </div>
+                            
+
+                            <div class="clearfix"></div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="area_id">Area:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="area_id" id="area_id" class="dropdown" style="width: 80%;">
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="territory_id">Territory:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="territory_id" id="territory_id" class="dropdown" style="width: 80%;">
+                                </div>
+                            </div>
+
+                            <div class="clearfix"></div>
+
+                        
+
+                         
+
+                            <div class="clearfix"></div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="phone">Land Phone No:</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="k-textbox" name="phone" placeholder="Enter Land Phone No" id="phone" style="width: 80%;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="mobile">Mobile No:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input name="mobile" id="mobile" class="k-textbox" placeholder="Enter Party Mobile No" style="width: 80%;">
+                                </div>
+                            </div>
+
+
+                            <div class="clearfix"></div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="party_email">Email Address:</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="k-textbox" name="email" placeholder="Enter Party Email Address" id="party_email" style="width: 80%;">
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="start_date">Start Date:</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="" name="start_date" placeholder="Pick a Business Starting Day" id="start_date" style="width: 80%;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="col-md-4">
+                                    <label for="party_is_active">Is Active</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="checkbox" name="party_is_active" id="party_is_active" style="margin-left: 6px;">
+                                </div>
+                            </div>
+                       
+                            <div class="clearfix"></div>
+
+                          
+
+                           
+
+
+                        </div>
+                        <div class="clearfix"></div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-5">
+                                <input type="button" class="k-button" id="PartyAddSubmit" value="Save Information" />
+                            </div>
+
+                            <div id="kWindow"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+      
+        <div id="transactTab">
+            <div class="panel panel-success">
+                <div class="panel-heading">Warehouse Add</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="warehouse_name">Warehouse Name</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_name" name="warehouse_name" placeholder="Enter Warehouse Name" class=" k-textbox" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="warehouse_code">Warehouse Code</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_code" name="warehouse_code" placeholder="Its Auto Generated" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="warehouse_address">Warehouse Address</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_address" name="warehouse_address" placeholder="Enter Warehouse Address" class="k-textbox" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="warehouse_type">Warehouse Type</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_type" name="warehouse_type" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="warehouse_party_type_id">Party Type</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_party_type_id" name="warehouse_party_type_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="warehouse_party_id">Party</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_party_id" name="warehouse_party_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="warehouse_incharge">Warehouse Incharge</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="warehouse_incharge" name="warehouse_incharge" class="k-textbox" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="warehouse_is_active">Is Active</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="checkbox" id="warehouse_is_active" value="1" checked="checked" name="warehouse_is_active" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="button" class="k-button" id="btnSaveWarehouse" name="btnSaveWarehouse" value="Save Warehouse" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+ 
+        $("#start_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            }
+        });
+
+
+        // Region
+        $("#region_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        //Area
+        $("#area_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+        //Territory
+
+        $("#territory_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "area_id",
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        }).data("kendoComboBox");
+
+
+        //On Change Territory
+        $('#area_id').change(function () {
+            var area_id = $('#area_id').val();
+           // $("#territory_id").kendoComboBox({enable: true});
+            $("#territory_id").kendoComboBox({
+                autoBind: true,
+                placeholder: "--- Select Territory ---",
+                dataTextField: "territory_name",
+                dataValueField: "territory_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllTerritoryByAreaId", "Territory")",
+                            data: { area_id: area_id }
+                        }
+                    }
+                }
+            });
+
+        });
+
+
+        var transactionTabs = $("#transactionTabs").kendoTabStrip({}).data("kendoTabStrip");
+        transactionTabs.enable(transactionTabs.tabGroup.children("li:eq(0)"), true);
+        transactionTabs.enable(transactionTabs.tabGroup.children("li:eq(1)"), false);
+
+        function lockTabs() {
+            transactionTabs.enable(transactionTabs.tabGroup.children("li:eq(2)"), false);
+        }
+        lockTabs();
+
+        $('#ulTabs').show();
+
+        //Party_type Combobox
+        $("#party_party_type_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "Select Party Type...",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllPartyType", "PartyType")",
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+        @*//Party_type On Change   //Load Master Dealer
+        $('#party_party_type_id').change(function () {
+            var partyTypeId = $('#party_party_type_id').val();
+            //alert(partyTypeId);
+            if (partyTypeId == 8) {
+                $("#master_dealer").data("kendoComboBox").enable(true);
+            } else {
+                $("#master_dealer").data("kendoComboBox").enable(false);
+            }
+
+        });
+
+        $("#master_dealer").kendoComboBox({
+            autoBind: true,
+            placeholder: "--Select Party--",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetMasterDealer", "Party")",
+                        type: "GET"
+                    }
+                },
+
+            }
+
+        });
+        $("#master_dealer").data("kendoComboBox").enable(false);*@
+
+
+
+
+
+
+        var data = [
+                { text: "Physical", value: "Physical" },
+                { text: "Virtual", value: "Virtual" }
+
+        ];
+
+        // create DropDownList from input HTML element
+        $("#warehouse_type").kendoComboBox({
+            dataTextField: "text",
+            dataValueField: "value",
+            dataSource: data,
+            index: 0,
+            //change: onChange
+        });
+
+
+
+        $("#btnSaveWarehouse").click(function () {
+            Loading(true);
+
+            var warehouse_name = $("#warehouse_name").val();
+            var warehouse_code = $("#warehouse_code").val();
+            var warehouse_address = $("#warehouse_address").val();
+            var warehouse_incharge = $("#warehouse_incharge").val();
+            var warehouse_type = $("#warehouse_type").val();
+            var warehouse_party_type_id = $("#warehouse_party_type_id").val();
+            var warehouse_party_id = $("#warehouse_party_id").val();
+            var userId = @userId;
+            //var is_active = $('input:checkbox:checked').val();
+            var warehouse_is_active = false;
+
+            if ($("#warehouse_is_active").is(":checked")) {
+                warehouse_is_active = true;
+            }
+
+            var warehouse = {
+                warehouse_name: warehouse_name,
+                warehouse_code: warehouse_code,
+                warehouse_address: warehouse_address,
+                warehouse_incharge: warehouse_incharge,
+                warehouse_type: warehouse_type,
+                party_type_id: warehouse_party_type_id,
+                party_id: warehouse_party_id,
+                is_active: warehouse_is_active,
+                created_by:userId
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Warehouse")",
+                data: JSON.stringify(warehouse),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+
+                        window.location.href = '/Party/Add';
+
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+        });
+        //warehouse section------------------------------------
+
+
+
+        $("#btnTestAgain").click(function () {
+
+
+        });
+
+
+
+        $("#PartyAddSubmit").click(function () {
+            Loading(false);
+            var party_id = $("#party_id").val();
+            var party_name = $("#party_name").val();
+            var credit_limit = $("#credit_limit").val(); 
+         
+            var proprietor_name = $("#proprietor_name").val();
+            var address = $("#address").val();
+            var location_id = $("#location_id").val();
+            var phone = $("#phone").val();
+            var mobile = $("#mobile").val();
+            var party_email = $("#party_email").val();
+            var party_party_type_id = $("#party_party_type_id").val();
+            var master_dealer = $('#master_dealer').val();
+            var start_date = $("#start_date").val();
+
+            var region_id = $("#region_id").val();
+            var territory_id = $("#territory_id").val();
+            var area_id = $("#area_id").val();
+
+            var userId = @userId;
+            var party_is_active = false;
+
+            if ($("#party_is_active").is(":checked")) {
+                party_is_active = true;
+            }
+
+            // Check Credit Limit
+            if (credit_limit <= 0 || credit_limit == "") {
+                sweetAlert("Sorry", "Credit Limit can not be '0'", "warning");
+                return false;
+            }
+            // Checking Mobile number length either 11
+            var txtLength = $("#mobile").val().length;
+            if (txtLength !=11) {
+                sweetAlert("Sorry", "Mobile number must be 11 digit", "warning");
+                return false;
+            }
+
+
+            //Checking Mobile number type either number
+
+            if (Math.floor($('#mobile').val()) == $('#mobile').val() && $.isNumeric($('#mobile').val())) {
+                // do nothing
+            } else {
+                //showing warning By Kiron 23/10/2016
+                sweetAlert("Sorry", "Invalid Number!", "warning");
+                return false;
+            }
+
+            var oParty = {
+                party_id: party_id,
+                party_name: party_name,
+                credit_limit:credit_limit,
+                proprietor_name: proprietor_name,
+                address: address,
+                location_id: location_id,
+                phone: phone,
+                mobile: mobile,
+                email: party_email,
+                party_type_id: party_party_type_id,
+                start_date: start_date,
+                is_active: party_is_active,
+                parent_party_id:master_dealer,                                          
+                region_id:region_id,
+                territory_id:territory_id,
+                area_id:area_id,
+                created_by:userId
+
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Party")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(oParty),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+
+
+                        var party_name= $("#party_name").val();
+                        // party list
+                        $("#employee_party_id").kendoComboBox({
+                            autoBind: true,
+                            placeholder: "--- Select Party ---",
+                            dataTextField: "party_name",
+                            dataValueField: "party_id",
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                                    }
+                                }
+                            }
+                        });
+
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetPartyByPartyName", "Party")?party_name="+party_name+"",
+                            dataType: 'json',
+                            contentType: "application/json",
+                            success: function (data) {
+                                Loading(false);
+                                // console.log(data.party_id);
+
+                                var comboBox = $("#employee_party_id").data("kendoComboBox");
+                                $("#employee_party_id").data("kendoComboBox").value(data.party_id);
+                                comboBox.enable(false);
+                            }
+                        });
+
+                        transactionTabs.enable(transactionTabs.tabGroup.children("li:eq(0)"), true);
+                        transactionTabs.enable(transactionTabs.tabGroup.children("li:eq(1)"), true);
+                        transactionTabs.select(1);
+
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "warning");
+                        return false;
+                    }
+
+                }
+            });
+
+        });
+
+    });
+
+    @*var dropDownTreeView;
+    function expandNodes()
+    {
+        dropDownTreeView.treeview().expand(".k-item");
+        dropDownTreeView.treeview().collapse(".k-item");
+    }
+    function requestEndHandler()
+    {
+        setTimeout("expandNodes()");
+    }
+    $.ajax({
+        type: "GET",
+        url: "@UrlConfig.Action("GetLocationTree", "Location")",
+        dataType: 'json',
+        success: function(locationTree) {
+            if (locationTree != null) {
+                dropDownTreeView = $("#location_id").kendoExtDropDownTreeView({
+                    treeview: {
+                        autoBind: true,
+                        loadOnDemand: true,
+                        dataSource: new kendo.data.HierarchicalDataSource({
+                            requestEnd: requestEndHandler,
+                            data: locationTree
+                        })
+                    }
+                }).data("kendoExtDropDownTreeView");
+            }
+        }
+    });*@
+
+</script>

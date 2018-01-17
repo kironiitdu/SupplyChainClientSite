@@ -1,0 +1,232 @@
+﻿@{
+    ViewBag.Title = "Department";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Add Department</h4></div>
+    <div class="panel-body">
+        <div id="grid"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function KendoWindowFunction(msg, status) {
+
+        var window = jQuery("#kWindow");
+        if (!window.data("kendoWindow")) {
+            window.kendoWindow({
+                actions: ["Close"],
+                title: "Agent Information Entry Error ",
+                modal: true,
+                height: 100,
+                width: 300,
+                position: {
+                    top: 100,
+                    left: 100
+                },
+                visible: false,
+                draggable: false,
+                resizable: false
+            });
+        }
+        window.data("kendoWindow").center().open();
+
+        var okHtml = '';
+        if (status === "error") {
+            okHtml = '<div style="margin-top:10px;text-align:center;"><span style="color:red;font-size:14px;">' + msg + '</span></div>';
+
+        }
+        window.html(okHtml);
+        return false;
+    }
+
+
+
+    jQuery(document).ready(function () {
+        $('#context').addClass('animated rollIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 8,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllDepartments", "Department")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Department")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Department")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "Department")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        //KendoWindowFunction(e.msg, "error", "");
+                        // this.cancelChanges();
+                    }
+
+                },
+
+                model: {
+                    id: "department_id",
+                    fields: {
+                        department_id: { editable: false, nullable: true },
+                        department_name: { type: "string", validation: { required: true } },
+                        department_abbreviation: { type: "string" },
+                        parent_department_id: { type: "number" },
+                        location: { type: "string" },
+                        is_active: { type: "boolean" },
+                        created_by: { type: "number" },
+                        created_date: { type: "string" },
+                        updated_by: { type: "number" },
+                        updated_date: { type: "string" },
+                        company_id: { type: "number" },
+                        employee_name: { type: "string" },
+
+                    }
+
+                }
+            }
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: {
+                extra: false,
+                operators: {
+                    string: {
+                        startswith: "Starts with",
+                        eq: "Is equal to",
+                        neq: "Is not equal to"
+                    }
+                }
+            },
+            pageable: {
+                refresh: true,
+                input: true,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+
+            toolbar: [{ name: "create", text: "Add Department" }],
+            columns: [
+            { field: "department_name", title: "Name", id: "designation_id" },
+            { field: "department_abbreviation", title: "Abbreviation", },
+            {
+                field: "parent_department_id",
+                title: "Parent Department",
+                editor: departmentDropDownEditor,
+                template: "#= department_name #",
+                filterable: {
+                    ui: departmentFilter
+                },
+
+            },
+           
+            { field: "location", title: "Location", },
+
+            { field: "is_active", title: "Is Active" },
+            { command: ["edit", "destroy"], title: "Action", width: "200px" }],
+            editable: "inline"
+        });
+
+
+
+
+        function departmentDropDownEditor(container, options) {
+            $('<input   data-text-field="department_name" data-value-field="department_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: true,
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllDepartments", "DepartmentPartial")"
+                            }
+                        }
+                    },
+                    optionLabel: "--Select--"
+                });
+        }
+
+
+        function employeeDropDownEditor(container, options) {
+            $('<input  data-text-field="employee_name" data-value-field="employee_id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: true,
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllEmployees", "EmployeePartial")"
+                        }
+                    }
+                },
+                    optionLabel: "--Select--"
+        });
+    }
+
+
+        function departmentFilter(element) {
+            element.kendoDropDownList({
+                dataTextField: "department_name",
+                dataValueField: "department_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllDepartments", "DepartmentPartial")"
+                        }
+                    }
+                },
+                optionLabel: "--Select--"
+            });
+        }
+
+
+        function employeeFilter(element) {
+            element.kendoDropDownList({
+                dataTextField: "employee_name",
+                dataValueField: "employee_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllEmployees", "EmployeePartial")"
+                    }
+                }
+            },
+                optionLabel: "--Select--"
+        });
+    }
+
+
+    });
+</script>
+<div id="kWindow"></div>
+
+

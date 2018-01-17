@@ -1,0 +1,120 @@
+﻿@*
+    Page: Location Index Form
+    Author: Kiron (13/08/2016)
+*@
+@{
+    ViewBag.Title = "Index";
+    
+   
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Area Setup</h4></div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/Location/Edit?location_id=#= location_id #" class="k-button k-grid-even">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Location")">
+                    <span class="k-icon k-add"></span>
+                    Add Location
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#context').addClass('animated rollIn');
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllLocations", "Location")",
+                            type: "GET"
+                        },
+                        create: {
+                            url: "@UrlConfig.Action("Post", "Location")",
+                            type: "POST",
+                            complete: function(e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        },
+
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "Location")",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                            
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function(e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "location_id",
+                            fields: {
+                                location_id: { editable: true, nullable: true },
+                                location_name: { type: "string" },
+                                employee_id: { type: "number" },
+                                employee_name: { type: "string" },
+                                parent_location_id: { type: "number" },
+                                parent_location_name: { type: "string" },
+                                is_leaf: { type: "boolean" }
+
+
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        update: true,
+                        destroy: true,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+
+                    columns: [
+                        { field: "location_name", title: "Location Name", id: "location_id", width: "150px" },
+                        { field: "employee_name", title: "Location Manager", id: "employee_id", width: "150px" },
+                        { field: "parent_location_name", title: "Parent Location", id: "parent_location_id", width: "150px" },
+                        { field: "is_leaf", title: "Is Leaf", width: "150px" },
+                        { title: "Action", width: "90px", template: kendo.template($("#edit-template").html()) },
+                        { command: ["destroy"], title: "Action", width: "100px" }],
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>
+

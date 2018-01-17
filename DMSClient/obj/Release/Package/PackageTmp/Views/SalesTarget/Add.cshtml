@@ -1,0 +1,180 @@
+﻿@*Author: Farzana Islam
+    Date: 20/8/2016*@
+@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<div class="row" id="context">
+    @*<div class="widget">*@
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Add Sales Target</h5></div>
+        <div class="panel-body">
+            <form id="SalesTargetAdd">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="company_id">Target Month:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="" name="target_month_name" id="target_month_name" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_code">Target Location:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="location_name" id="location_name" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="branch_name">Target Person:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="target_on_emp_name" id="target_on_emp_name" style="width:80%;">
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="emp_id">Target Quantity:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="target_quantity" id="target_quantity" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                </div>
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="SalesTargetAddSubmit" value="Save Information" />
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+        $("#target_month_name").kendoDatePicker({
+            // defines the start view
+            start: "year",
+
+            // defines when the calendar should return date
+            depth: "year",
+
+            // display month and year in the input
+            format: "MMMM, yyyy"
+        });
+
+
+        
+        //Location Dropdown
+    @*var countrys = $("#location_id").kendoComboBox({
+        placeholder: "Select Country...",
+        dataTextField: "country_name",
+        dataValueField: "location_id",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllCountries", "Country")",
+                type: "GET"
+            }
+        }
+
+    },
+            optionLabel: "Select Country"
+
+    }).data("kendoComboBox");*@
+
+    //Target Person Combobox
+
+        $("#target_on_emp_name").kendoComboBox({
+        autoBind: true,
+        placeholder: "Select Target Person Type...",
+        dataTextField: "employee_name",
+        dataValueField: "employee_id",
+        dataSource: {
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetDropdownForSalesTarget", "Employee")",
+                type: "GET"
+            }
+        },
+
+    }
+    }).data("kendoComboBox");
+
+    });
+
+    //data Save
+    $(document).ready(function () {
+        $("#SalesTargetAddSubmit").click(function () {
+            $('#context').addClass('animated zoomIn');
+            Loading(true);
+            var userId = @userId;
+            var target_id = $("#target_id").val();
+            var target_month_name = $("#target_month_name").val();
+            var location_name = $("#location_name").val();
+            var target_on_emp_name = $("#target_on_emp_name").val();
+            var target_quantity = $("#target_quantity").val();
+           
+
+            var oSaTarget = {
+                target_id: target_id,
+                target_month: target_month_name,
+                location_id: location_name,
+                target_on_emp_id: target_on_emp_name,
+                target_quantity: target_quantity,
+                created_by:userId
+
+            };
+
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "SalesTarget")",
+                dataType: 'json',
+            contentType: "application/json",
+            data: JSON.stringify(oSaTarget),
+            success: function (data) {
+                Loading(false);
+                console.log(data);
+
+                if (data.output === "success") {
+                    NotificationMessage(data);
+                    //KendoWindowFunction(data.msg, "success", "");
+                    return false;
+                } else {
+                    NotificationMessage(data);
+                    // KendoWindowFunction(data.msg, "error", "");
+                    return false;
+                }
+            }
+        });
+
+    });
+    });
+
+</script>

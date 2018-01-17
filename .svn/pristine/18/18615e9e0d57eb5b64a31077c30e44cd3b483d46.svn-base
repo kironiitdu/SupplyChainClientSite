@@ -1,0 +1,212 @@
+﻿@*
+    Page: Location Edit Form
+    Author: Kiron
+
+*@
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+   
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+      
+        $('#context').addClass('animated flipInX');
+        var location_id = '@ViewBag.location_id';
+        Loading(true);
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("GetLocationById", "Location")",
+            data: {
+                location_id: location_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+                console.log(location_id);
+                $("#location_name").val(data.location_name);
+                $("#parent_location_name").val(data.parent_location_name);
+                $("#employee_id").data("kendoComboBox").value(data.employee_id);
+                $("#parent_location_id").data("kendoComboBox").value(data.parent_location_id);
+                //$("#is_leaf").val(data.is_leaf);
+                var isLeaf = data.is_leaf;
+                if (isLeaf===true) {
+                    $("#is_leaf").prop("checked", true);
+                }
+                
+            }
+        });
+    });
+</script>
+<div class="row" id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Edit Location Setup</h4></div>
+        <div class="panel-body">
+           
+            <form id="LocationAdd">
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-3">
+                                <label for="location_name">Location Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="location_name" name="location_name" class="k-textbox"/>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <label for="employee_id">Area Head&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="employee_id" name="employee_id"/>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <label for="parent_location_id">Parent Location&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="parent_location_id" name="parent_location_id"/>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-3">
+                                <input type="checkbox" id="is_leaf" class="k-checkbox">
+                                <label class="k-checkbox-label" for="is_leaf">Is Leaf</label>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <br/>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6 ">
+                            <input type="button" class="k-button" id="LocationEditSubmit" name="LocationEditSubmit" value="Save Information" />
+                        </div>
+
+                        <div id="kWindow"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    //Employee
+    $("#employee_id").kendoComboBox({
+        autoBind: false,
+        placeholder: "--- Select Location Manager ---",
+        dataTextField: "employee_name",
+        dataValueField: "employee_id",
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllEmployees", "Employee")"
+            }
+        }
+    }
+
+    });
+
+
+    //Parent Location
+    $("#parent_location_id").kendoComboBox({
+        autoBind: false,
+        placeholder: "--- Select Parent Location ---",
+        dataTextField: "location_name",
+        dataValueField: "parent_location_id",
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllLocationByParent", "Location")"
+            }
+        }
+    }
+
+    });
+
+
+
+
+    $("#LocationEditSubmit").click(function () {
+            Loading(true);
+
+            var location_id = '@ViewBag.location_id';
+            var location_name = $("#location_name").val();
+            var parent_location_id = $("#parent_location_id").val();
+            var employee_id = $("#employee_id").val();
+            var is_leaf = false;
+            if ($("#is_leaf").is(":checked")) {
+                is_leaf = true;
+            }
+            var oLocation = {
+                location_id:location_id,
+                parent_location_id: parent_location_id,
+                location_name: location_name,
+                employee_id: employee_id,
+                is_leaf: is_leaf
+
+            };
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("Put", "Location")",
+                data: JSON.stringify(oLocation),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+
+
+
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+
+
+
+        });
+   
+
+
+
+
+
+</script>

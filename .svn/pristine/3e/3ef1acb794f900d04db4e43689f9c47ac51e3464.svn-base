@@ -1,0 +1,14 @@
+﻿
+@helper Action(string method, string controller)
+{
+    string apiPath = Session["apiPath"].ToString();
+    string connection_domain = apiPath + controller + "/" + method;  // maruf:04-Oct-2016
+    @connection_domain;
+}
+
+@helper HttpRouteUrl()
+{
+    string apiPath = Session["apiPath"].ToString();
+
+    @apiPath;
+}

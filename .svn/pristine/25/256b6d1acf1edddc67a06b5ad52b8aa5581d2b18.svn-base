@@ -1,0 +1,213 @@
+﻿@*
+    Page: Received Index Form
+    Author: Kiron (22/08/2016)
+*@
+@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    function StatusFunction(data) {
+        var userId=@userId;
+        var receive_id = data;
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("UpdateStatus", "Receive")",
+            data: {
+                receive_id:receive_id,
+                user_id:userId
+            },
+            success: function(data) {
+                if (data.output === "success") {
+                    sweetAlert("Yes...", data.msg,data.output);
+                } else {
+                    sweetAlert("Sorry...", data.msg, data.output);
+                }
+                $('#grid').data('kendoGrid').dataSource.read();
+                $('#grid').data('kendoGrid').refresh();
+
+            }
+        });
+    }
+</script>
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"> <h4>Received Amount List</h4></div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/Receive/Edit?receive_id=#= receive_id #" class="k-button k-grid-even edit">Edit</a>
+        </script>
+
+        <script id="status-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" onclick='javascript:StatusFunction(#= receive_id #);' class="k-button k-grid-even approved">Receive</a>
+
+        </script>
+        <script id="report-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/Receive/GetMoneyReceiptReport?receive_id=#= receive_id #" target="_blank" class="k-button k-grid-even report">Print Money Resit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Receive")">
+                    <span class="k-icon k-add"></span>
+                    Add Received Amount
+                </a>
+            </div>
+        </div>
+        <div id="grid" style="overflow-y: scroll;"></div>
+
+
+        <script type="text/javascript">
+
+            var userId=@userId;
+
+            $(document).ready(function () {
+             
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllReceives", "Receive")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function(e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("Delete", "Receive")?updated_by=" + userId,
+                            type: "DELETE",
+                            complete: function (e) {
+                                console.log(e);
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+
+                            if (e.output === "error") {
+                                console.log(e.output);
+                            }
+
+                        },
+
+                        model: {
+                            id: "receive_id",
+                            fields: {
+                                receive_id: { editable: false, nullable: true },
+                                receipt_no : { type: "string" },
+                                receive_date : { type: "date" },
+                                party_name: { type: "string" },
+                                payment_method_name: { type: "string" },
+                                amount: { type: "number" },
+                                bank_name: { type: "string" },
+                                branch_name: { type: "string" },
+                                reference_no: { type: "string" },
+                                invoice_no: { type: "string" },
+                                last_invoice_balance: { type: "number" },
+                                representative: { type: "string" },
+                                bank_charge: { type: "number" },
+                                remarks: { type: "number" },
+                                payment_req_id: { type: "number" },
+                                document_attachment: { type: "string" },
+                                approved_by: { type: "string" },
+                                is_varified: { type: "boolean" },
+                                status: { type: "string" },
+                                created_by: { type: "string" },
+                                created_date: { type: "date" },
+                                updated_by: { type: "string" },
+                                updated_date: { type: "date" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    filterable: true,                                                           
+                    selectable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50, 100, 200, 300, 400, 500, 1000]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    columns: [
+                    { field: "party_name", title: "Channel Name", width: "150px" },
+                    { field: "receive_date", title: "Receive Date", width: "150px",format: "{0:dd-MM-yyyy}"  },
+                    { field: "receipt_no", title: "Receipt No", width: "150px" },
+                    { field: "invoice_no", title: "Invoice No", width: "150px" },
+                    { field: "payment_method_name", title: "Payment Method", width: "150px" },
+                    { field: "bank_name", title: "Bank", width: "150px" },
+                    { field: "branch_name", title: "Branch", width: "150px" },
+                    { field: "reference_no", title: "Check/Slip No", width: "150px" },
+                    { field: "bank_charge", title: "Bank Charge ", width: "150px" },
+                    { field: "representative", title: "Representative", width: "150px" },
+                    { field: "is_varified", title: "Is Varified", width: "150px" },
+                    { field: "status", title: "Status", width: "150px" },
+                    { field: "last_invoice_balance", title: "Previous Balance ", width: "150px" },
+                    { field: "amount", title: "Amount ", width: "150px" },
+                    { field: "created_by", title: "Created By", width: "150px" },
+                    { field: "created_date", title: "Created Date", width: "150px",format: "{0:dd-MM-yyyy}"  },
+                    { field: "updated_by", title: "Updated By ", width: "150px" },
+                    { field: "updated_date", title: "Updated Date ", width: "150px",format: "{0:dd-MM-yyyy}"  },
+                    { field: "approved_by", title: "Approved By ", width: "150px" },
+                    {
+                        title: "Action", width: "250px",
+                        template: kendo.template($("#edit-template").html()+$("#status-template").html()+$("#report-template").html())
+                    },
+
+                    { command: ["destroy"], title: "Action", width: "90px" }],
+
+                    dataBound: function (e) {
+                            var grid = $("#grid").data("kendoGrid");
+                            var gridData = grid.dataSource.view();
+
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                            var editButtonApproved = $(currenRow).find(".approved");
+                            var editButtonEdit = $(currenRow).find(".edit");
+                            var editButtonReport = $(currenRow).find(".report");
+                            var editButtonDelete = $(currenRow).find(".k-grid-delete");
+                            var xxx = $(currenRow).find("a");
+
+                            //  console.log(xxx);
+                            if (gridData[i].status === "Approved") {
+
+                                editButtonApproved.hide();
+                                editButtonEdit.hide();
+                                editButtonDelete.hide();
+                            } else {
+                                editButtonReport.hide();
+                            }
+                        }
+                    },
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>
+

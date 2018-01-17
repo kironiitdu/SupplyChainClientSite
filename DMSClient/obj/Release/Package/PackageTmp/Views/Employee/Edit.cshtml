@@ -1,0 +1,608 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+<link href="~/Content/kendo/styles/kendo.web.plugins.css" rel="stylesheet" />
+<script src="~/Content/kendo/js/kendo.web.plugins.js"></script>
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#reset_pass").hide();
+
+        var employee_id = '@ViewBag.employeeId';
+        Loading(true);
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("GetEmployeeById", "Employee")",
+            data: {
+                employee_id: employee_id
+            },
+            dataType: "json",
+            success: function (data) {
+                $("#reset_pass_chk_div").hide();
+                $("#userInfoDiv").hide();
+                //console.log(data);
+                $("#employee_name").val(data.employee_name);
+                $("#date_of_birth").val(kendo.toString(kendo.parseDate(data.date_of_birth, "yyyy-MM-dd"), "MM/dd/yyyy"));
+                $("#date_of_join").val(kendo.toString(kendo.parseDate(data.date_of_join, "yyyy-MM-dd"), "MM/dd/yyyy"));
+                $("#department_id").data("kendoComboBox").value(data.department_id);
+                $("#designation_id").data("kendoComboBox").value(data.designation_id);
+                $("#email_address").val(data.email_address);
+                $("#mobile_number").val(data.mobile_number);
+                $("#gender").data("kendoDropDownList").value(data.gender);
+                $("#marital_status").data("kendoDropDownList").value(data.marital_status);
+                $("#blood_group").data("kendoDropDownList").value(data.blood_group);
+                $("#region_id").data("kendoComboBox").value(data.region_id);
+                $("#area_id").data("kendoComboBox").value(data.area_id);
+                $("#territory_id").data("kendoComboBox").value(data.territory_id);
+                $("#is_active").prop('checked',data.is_active);
+                $("#address").val(data.address);
+                $("#is_user").prop('checked',data.is_user);
+                if (data.is_user==true) {
+                    $("#is_user").prop("disabled", true);
+                    $("#login_name").prop("disabled", true);
+                    $("#reset_pass_chk_div").show();
+                    $("#userInfoDiv").show();
+                    $("#reset_pass").hide();
+
+                    $("#user_id").val(data.user_id);
+                    $("#login_name").val(data.login_name);
+                    $("#role_id").data("kendoComboBox").value(data.role_id);
+                }
+
+                Loading(false);
+            }
+        });
+    });
+</script>
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Employee Edit</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="employee_name">Employee Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="employee_name" name="employee_name" class="k-textbox" />
+                        <input id="user_id" name="user_id" class="k-textbox" type="hidden" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="blood_group">Blood Group</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="blood_group" style="width: 80%;" name="blood_group">
+                            <option value="0">Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="B+">B+</option>
+                            <option value="AB+">AB+</option>
+                            <option value="O+">O+</option>
+                            <option value="A-">A-</option>
+                            <option value="B-">B-</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="date_of_birth">Date Of Birth</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="date_of_birth" name="date_of_birth" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="date_of_join">Date Of Join</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="date_of_join" name="date_of_join" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="gender">Gender&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="gender" style="width: 80%;" name="gender">
+                            <option value="0">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="marital_status">Marital Status</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="marital_status" style="width: 80%;" name="marital_status">
+                            <option value="0">Select Marital Status</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="mobile_number">Mobile</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="mobile_number" name="mobile_number" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="email_address">Email Address</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="email_address" name="email_address" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="department_id">Department&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="department_id" name="department_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="designation_id">Designation&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="designation_id" name="designation_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="region_id">Region&nbsp;</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="region_id" name="region_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="area_id">Area&nbsp;</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="area_id" name="area_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="territory_id">Territory&nbsp;</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="territory_id" name="territory_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="is_active">Is Active?</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="checkbox" id="is_active" name="is_active" value="1" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="address">Address</label>
+                    </div>
+                    <div class="col-md-3">
+                        <textarea id="address" name="address" class="k-textbox"></textarea>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="is_user">Is User?</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="checkbox" id="is_user" name="is_user" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-success" id="userInfoDiv">
+        <div class="panel-heading">User Info</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="login_name">Login Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="login_name" name="login_name" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="role_id">Role&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="role_id" name="role_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row" id="reset_pass_chk_div">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="chk_pass">Reset Password?</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="checkbox" id="chk_pass" name="chk_pass">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row" id="reset_pass">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="password">Password&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="password" type="password" name="password" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="confirm_password">Confirm Password&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="confirm_password" type="password" name="confirm_password" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnSaveUser" name="btnSaveUser" value="Update Employee" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker
+    $(document).ready(function () {
+        //$('#context').addClass('animated flipInX');
+
+        $("#gender").kendoDropDownList();
+        $("#blood_group").kendoDropDownList();
+        $("#marital_status").kendoDropDownList();
+
+        $('#chk_pass').click(function () {
+            if ($(this).is(':checked')) {
+                $("#reset_pass").show(500);
+            }
+            else {
+                $("#reset_pass").hide(500);
+                $("#password").val("");
+                $("#confirm_password").val("");
+            }
+        });
+
+        $('#is_user').click(function () {
+            if ($(this).is(':checked')) {
+                $("#userInfoDiv").show(500);
+            }
+            else {
+                $("#userInfoDiv").hide(500);
+
+                $("#login_name").val("");
+                $("#password").val("");
+                $("#confirm_password").val("");
+                $("#role_id").data("kendoComboBox").value("");
+
+                $("#role_id").kendoComboBox({
+                    autoBind: false,
+                    placeholder: "--- Select Role ---",
+                    dataTextField: "role_name",
+                    dataValueField: "role_id",
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllRoles", "Role")"
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
+
+        $("#date_of_birth").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            }
+        });
+
+        $("#date_of_join").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            }
+        });
+
+
+
+        // role list
+        $("#department_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Department ---",
+            dataTextField: "department_name",
+            dataValueField: "department_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllDepartments", "Department")"
+                    }
+                }
+            }
+
+        });
+
+
+        //Designation
+        $("#designation_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Designation ---",
+            dataTextField: "sales_designation",
+            dataValueField: "sales_designation_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllDesignation", "Designation")"
+                    }
+                }
+            }
+
+        });
+
+        //Region DDL
+        $("#region_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        });
+
+        $("#role_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Role ---",
+            dataTextField: "role_name",
+            dataValueField: "role_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRoles", "Role")"
+                    }
+                }
+            }
+
+        });
+
+        //Area DDL
+        $("#area_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            cascadeFrom: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        });
+
+        //Territory DDL
+        $("#territory_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Territory ---",
+            dataTextField: "territory_name",
+            dataValueField: "territory_id",
+            cascadeFrom: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllTerritory", "Territory")"
+                    }
+                }
+            }
+        });
+
+        $("#btnSaveUser").click(function () {
+            //Loading(true);
+
+            //employee info portion-------------
+            var employee_name = $("#employee_name").val();
+            var date_of_birth = $("#date_of_birth").val();
+            var date_of_join = $("#date_of_join").val();
+            var department_id = $("#department_id").val();
+            var designation_id = $("#designation_id").val();
+            var email_address = $("#email_address").val();
+            var mobile_number = $("#mobile_number").val();
+            var gender = $("#gender").val();
+            var marital_status = $("#marital_status").val();
+            var blood_group = $("#blood_group").val();
+            var region_id = $("#region_id").val();
+            var area_id = $("#area_id").val();
+            var territory_id = $("#territory_id").val();
+            var is_active = $("#is_active").prop('checked');
+            var is_user = $("#is_user").prop('checked');
+            var chk_pass = $("#chk_pass").prop('checked');
+            var address = $("#address").val();
+            var userId = @userId;
+
+            //user info portion---------------
+            var login_name = $("#login_name").val();
+            var user_id = $("#user_id").val();
+            var role_id = $("#role_id").val();
+            var password = $("#password").val();
+            var confirm_password = $("#confirm_password").val();
+
+            if (user_id == 0) {
+                if (is_user == true) {
+                    if (password != confirm_password) {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Password Doesn't Match!", "error");
+                    } else {
+                        if (password == '') {
+                            Loading(false);
+                            sweetAlert("Sorry...", "Password is empty!", "error");
+                        } else {
+                            myFunction();
+                        }
+                    }
+                } else {
+                    myFunction();
+                }
+            } else {
+                if (chk_pass == true) {
+                    if (password != confirm_password) {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Password Doesn't Match!", "error");
+                    } else {
+                        if (password == '') {
+                            Loading(false);
+                            sweetAlert("Sorry...", "Password is empty!", "error");
+                        } else {
+                            myFunction();
+                        }
+                    }
+                } else {
+                    myFunction();
+                }
+            }
+
+
+
+            function myFunction() {
+
+                var employeeModel = {
+
+                    employee_id: '@ViewBag.employeeId',
+                    employee_name: employee_name,
+                    date_of_birth: date_of_birth,
+                    date_of_join: date_of_join,
+                    department_id: department_id,
+                    designation_id: designation_id,
+                    email_address: email_address,
+                    mobile_number: mobile_number,
+                    address: address,
+                    gender: gender,
+                    marital_status: marital_status,
+                    blood_group: blood_group,
+                    region_id: region_id,
+                    area_id: area_id,
+                    territory_id: territory_id,
+                    is_active: is_active,
+                    is_user:is_user,
+                    login_name: login_name,
+                    role_id: role_id,
+                    chk_pass:chk_pass,
+                    user_id:user_id,
+                    password: password,
+                    created_by: userId,
+                    updated_by: userId
+                };
+                console.log(employeeModel);
+                $.ajax({
+                    type: "PUT",
+                    url: "@UrlConfig.Action("Put", "Employee")",
+                    data: JSON.stringify(employeeModel),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        if (data.output === "success") {
+                            sweetAlert("Yes...", data.msg, "success");
+                            return false;
+                        } else {
+                            sweetAlert("Sorry...", data.msg, "warning");
+                            return false;
+                        }
+                    }
+                });
+
+            }
+        });
+    });
+
+</script>

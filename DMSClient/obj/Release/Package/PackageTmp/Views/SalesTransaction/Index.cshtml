@@ -1,0 +1,257 @@
+﻿@*
+    Author: Kiron:01/09/2016
+    For All Sales Transaction Summery
+*@
+
+@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Daily Sales Transaction</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="from_date">From Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="from_date" name="from_date" placeholder="Please Enter Date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_date">To Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_date" name="to_date" placeholder="Please Enter Date" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="panel-body">
+            <br />
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="button" class="k-button" id="btnDailySalesReportExcel" name="btnDailySalesReportExcel" value="View Sales Excel" />&nbsp;&nbsp;&nbsp;
+                        <input type="button" class="k-button" id="btnDailySalesReport" name="btnDailySalesReport" value="View Sales PDF" />
+                    </div>
+                </div>
+            </div>
+            <div id="grid"></div>
+
+
+            <script type="text/javascript">
+
+
+
+                $(document).ready(function () {
+                    var user_id = '@userId';
+                    var todayDate = kendo.toString(kendo.parseDate(new Date()), 'dd/MM/yyyy');
+                    $("#from_date").val(todayDate);
+                    $("#to_date").val(todayDate);
+                    $("#from_date").kendoDatePicker({
+                        animation: {
+                            close: {
+                                effects: "fadeOut zoom:out",
+                                duration: 300
+                            },
+                            open: {
+                                effects: "fadeIn zoom:in",
+                                duration: 300
+                            }
+                        },
+                        format: "dd/MM/yyyy"
+
+                        //    Author: Kiron:03/09/2016
+                        //For All Sales Transaction Summery
+
+                    });
+                    $("#to_date").kendoDatePicker({
+                        animation: {
+                            close: {
+                                effects: "fadeOut zoom:out",
+                                duration: 300
+                            },
+                            open: {
+                                effects: "fadeIn zoom:in",
+                                duration: 300
+                            }
+                        },
+                        format: "dd/MM/yyyy"
+                    });
+                    $("#btnDailySalesReport").click(function () {
+                        Loading(false);
+                        var from_date = $("#from_date").val();
+                        var to_date = $("#to_date").val();
+                        var user_id = '@userId';
+
+                        if (user_id == "") {
+                            user_id = 0;
+                        }
+                        if (from_date == "") {
+                            from_date = "";
+                        }
+                        if (to_date == "") {
+                            to_date = "";
+                        }
+                        var Inventory = {
+                            user_id: user_id,
+                            from_date: from_date,
+                            to_date: to_date
+                        };
+
+                        {
+                            var url = "/SalesTransaction/DailySalesTransactionReport?user_id=" + user_id + "&from_date=" + from_date + "&to_date=" + to_date;
+                            window.open(url, '_blank');
+                        }
+
+
+
+                    });
+                    $("#btnDailySalesReportExcel").click(function () {
+                        Loading(false);
+                        var from_date = $("#from_date").val();
+                        var to_date = $("#to_date").val();
+                        var user_id = '@userId';
+
+                        if (user_id == "") {
+                            user_id = 0;
+                        }
+                        if (from_date == "") {
+                            from_date = "";
+                        }
+                        if (to_date == "") {
+                            to_date = "";
+                        }
+                        var Inventory = {
+                            user_id: user_id,
+                            from_date: from_date,
+                            to_date: to_date
+                        };
+
+                        {
+                            var url = "/SalesTransaction/DailySalesTransactionExcel?user_id=" + user_id + "&from_date=" + from_date + "&to_date=" + to_date;
+                            window.open(url, '_blank');
+                        }
+
+
+
+                    });
+
+                    var dataSource = new kendo.data.DataSource({
+                        pageSize: 20,
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("DailySalesTransaction", "Inventory")",
+                                type: "GET"
+                            },
+                            update: {
+                                url: "",
+                                type: "PUT",
+                                complete: function (e) {
+                                    jQuery("#grid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                url: "@UrlConfig.Action("", "")",
+                                type: "DELETE",
+                                complete: function (e) {
+                                    console.log(e);
+                                    jQuery("#grid").data("kendoGrid").dataSource.read();
+                                    swal("", e.responseJSON.msg, e.responseJSON.output);
+                                }
+                            }
+                        },
+
+                        autoSync: false,
+                        schema: {
+                            errors: function (e) {
+                                console.log(e.errors);
+                                console.log(e.errors);
+
+                                if (e.output === "error") {
+
+                                }
+
+                            },
+
+                            model: {
+                                id: "delivery_details_id",
+                                fields: {
+                                    delivery_details_id: { editable: false, nullable: true },
+                                    delivery_master_id: { type: "number" },
+                                    delivery_date: { type: "string" },
+                                    from_warehouse_id: { type: "number" },
+                                    from_warehouse_name: { type: "string" },
+                                    to_warehouse_id: { type: "number" },
+                                    to_warehouse_name: { type: "string" },
+                                    product_name: { type: "string" },
+                                    product_id: { type: "number" },
+                                    color_name: { type: "string" },
+                                    color_id: { type: "number" },
+                                    is_gift: { type: "string" },
+                                    delivered_quantity: { type: "number" },
+                                    unit_price: { type: "number" },
+                                    stock_quantity: { type: "line_total" }
+
+
+                                }
+
+                            }
+                        }
+
+                    });
+                    jQuery("#grid").kendoGrid({
+                        dataSource: dataSource,
+                        filterable: true,
+                        selectable: true,
+                        pageable: {
+                            refresh: true,
+                            input: true,
+                            pageSize: 20,
+                            numeric: false,
+                            pageSizes: [10, 20, 50, 100, 200, 300, 400, 500, 1000]
+                        },
+
+                        sortable: true,
+                        groupable: true,
+                        resizable: true,
+
+                        columns: [
+
+                            { field: "delivery_date", title: "Delivery Date", width: "150px" },
+                            { field: "from_warehouse_name", title: "From warehouse", width: "150px" },
+                            { field: "to_warehouse_name", title: "To Warehouse", width: "150px" },
+                            { field: "product_name", title: "Product _Name", width: "150px" },
+                            { field: "color_name", title: "Color Name", width: "150px" },
+                            { field: "is_gift", title: "Is Gift", width: "150px" },
+                            { field: "delivered_quantity", title: "Delivered Quantity", width: "150px" },
+                            { field: "unit_price", title: "Unit Price", width: "150px" },
+                            { field: "line_total", title: "Line Total", width: "150px" }
+
+
+                        ],
+
+
+                        editable: "inline"
+                    });
+
+
+                });
+            </script>
+
+        </div>
+    </div>
+
+

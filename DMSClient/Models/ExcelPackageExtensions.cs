@@ -1,0 +1,73 @@
+﻿using System;
+using System.Data;
+using System.Linq;
+using System.Text;
+using OfficeOpenXml;
+namespace DMSClient.Models
+{
+    public static class ExcelPackageExtensions
+    {
+        // Remove special character including space. It is using for fixing column header in excel (first row)
+        public static string RemoveSpecialCharacters(string str)
+        {
+            var sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
+                {
+                    sb.Append(c);
+                }
+            }
+            var strHeader = sb.ToString();
+            return strHeader.ToUpper();
+        }
+        public static DataTable ToDataTable(this ExcelPackage package)
+        {
+            try
+            {
+                string[] workingColumns = { "MODEL", "COLOR", "IMEI1", "IMEI2", "CARTON_NO" };
+                ExcelWorksheet workSheet = package.Workbook.Worksheets.First();
+
+                var table = new DataTable();
+                foreach (var firstRowCell in workSheet.Cells[1, 1, 1, workSheet.Dimension.End.Column])
+                {
+                    string header = RemoveSpecialCharacters(firstRowCell.Text);
+                    table.Columns.Add(header);
+                }
+                // TAKING EXCEL ROWS TO DT
+                for (var rowNumber = 2; rowNumber <= workSheet.Dimension.End.Row; rowNumber++)
+                {
+                    var row = workSheet.Cells[rowNumber, 1, rowNumber, workSheet.Dimension.End.Column];
+                    var newRow = table.NewRow();
+                    foreach (var cell in row)
+                    {
+                        newRow[cell.Start.Column - 1] = cell.Text;
+                    }
+                    if (!string.IsNullOrWhiteSpace(newRow[0].ToString()))
+                    {
+                        table.Rows.Add(newRow);
+                    }
+                }
+                // REMOVING UNNECESSARY COLUMNS from right side
+                for (var i = table.Columns.Count - 1; i >= 0; i--)
+                {
+                    var strcolname = table.Columns[i].ColumnName;
+                    if (Array.IndexOf(workingColumns, strcolname) == -1)
+                    {
+                        table.Columns.RemoveAt(i);
+                    }
+                }
+                // Checking number of columns
+                if (table.Columns.Count == workingColumns.Length)
+                {
+                    return table;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            return null;
+        }
+    }
+}

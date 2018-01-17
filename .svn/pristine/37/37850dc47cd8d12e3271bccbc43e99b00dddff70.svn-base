@@ -1,0 +1,317 @@
+﻿
+@{
+    ViewBag.Title = "SalesIndex";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["party_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+<div id="context">
+
+    <input type="hidden" id="party_name" />
+    <div class="panel panel-success" id="context">
+        <div class="panel-heading"><h4>Payment Request List</h4></div>
+        <div class="panel-body">
+            <div class="k-grid  k-secondary" data-role="grid">
+                <div class="k-toolbar k-grid-toolbar">
+                    <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("AddPaymentOptionForSales", "PaymentRequest")">
+                        <span class="k-icon k-add"></span>
+                        Add New Payment
+                    </a>
+                </div>
+            </div>
+            <div id="grid" style="overflow-y: scroll;"></div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var partyId = '@partyId';
+    $(document).ready(function () {
+        //$('#context').addClass('animated rollIn');
+        var columnss = [];
+        var partyNameInfo='';
+        getpartyname(partyId);
+        function getpartyname(partyId){
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyTypeName", "PaymentRequest")?party_id="+ partyId,
+                success: function(data) {
+                    $("#party_name").val(data[0].party_type_name);
+                    if(data[0].party_type_name.toUpperCase() == "CENTRAL"){
+                        $("#addPayment").hide();
+                    }
+                    var partyNameInfo =$("#party_name").val();
+                    if(partyNameInfo == "Central")
+                    {
+                        console.log(partyNameInfo);
+                        columnss = [
+                           { field: "receipt_no", title: "Receipt No", width: "150px" },
+                           { field: "deposite_date", title: "Deposit Date", width: "150px",template: "#= kendo.toString(kendo.parseDate(deposite_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #"  },
+                           { field: "party_name", title: "Channel Name", width: "150px" },
+                           { field: "territory_name", title: "Channel Teritory", width: "150px" },
+                           { field: "opening_balance", title: "Opening Balance", width: "150px" },  
+                           { field: "payment_method_name", title: "Payment Method", width: "150px" },
+                           { field: "amount", title: "Payment Amount", width: "150px" },
+                           { field: "bank_name", title: "Bank", width: "150px" },
+                           { field: "bank_branch_name", title: "Branch", width: "150px" },
+                           { field: "cheque_no", title: "Bank Deposit Ref", width: "150px" },
+                           { field: "status", title: "Status", width: "150px" },
+                           { field: "approved_by", title: "Approved By ", width: "150px" },
+                            //{ field: "party_name", title: "Channel Name", id: "party_name", width: "150px" },
+                            //{ field: "payment_method_name", title: "Payment Method", id: "payment_method_id", width: "150px" },
+                            //{ field: "bank_branch_id", title: "Payment Type", width: "150px" },
+                            //{ field: "amount", title: "Amount", id: "amount", width: "150px" },
+                            //{ field: "deposite_date", title: "Deposite Date", id: "deposite_date", width: "155px",format: "{0:dd-MM-yyyy}" },
+                            //{ field: "approved", title: "Status", id: "approved", width: "150px" },
+                            { title: "Action", width: "100px",template: kendo.template($("#edit-template").html())},
+                           // { title: "Action", width: "100px",template: kendo.template($("#status-template").html())},
+                            { title: "Action", width: "100px",template: kendo.template($("#download-template").html())},
+                            { title: "Action",template: kendo.template($("#delete-template").html()), width: "100px" }
+
+                        ];
+                    }
+                    else
+                    {
+
+                        columnss = [
+                           { field: "receipt_no", title: "Receipt No", width: "150px" },
+                           { field: "deposite_date", title: "Deposite Date", id: "deposite_date", width: "155px",template: "#= kendo.toString(kendo.parseDate(deposite_date,'yyyy/MM/dd hh:mm:ss'), 'dd/MM/yyyy HH:mm:ss tt') #"},
+                           { field: "party_name", title: "Channel Name", width: "150px" },
+                           { field: "territory_name", title: "Channel Teritory", width: "150px" },
+                           { field: "opening_balance", title: "Opening Balance", width: "150px" },  
+                           { field: "payment_method_name", title: "Payment Method", width: "150px" },
+                           { field: "amount", title: "Payment Amount", width: "150px" },
+                           { field: "bank_name", title: "Bank", width: "150px" },
+                           { field: "bank_branch_name", title: "Branch", width: "150px" },
+                           { field: "cheque_no", title: "Bank Deposit Ref", width: "150px" },
+                           { field: "status", title: "Status", width: "150px" },
+                           { field: "approved_by", title: "Approved By ", width: "150px" },
+                            //{ field: "party_name", title: "Channel Name", id: "party_name", width: "150px" },
+                            //{ field: "payment_method_name", title: "Payment Method", id: "payment_method_id", width: "150px" },
+                            //{ field: "bank_branch_id", title: "Payment Type", width: "150px" },
+                            //{ field: "amount", title: "Amount", id: "amount", width: "150px" },
+                            //{ field: "deposite_date", title: "Deposite Date", id: "deposite_date", width: "155px",format: "{0:dd-MM-yyyy}" },
+                            //{ field: "approved", title: "Status", id: "approved", width: "150px" },
+                            { title: "Action", width: "100px",template: kendo.template($("#edit-template").html())},
+                            { title: "Action",template: kendo.template($("#delete-template").html()), width: "100px" },
+                            { title: "Action", width: "100px",template: kendo.template($("#download-template").html())}
+                        ];
+
+
+                    }
+
+
+                    var dataSource = new kendo.data.DataSource({
+                        pageSize: 20,
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetAllPaymentRequest", "PaymentRequest")?party_id=" + partyId,
+                                type: "GET"
+                            },
+                            destroy: {
+                                url: "@UrlConfig.Action("Delete", "PaymentRequest")",
+                                type: "DELETE",
+                                complete: function (e) {
+                                    jQuery("#grid").data("kendoGrid").dataSource.read();
+                                    swal("", e.responseJSON.msg, e.responseJSON.output);
+                                }
+                            }
+                        },
+                        autoSync: false,
+                        schema: {
+                            errors: function (e) {
+                                console.log(e.errors);
+                                if (e.output === "error") {
+                                    console.log(e.output);
+                                }
+                            },
+
+                            model: {
+                                id: "payment_req_id",
+                                fields: {
+                                    payment_req_id: { editable: false, nullable: true },
+                                    amount: { type: "number" },
+                                    deposite_date: { type: "date" },
+                                    payment_method_id: { type: "string" },
+                                    bank_branch_id: { type: "string" },
+                                    bank_name:{type:"string"},
+                                    bank_branch_name:{type:"string"},
+                                    payment_method_name: { type: "string" },
+                                    cheque_no: { type: "string" },
+                                    document_attachment: { type: "string" },
+                                    party_id: { type: "string" },
+                                    party_name: { type: "string" },
+                                    sales_representative: { type: "string" },
+                                    party_type_id: { type: "string" },
+                                    party_type_name: { type: "string" },
+                                    approved: { type: "string" },
+                                    receipt_no:{type:"string"},
+                                    opening_balance:{type:"number"},
+                                    territory_name:{type:"string"},
+                                    approved_by:{type:"string"},
+                                    status:{type:"string"}
+
+                                }
+
+                            }
+                        }
+
+                    });
+                    jQuery("#grid").kendoGrid({
+                        dataSource: dataSource,
+                        filterable: true,
+                        pageable: {
+                            refresh: true,
+                            input: true,
+                            pageSize: 20,
+                            numeric: false,
+                            pageSizes: [10, 20, 50]
+                        },
+                        sortable: true,
+                        groupable: true,
+                        resizable: true,
+                        columns: columnss,
+                        editable: "inline",
+                        // Hide Download button if payment method==Cash
+                        dataBound: function (e) {
+                            var grid = $("#grid").data("kendoGrid");
+                            var gridData = grid.dataSource.view();
+
+                            for (var i = 0; i < gridData.length; i++) {
+                                var currentUid = gridData[i].uid;
+                                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                                var buttonDownload = $(currenRow).find(".download");
+                                var buttonEdit = $(currenRow).find(".edit");
+                                var buttonDelete = $(currenRow).find(".delete");
+                                if( gridData[i].approved =="true") {
+                                    buttonEdit.hide();
+                                    buttonDelete.hide();
+                                }
+                                if (gridData[i].payment_method_name === "Cash" ) {
+
+                                    buttonDownload.hide();
+
+
+                                } else {
+                                    buttonDownload.show();
+
+                                }
+                            }
+                        }
+                    });
+
+                }
+            });
+        }
+
+
+
+    });
+</script>
+
+@*For Approved Button*@
+<script type="text/javascript">
+    var userId='@userId';
+    function DeleteFunction(data) {
+        var payment_req_id = data;
+        $.ajax({
+            type: "Delete",
+            url: "@UrlConfig.Action("Delete", "PaymentRequest")?payment_req_id=" + payment_req_id + "&updated_by=" + userId,
+            success: function(data) {
+                if (data.output === "success") {
+                    sweetAlert("Yes...", data.msg, "success");
+                }
+                $('#grid').data('kendoGrid').dataSource.read();
+                $('#grid').data('kendoGrid').refresh();
+
+            }
+        });
+    }
+
+    function StatusFunction(data) {
+        var userId='@userId';
+        var payment_req_id = data;
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("UpdateStatus", "PaymentRequest")",
+            data: {
+                payment_req_id:payment_req_id,
+                user_id:userId
+            },
+            success: function(data) {
+                if (data.output === "success") {
+                    sweetAlert("Yes...", data.msg, "success");
+                }
+                $('#grid').data('kendoGrid').dataSource.read();
+                $('#grid').data('kendoGrid').refresh();
+
+            }
+        });
+    }
+
+
+    function downloadfunction(data) {
+        var payment_req_id = data;
+        var url = "@UrlConfig.Action("GetImage", "PaymentRequest")?payment_req_id=" + payment_req_id;
+        $.ajax({
+            type: 'GET',
+            url: "@UrlConfig.Action("GetImage", "PaymentRequest")",
+            data: {
+                payment_req_id:payment_req_id
+               },
+              success: function(result) {
+
+                    if (result.output == "warning") {
+                    sweetAlert("Sorry...", "No File uploaded!!", "warning");
+                }
+                else
+                {
+                    window.open(url, '_blank');
+                }
+
+
+            }
+        });
+
+
+    }
+</script>
+
+<script id="delete-template" type="text/x-kendo-template">
+    <a style="font-size:11px; text-decoration: none;" onclick='javascript:DeleteFunction(#= payment_req_id #);' class="k-button k-grid-even delete">Delete</a>
+    @*#var partyName = document.getElementById('party_name').value;#
+        #if(approved != 'true' && partyName.toUpperCase() != "CENTRAL"){#
+        <a style="font-size:11px; text-decoration: none;" onclick='javascript:DeleteFunction(#= payment_req_id #);' class="k-button k-grid-even delete">Delete</a>
+        #}#*@
+
+
+</script>
+
+<script id="edit-template" type="text/x-kendo-template">
+    <a id="party_edit" style="font-size:11px; text-decoration: none;" href="/PaymentRequest/edit?payment_req_id=#= payment_req_id #" class="k-button k-grid-even edit">Edit</a>
+    @*#var partyName = document.getElementById('party_name').value;#
+        #if(approved != 'true' && partyName.toUpperCase() != "CENTRAL"){#
+        <a id="party_edit" style="font-size:11px; text-decoration: none;" href="/PaymentRequest/edit?payment_req_id=#= payment_req_id #" class="k-button k-grid-even edit">Edit</a>
+        #}#*@
+
+</script>
+
+<script id="download-template" type="text/x-kendo-template">
+    @*#var partyName = document.getElementById('party_name').value;#*@
+    <a style="font-size:11px; text-decoration: none;" href="javascript:void(0);" onclick="javascript:downloadfunction(#= payment_req_id#)" class="k-button k-grid-even download">Download</a>
+</script>
+
+<script id="status-template" type="text/x-kendo-template">
+    #var partyName = document.getElementById('party_name').value;#
+    #if(approved != 'true' && partyName.toUpperCase() == "CENTRAL"){#
+    <a style="font-size:11px; text-decoration: none;" href="/Receive/ProcessPaymentRequest?payment_req_id=#= payment_req_id #" class="k-button k-grid-even">Approve</a>
+    #  }#
+</script>

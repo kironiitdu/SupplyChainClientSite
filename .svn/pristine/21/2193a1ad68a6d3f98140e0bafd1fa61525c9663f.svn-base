@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Promotion List";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Promotion List</div>
+    <div class="panel-body">
+        <script id="edit-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/Promotion/Edit?promotionMasterId=#= promotion_master_id #" class="k-button k-grid-even edit">Edit</a>
+        </script>
+        <div class="k-grid  k-secondary" data-role="grid">
+            <div class="k-toolbar k-grid-toolbar">
+                <a class="k-button k-button-icontext k-grid-add" href="@Url.Action("Add", "Promotion")">
+                    <span class="k-icon k-add"></span>
+                    New Promotion
+                </a>
+            </div>
+        </div>
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllActivePromotions", "Promotion")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("", "")",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                            }
+                        },
+                        model: {
+                            id: "promotion_master_id",
+                            fields: {
+                                promotion_master_id: { editable: false, nullable: true },
+                                promotion_code: { type: "string" },
+                                promotion_name: { type: "string" },
+                                promotion_start_date: { type: 'date' },
+                                promotion_end_date: { type: 'date' },
+                                promotion_type: { type: "string" }
+                            }
+                        }
+                    }
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    columns: [
+                        { field: "promotion_code", title: "Promotion Code", id: "promotion_master_id", width: "50px" },
+                        { field: "promotion_name", title: "Promotion Name", width: "50px" },
+                        { field: "promotion_start_date", title: "Start Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        { field: "promotion_end_date", title: "End Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        { field: "promotion_type", title: "Type", width: "50px" },
+                        {
+                            title: "Action", width: "30px",
+                            template: kendo.template($("#edit-template").html())
+                        }],
+                    editable: "inline"
+                });
+            });
+        </script>
+    </div>
+</div>

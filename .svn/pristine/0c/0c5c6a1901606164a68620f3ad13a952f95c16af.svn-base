@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace DMSClient.Controllers
+{
+    public class TransferOrderController : Controller
+    {
+        // GET: TransferOrder
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult Add()
+        {
+            return View();
+        }
+
+        public ActionResult Edit(int transfer_order_master_id)
+        {
+            ViewBag.transferOrderMasterId = transfer_order_master_id;
+            return View();
+        }
+    }
+}

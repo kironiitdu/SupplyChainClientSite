@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+}
+
+
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Payment Method</h4></div>
+    <div class="panel-body">
+
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    var userId = @userId;
+</script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        //Added By Kiron : 21-01-2017
+        $('#context').addClass('animated zoomIn');
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllPaymentMethod", "PaymentMethod")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "PaymentMethod")?updated_by=" + userId,
+                    type: "PUT",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "PaymentMethod")?updated_by=" + userId,
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "PaymentMethod")?created_by=" + userId,
+                    type: "POST",
+                    complete: function(e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function(e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        KendoWindowFunction(e.msg, "error", "");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "payment_method_id",
+                    fields: {
+                        payment_method_id: { editable: false, nullable: true },
+                        payment_method_name: { type: "string", validation: { required: true } },
+                        is_active: { type: "boolean" }
+                    }
+
+                }
+
+            }
+
+
+        });
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50,100,200,500,1000]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+            update: true,
+            destroy: true,
+
+            toolbar: [{ name: "create", text: "Add Payment Method" }],
+            columns: [
+                { field: "payment_method_name", title: "Payment Method Name", id: "payment_method_id", width: "150px" },
+                { field: "is_active", title: "Is Active", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+
+    });
+</script>
+
+

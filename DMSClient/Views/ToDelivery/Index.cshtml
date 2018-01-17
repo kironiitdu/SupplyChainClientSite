@@ -1,0 +1,112 @@
+﻿@{
+    ViewBag.Title = "Delivered TO List";
+}
+
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Delivered Transfer Order List</div>
+    <div class="panel-body">
+        <script id="Report-template" type="text/x-kendo-template">
+            <a style="font-size:11px; text-decoration: none;" href="/ToDelivery/GetToDeliveryReport?to_delivery_master_id=#= to_delivery_master_id#" target="_blank" class="k-button k-grid-even">Report</a>
+        </script>
+
+        <div id="grid"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllToDelivery", "ToDelivery")",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+                        destroy: {
+                            url: "@UrlConfig.Action("", "")",
+                            type: "DELETE",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                                swal("", e.responseJSON.msg, e.responseJSON.output);
+                            }
+                        }
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "to_delivery_master_id",
+                            fields: {
+                                to_delivery_master_id: { editable: false, nullable: true },
+                                to_delivery_no: { type: "string" },
+                                to_delivery_date: { type: 'date' },
+                                from_warehouse_id: { type: "string" },
+                                from_warehouse_name: { type: "string" },
+                                to_warehouse_id: { type: "string" },
+                                to_warehouse_name: { type: "string" },
+                                order_no: { type: "string" },
+                                status: { type: "string" },
+                                full_name: { type: "string" },
+                                created_by: { type: "string" }
+                            }
+
+                        }
+                    }
+
+                });
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 20, 50]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+
+
+                    columns: [
+                        { field: "to_delivery_no", title: "TO Delivery No", id: "to_delivery_master_id", width: "50px" },
+                        { field: "to_delivery_date", title: "TO Delivery Date", width: "50px", format: "{0:dd-MM-yyyy}" },
+                        { field: "order_no", title: "TO No", width: "50px" },
+                        { field: "from_warehouse_name", title: "From Warehouse", width: "50px" },
+                        { field: "to_warehouse_name", title: "To Warehouse", width: "50px" },
+                        {
+                            title: "Action", width: "50px", template: kendo.template($("#Report-template").html())
+                        }
+                    ],
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+
+
+    </div>
+</div>

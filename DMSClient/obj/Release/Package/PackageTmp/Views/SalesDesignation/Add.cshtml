@@ -1,0 +1,176 @@
+﻿@*Author:Kiron
+    Date:08/08/2016*@
+@{
+    ViewBag.Title = "Add";
+}
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Sales Designation Add</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="designation_name">Sales Designation</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="designation_name" name="designation_name" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-2">
+                        <label for="company_id">Company</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="company_id" name="company_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="branch_id">Branch</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="branch_id" name="branch_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <input type="checkbox" id="has_target" class="k-checkbox">
+                        <label class="k-checkbox-label" value="1" for="has_target">Has Target</label>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="group-box">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnSaveSalesDesignation" name="btnSaveSalesDesignation" value="Save Sales Designation" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    //date time picker   //For Check Box Value 
+    
+
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+        // party list
+        $("#company_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Company ---",
+            dataTextField: "company_name",
+            dataValueField: "company_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCompanies", "Company")"
+                    }
+                }
+            }
+
+        });
+
+        //party type list
+        $("#branch_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Branch ---",
+            dataTextField: "branch_name",
+            dataValueField: "branch_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBranches", "Branch")"
+
+                    }
+                }
+            }
+
+        });
+
+        var hasTarget = false;
+        $('#has_target').click(function () {
+            if ($(this).is(':checked')) {
+                hasTarget = true;
+            } else {
+                hasTarget = false;
+            }
+        });
+        
+
+        $("#btnSaveSalesDesignation").click(function () {
+            Loading(true);
+
+            
+            var designation_name = $("#designation_name").val();
+            var has_target = hasTarget;
+            var company_id = $("#company_id").val();
+            var branch_id = $("#branch_id").val();
+          
+            
+
+            var salesDesignation = {
+                designation_name: designation_name,
+                has_target: has_target,
+                company_id: company_id,
+                branch_id: branch_id
+               
+            };
+
+                $.ajax({
+                    type: "POST",
+                    url: "@UrlConfig.Action("Post", "SalesDesignation")",
+                    data: JSON.stringify(salesDesignation),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+                        console.log(data);
+
+                        if (data.output === "success") {
+                            sweetAlert("Yes...", data.msg, "success");
+
+                            //clear all text box below --------------------------------------
+                            $("#designation_name").val("");
+                            $("#has_target").val("");
+                            $("#company_id").val("");
+                            $("#branch_id").val("");
+                            var company_id = $("#company_id").data("kendoComboBox");
+                            company_id.dataSource.data([]);
+                            company_id.text("");
+                            var branch_id = $("#branch_id").data("kendoComboBox");
+                            branch_id.dataSource.data([]);
+                            branch_id.text("");
+
+                          
+                            return false;
+                        } else {
+                            sweetAlert("Sorry...", data.msg, "error");
+                            return false;
+                        }
+                    }
+                });
+           // }
+
+
+
+        });
+    });
+
+
+
+
+
+</script>
+

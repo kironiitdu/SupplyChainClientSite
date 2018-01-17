@@ -1,0 +1,917 @@
+﻿@{
+    ViewBag.Title = "MD Delivery To Retailer";
+    var userId = "";
+    var partyTypeId = "";
+    var partyId = 0;
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+        partyTypeId = Session["party_type_id"].ToString();
+        partyId = Convert.ToInt32(Session["party_id"].ToString());
+    }
+
+
+}
+
+<script type="text/javascript">
+    var userId = @userId;
+    var partyTypeId = @partyTypeId;
+    var partyId = @partyId;
+</script>
+
+<div class="col-md-12 widget-body" id="context">
+    <div class="row">
+
+        <div class="row">
+            <div class="panel panel-success">
+                <div class="panel-heading">Retailer Information</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="party_type_id">Party Type</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="party_type_id" name="party_type_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="party_id">Party&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="party_id" name="party_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="retailer_name">Retailer Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="retailer_name" name="retailer_name" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="address">Address&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="address" name="address" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="mobile_no">Mobile No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="mobile_no" name="mobile_no" class="k-textbox" disabled />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="from_warehouse_id">From Warehouse</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="from_warehouse_id" name="from_warehouse_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="remarks">Remarks</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="remarks" name="remarks" class="k-textbox" />
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <label for="to_warehouse_id">To Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="to_warehouse_id" name="to_warehouse_id" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-success">
+                <div class="panel-heading">Product List</div>
+                <div class="panel-body">
+                    <div class="row" id="daynamicPanel">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <label for="scan_imei">Scan Imei</label>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="scan_imei" name="scan_imei" class="k-textbox" />
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                    <br />
+                    <div id="RequisitionDetailsGrid"></div>
+                    <br />
+                    <div class="group-box">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="amount">Amount</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="amount" name="amount" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="vat_pcnt">VAT (%)</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="vat_pcnt" name="vat_pcnt" value="15" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="amount_with_vat">Amount with VAT</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="amount_with_vat" name="amount_with_vat" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="discount_pcnt">Discount (%)</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="discount_pcnt" name="discount_pcnt" class="k-textbox" value="0" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <div class="col-md-3">
+                                        <div class="col-md-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="discount_amount">Discount Amount</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="discount_amount" name="discount_amount" class="k-textbox" value="0" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <div class="col-md-3">
+                                        <div class="col-md-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="net_amount">Net Amount</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="net_amount" name="net_amount" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="net_amount">Paid Amount&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="paid_amount" name="paid_amount" class="k-textbox" />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-2">
+                                    <label for="net_amount">Return Amount&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="return_amount" name="return_amount" class="k-textbox" disabled />
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-3">
+
+                                </div>
+                                <div class="col-md-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="group-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="button" class="k-button" id="btnSaveRequisition" name="btnSaveRequisition" value="Save Information" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<p>&nbsp;</p>
+<script type="text/javascript">
+
+    //date time picker
+    //requisition date
+    $(document).ready(function () {
+
+        $('#context').addClass('animated zoomIn');
+
+        $("#discount_pcnt").keyup(function () {
+            this.value = this.value.replace(/[^0-9\.]/g,'');
+
+        });
+        $("#discount_amount").keyup(function () {
+            this.value = this.value.replace(/[^0-9\.]/g,'');
+
+        });
+
+        $('#discount_pcnt').live("keypress", function(e) {
+            if (e.keyCode == 13) {
+
+                var discountPcnt= $("#discount_pcnt").val();
+
+                var amountWithVat= $('#amount_with_vat').val();
+                var xx = amountWithVat * discountPcnt / 100;
+
+                $("#discount_amount").val(xx);
+                $("#net_amount").val(amountWithVat-xx);
+            }
+        });
+        $('#discount_amount').live("keypress", function(e) {
+            if (e.keyCode == 13) {
+
+                var discountAmount= $("#discount_amount").val();
+
+                var amountWithVat= $('#amount_with_vat').val();
+                var xx = discountAmount / amountWithVat * 100;
+
+                $("#discount_pcnt").val(xx);
+                $("#net_amount").val(amountWithVat-discountAmount);
+
+            }
+        });
+
+        $("#paid_amount").keyup(function () {
+            this.value = this.value.replace(/[^0-9\.]/g,'');
+
+        });
+
+        $('#paid_amount').live("keypress", function(e) {
+            if (e.keyCode == 13) {
+
+                var paidAmount= $("#paid_amount").val();
+
+                var netAmount= $('#net_amount').val();
+                var xx = paidAmount - netAmount ;
+
+                $("#return_amount").val(xx);
+
+            }
+        });
+
+        //warehouse list
+        $("#from_warehouse_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetWarehouseByPartyId", "Warehouse")?party_id="+partyId+""
+                    }
+                }
+            },
+            index: 0
+        });
+
+
+        if (partyTypeId != 1) {
+            $("#from_warehouse_id").kendoComboBox({enable: false});
+        }
+
+        $("#from_warehouse_id").data("kendoComboBox").select(1);
+
+        //party type dropdown
+        $("#party_type_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Party Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetRetailerPartyType", "PartyType")"
+                    }
+                }
+            },
+            index: 0
+        });
+
+
+        function onChange() {
+            var comboPartyId = $("#party_id").val();
+            $("#to_warehouse_id").val("");
+            //to warehouse list
+            $("#to_warehouse_id").kendoComboBox({
+                autoBind: true,
+                placeholder: "--- Select Warehouse ---",
+                dataTextField: "warehouse_name",
+                dataValueField: "warehouse_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetWarehouseByPartyId", "Warehouse")?party_id=" + comboPartyId
+                        }
+                    }
+                },
+                index: 0
+            });
+
+
+            $.ajax({
+                type: "GET",
+                url: "@UrlConfig.Action("GetPartyById", "Party")?party_id="+comboPartyId,
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    $("#retailer_name").val(data.proprietor_name);
+                    $("#address").val(data.address);
+                    $("#mobile_no").val(data.mobile);
+                }
+            });
+
+        }
+
+
+        //party dropdown
+        $("#party_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Party ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            change: onChange,
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRetailerByPartyId","Party")?party_id=" + partyId
+                    }
+                }
+            }
+        });
+
+
+        @*//to warehouse list
+        $("#to_warehouse_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetSalesWarehouseOnly", "Warehouse")"
+                    }
+                }
+            }
+        });*@
+
+        $("#to_warehouse_id").kendoComboBox({
+            placeholder: "--- Select Warehouse ---"
+        });
+
+        //Meraj: 04/10/2016
+        if (partyTypeId != 1) {
+            $("#party_type_id").kendoComboBox({enable: false});
+            // $("#party_id").kendoComboBox({enable: false});
+             $("#to_warehouse_id").kendoComboBox({enable: false});
+        }
+
+
+        //Meraj this for IMEI Scan and load grid------------------------
+
+        var sampleData = [];
+
+        function checkDuplicateImei(hayStack, imei_no) {
+            if (!hayStack) {
+                return false;
+            } else {
+                for (var i = 0; i < hayStack.length; i++) {
+                    if (hayStack[i].imei_no == imei_no) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        $('#daynamicPanel :input').live('keyup', function(e) {
+
+            if(e.keyCode === 13)
+            {
+                $(this).trigger("enterKey");
+                var id = this.id;
+                var imei_no =$('#scan_imei').val();
+                var party_id =partyId;
+                Loading(true);
+                $.ajax({
+                    type: "GET",
+                    url: "@UrlConfig.Action("GetProductInformation", "ReceiveSerialNoDetails")?imei_no="+imei_no+"&party_id="+party_id+"",
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (data) {
+                        Loading(false);
+
+                        if (data !='') {
+
+                            for (var i = 0; i < data.length; i++) {
+                                var productDetails = {
+                                    receive_serial_no_details_id: data[i].receive_serial_no_details_id,
+                                    product_id: data[i].product_id,
+                                    product_name: data[i].product_name,
+                                    color_id: data[i].color_id,
+                                    color_name: data[i].color_name,
+                                    price: data[i].price,
+                                    discount: 0,
+                                    line_total:data[i].price-0,
+                                    imei_no: data[i].imei_no
+                                };
+                                var isDuplicate = checkDuplicateImei(sampleData,imei_no);
+                                if (isDuplicate) {
+                                    swal("Exception", "IMEI already in list !!", "warning");
+                                } else {
+                                    sampleData.push(productDetails);
+                                }
+
+                            }
+                            console.log(sampleData);
+
+                            //productList Grid---------------------
+
+                            // custom logic start
+
+                            var sampleDataNextID = sampleData.length + 1;
+
+                            function getIndexById(id) {
+                                var idx,
+                                    l = sampleData.length;
+
+                                for (var j = 0; j < l; j++) {
+                                    if (sampleData[j].receive_serial_no_details_id == id) {
+                                        return j;
+                                    }
+                                }
+                                return null;
+                            }
+
+                            // custom logic end
+
+                            var dataSource = new kendo.data.DataSource({
+                                transport: {
+                                    read: function (e) {
+                                        // on success
+                                        e.success(sampleData);
+                                        //console.log(sampleData);
+
+                                        var totalNumber = sampleData.length;
+
+                                        var amount = 0;
+
+                                        for (var i = 0; i < totalNumber; i++) {
+
+                                            amount += +parseFloat(sampleData[i].line_total).toFixed(2);
+
+                                        }
+                                        $("#amount").val(amount);
+                                        var vatPcnt = $("#vat_pcnt").val();
+                                        var amount_with_vat = amount * vatPcnt / 100;
+                                        $("#amount_with_vat").val(amount+amount_with_vat);
+                                        $("#net_amount").val(amount+amount_with_vat);
+                                    },
+                                    create: function (e) {
+
+
+                                    },
+                                    update: function (e) {
+                                        // locate item in original datasource and update it
+                                        sampleData[getIndexById(e.data.receive_serial_no_details_id)] = e.data;
+                                        //getRebateAndGiftInfo();
+                                        e.success();
+
+                                    },
+                                    destroy: function (e) {
+                                        // locate item in original datasource and remove it
+                                        // var requisitionDetailsId=e.data.requisition_details_id;
+
+                                        sampleData.splice(getIndexById(e.data.receive_serial_no_details_id), 1);
+                                        // on success
+                                        e.success();
+                                        var entityGrid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                        var gridData = entityGrid.dataSource.data();
+                                        var totalNumber = gridData.length;
+
+                                        var amount = 0;
+
+                                        for (var i = 0; i < totalNumber; i++) {
+
+                                            amount += +parseFloat(gridData[i].line_total).toFixed(2);
+
+                                        }
+                                        $("#amount").val(amount);
+                                        var vatPcnt = $("#vat_pcnt").val();
+                                        var amount_with_vat = amount * vatPcnt / 100;
+                                        $("#amount_with_vat").val(amount+amount_with_vat);
+                                        $("#net_amount").val(amount+amount_with_vat);
+                                        //console.log(gridData);
+                                    }
+                                },
+                                error: function (e) {
+                                    // handle data operation error
+                                    alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                                },
+                                pageSize: 10,
+                                batch: false,
+                                schema: {
+                                    model: {
+                                        id: "receive_serial_no_details_id",
+                                        fields: {
+                                            receive_serial_no_details_id: { editable: false, nullable: true },
+                                            product_id: { field: "product_id", type: "integer" },
+                                            product_name: { type: "string" },
+                                            color_id: { field: "color_id", type: "integer" },
+                                            color_name: { type: "string" },
+                                            imei_no: { type: "string" },
+                                            price: { type: "string" },
+                                            discount: { type: "string", editable: true },
+                                            line_total: { type: "string", editable: true }
+
+                                        }
+                                    }
+                                }
+                            });
+
+
+
+                            $("#RequisitionDetailsGrid").kendoGrid({
+                                dataSource: dataSource,
+                                pageable: true,
+                                // toolbar: ["create"],
+                                selectable: true,
+                                save: function (data) {
+
+                                    var tempAmount = +data.model.price - +data.model.discount;
+                                    data.model.set("line_total", tempAmount);
+
+
+                                    var entityGrid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                    var gridData = entityGrid.dataSource.data();
+                                    var totalNumber = gridData.length;
+
+                                    var amount = 0;
+
+                                    for (var i = 0; i < totalNumber; i++) {
+                                        amount += +parseFloat(gridData[i].line_total).toFixed(2);
+                                    }
+
+                                    $("#amount").val(amount);
+                                    var vatPcnt = $("#vat_pcnt").val();
+                                    var amount_with_vat = amount * vatPcnt / 100;
+                                    $("#amount_with_vat").val(amount+amount_with_vat);
+                                    $("#net_amount").val(amount+amount_with_vat);
+
+                                },
+                                edit: function (e) {
+
+                                    $('input[name="line_total"]').attr('readonly', 'readonly');
+                                    $('input[name="price"]').attr('readonly', 'readonly');
+
+                                },
+                                cancel: function(data) {
+
+                                    var tempAmount = +data.model.quantity * +data.model.price;
+                                    data.model.set("lineTotal", tempAmount);
+
+
+                                    var gridData = sampleData;
+                                    var totalNumber = gridData.length;
+
+
+                                    console.log(sampleData);
+
+                                },
+                                columns: [
+                                    { field: "product_id", title: "Product", template: "#= product_name #", editor: productDropDownEditor, width: "50px" },
+                                    { field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditor, width: "50px" },
+                                    { field: "imei_no", title: "IMEI", width: "50px" },
+                                    { field: "price", title: "Price", width: "50px" },
+                                    { field: "discount", title: "Discount", width: "50px" },
+                                    { field: "line_total", title: "Line Total", width: "50px" },
+                                    { command: ["edit", "destroy"], title: "&nbsp;", width: "110px" }
+                                ],
+                                editable: "inline"
+                            });
+
+
+                            var len = $("#RequisitionDetailsGrid").find("tbody tr").length;
+                            for(var j=0;j<=len ; j++)
+                            {
+                                var model = $("#RequisitionDetailsGrid").data("kendoGrid").dataSource.at(j);
+                                if (model) {//field names
+                                    model.fields["product_id"].editable = false;
+                                    model.fields["color_id"].editable = false;
+                                    model.fields["imei_no"].editable = false;
+                                    //model.fields["price"].editable = false;
+                                    //model.fields["line_total"].editable = false;
+
+                                }
+
+                            }
+
+                            //template for product comboBox
+                            function productDropDownEditor(container, options) {
+                                jQuery('<input required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                                    .appendTo(container)
+
+                                    .kendoComboBox({
+                                        autoBind: true,
+                                        placeholder: "-Select-",
+                                        dataSource: {
+                                            transport: {
+                                                read: {
+                                                    url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                                                    type: "GET"
+                                                }
+                                            }
+
+                                        },
+
+                                        change: function (e) {
+                                            var dataItem = this.dataItem(e.item);
+
+                                            console.log(dataItem.product_name);
+                                            var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                            var sel = grid.select();
+                                            var sel_idx = sel.index();
+                                            var gridData = grid.dataSource.data();
+                                            gridData[sel_idx].product_id = dataItem.product_id,
+                                                gridData[sel_idx].product_name = dataItem.product_name;
+                                            gridData[sel_idx].color_id = dataItem.color_id,
+                                                gridData[sel_idx].color_name = dataItem.color_name;
+                                            gridData[sel_idx].unit_id = dataItem.unit_id;
+                                            gridData[sel_idx].unit_name = dataItem.unit_name;
+                                            gridData[sel_idx].brand_id = dataItem.brand_id;
+                                            gridData[sel_idx].brand_name = dataItem.brand_name;
+                                            gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                                            gridData[sel_idx].product_category_name = dataItem.product_category_name;
+
+                                            if (partyTypeId==1) {
+                                                gridData[sel_idx].price = dataItem.rp_price;
+                                            }
+                                            if (partyTypeId==2) {
+                                                gridData[sel_idx].price = dataItem.md_price;
+                                            }
+                                            if (partyTypeId==3) {
+                                                gridData[sel_idx].price = dataItem.bs_price;
+                                            }
+
+                                        }
+                                    });
+                            }
+
+
+                            //template for color comboBox
+                            function colorDropDownEditor(container, options) {
+                                jQuery('<input required data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                                    .appendTo(container)
+
+                                    .kendoComboBox({
+                                        autoBind: true,
+                                        placeholder: "-Select-",
+                                        dataSource: {
+                                            transport: {
+                                                read: {
+                                                    url: "@UrlConfig.Action("GetAllColors", "Color")",
+                                                    type: "GET"
+                                                }
+                                            }
+
+                                        },
+
+                                        change: function (e) {
+                                            var dataItem = this.dataItem(e.item);
+
+                                            console.log(dataItem.product_name);
+                                            var grid = $("#RequisitionDetailsGrid").data("kendoGrid");
+                                            var sel = grid.select();
+                                            var sel_idx = sel.index();
+                                            var gridData = grid.dataSource.data();
+                                            gridData[sel_idx].color_id = dataItem.color_id,
+                                                gridData[sel_idx].color_name = dataItem.color_name;
+
+
+                                        }
+                                    });
+                            }
+
+                            //productList Grid---------------------
+
+
+
+                            //return false;
+                        } else {
+                            swal("Exception", "Product Not Available !!", "error");
+                            return false;
+                        }
+                    }
+                });
+
+                $("#" + id + "").val("");
+            }
+        });
+        //--------------------------------------------------------------
+
+
+
+        $("#btnSaveRequisition").click(function () {
+            //var newWindow = window.open("","_blank");
+            //newWindow.blur();
+
+            Loading(true);
+
+            var party_type_id = $('#party_type_id').val();
+            var party_id = $('#party_id').val();
+            var retailer_name = $('#retailer_name').val();
+            var address = $('#address').val();
+            var mobile_no=$('#mobile_no').val();
+            var from_warehouse_id = $('#from_warehouse_id').val();
+            var to_warehouse_id=$('#to_warehouse_id').val();
+            var remarks = $('#remarks').val();
+            //var created_by = userId;
+            //var owner_party_id = partyId;
+
+            var amount = $('#amount').val();
+            var vat_pcnt = $('#vat_pcnt').val();
+            var amount_with_vat = $('#amount_with_vat').val();
+            var discount_pcnt = $('#discount_pcnt').val();
+            var discount_amount = $('#discount_amount').val();
+            var net_amount = $('#net_amount').val();
+            var paid_amount = $('#paid_amount').val();
+            var return_amount = $('#return_amount').val();
+            //var status = $('#status').val();
+
+
+            var PosMasterData = {
+                party_type_id: party_type_id,
+                party_id: party_id,
+                retailer_name: retailer_name,
+                address: address,
+                mobile_no: mobile_no,
+                from_warehouse_id: from_warehouse_id,
+                to_warehouse_id: to_warehouse_id,
+                amount: amount,
+                vat_pcnt: vat_pcnt,
+                amount_with_vat: amount_with_vat,
+                discount_pcnt: discount_pcnt,
+                discount_amount: discount_amount,
+                net_amount: net_amount,
+                paid_amount: paid_amount,
+                return_amount: return_amount,
+
+                remarks: remarks,
+                created_by: userId,
+                owner_party_id: partyId
+            };
+
+            var ProductDetailsList = [];
+            var ProductDetailsGrid = $("#RequisitionDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < ProductDetailsGrid.length; i++) {
+                var productDetails = {
+
+                    product_id: ProductDetailsGrid[i].product_id,
+                    color_id: ProductDetailsGrid[i].color_id,
+                    imei_no: ProductDetailsGrid[i].imei_no,
+                    price: ProductDetailsGrid[i].price,
+                    discount: ProductDetailsGrid[i].discount,
+                    line_total: ProductDetailsGrid[i].line_total
+
+                };
+                ProductDetailsList.push(productDetails);
+            }
+
+            var RetailerDeliveryModel = {
+                RetailerDeliveryMasterData: PosMasterData,
+                RetailerDeliveryDetailsList: ProductDetailsList
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "RetailerDelivery")",
+                data: JSON.stringify(RetailerDeliveryModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    //console.log(ProductDetailsGrid);
+                    if (data.output === "success") {
+
+
+                        //var retailer_delivery_master_id = data.returnvalue.retailer_delivery_master_id;
+
+                        //var url = "/CentralPointOfSale/GetPosInvoiceReport?pos_master_id=" + retailer_delivery_master_id;
+                        ////window.open(url, '_blank');
+                        //newWindow.location.href = url;
+                        //newWindow.focus();
+
+
+                        swal("Success", data.msg, "success");
+                        window.location.href = '/MdDeliveryToRetailer/index';
+                        return false;
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+    });
+
+
+</script>

@@ -1,0 +1,1449 @@
+﻿@{
+    ViewBag.Title = "Add Delivery";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+
+}
+<script type="text/javascript">
+    var userId = @userId;
+    var requisitionMasterId= @ViewBag.requisition_master_id;
+</script>
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">Delivery Master <input type="button" class="k-button" id="btnRefresh" name="btnRefresh" value="Refresh" /></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="imei_process">IMEI Process&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="imei_process" style="width: 80%;" name="imei_process">
+                            @*<option value="excel" selected="selected">Excel Upload</option>*@
+                            <option value="barcode">Barcode</option>
+                        </select>
+
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="delivery_date">Delivery Date</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="delivery_date" name="delivery_date" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="party_type_id">Channel Type&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_type_id" name="party_type_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="region_id">Region&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="region_id" name="region_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="area_id">Area&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="area_id" name="area_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="party_id">Channel Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="party_id" name="party_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="requisition_master_id">Requisition No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+
+                    </div>
+                    <div class="col-md-3">
+                        <input id="requisition_master_id" name="requisition_master_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="lot_no">Lot No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="lot_no" name="lot_no" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="from_warehouse_id">From Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="from_warehouse_id" name="from_warehouse_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="to_warehouse_id">To Warehouse&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="to_warehouse_id" name="to_warehouse_id" disabled />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="remarks">Remarks</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="remarks" name="remarks" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="company_id">Company&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="dropdown" name="company_id" id="company_id" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-success">
+        <div class="panel-heading">Product List</div>
+        <div class="panel-body">
+            <div id="listGrid">
+                <div class="row"><div id="poDetailsGrid"></div></div>
+            </div>
+            <br />
+            <div id="scan">
+                <div class="row">
+                    <div>
+                        <div class="col-md-6">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">Barcode Scaner</div>
+                                <div class="panel-body" id="daynamicPanel">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    IMEI List<span id="barcodeImeiCount" style="float: right"></span>
+                                    <div class="row bg-white" id="barcodeImeiSum"></div>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row" id="imei_list" style="overflow:auto; height:150px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="excel" class="row">
+                <div class="col-md-4">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Upload IMEI Excel File</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input name="files" id="excelFile" type="file" class="k-file" style="width: 100%" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <br />
+                                    * Excel file must contain columns named "MODEL", "COLOR","IMEI"
+                                </div>
+                                <div class="col-md-4">
+                                    <br />
+                                    <input type="button" id="uploadExcel" value="Upload" class="k-button" style="float: right" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-8">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            IMEI List <span id="imei_count" style="float: right"></span>
+                            <div class="row" id="excelImeiSum"></div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" id="excelImei" style="overflow:auto; max-height:150px; min-height: 70px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="group-box">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-2">
+                            @*<label for="status">Status</label>*@
+                        </div>
+                        <div class="col-md-3">
+                            <input type="hidden" id="status" name="status" class="k-textbox" value="RFD" disabled />
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2">
+                            <label for="total_amount">Total Amount</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input id="total_amount" name="total_amount" class="k-textbox" />
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="group-box" id="btnDiv">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnSaveDelivery" name="btnSaveDelivery" value="Save Information" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Javascript and Ajax to Submit the Form-->
+<script type="text/javascript">
+
+    $("#btnDiv").hide(500);
+    $("#listGrid").hide(500);
+    $("#scan").hide(500);
+    $("#excel").hide(500);
+
+    var listData = "";
+    var skuCount = [];
+    var totalSku = 0;
+    var receiveSerialNoList = [];
+
+    $(document).ready(function () {
+
+        $('#btnRefresh').click(function() {
+            location.reload();
+        });
+
+
+        var todayDate = kendo.toString(kendo.parseDate(new Date()), 'yyyy/MM/dd');
+        $("#delivery_date").val(todayDate);
+        $('#context').addClass('animated zoomIn');
+
+        var sampleData;
+        var receiveSerialNoList = [];
+        var counter=0;
+
+
+
+        var imeiProcess = $("#imei_process").val();
+        $("#daynamicPanel").empty();
+        $("#imei_list").empty();
+
+        $("#listGrid").hide(500);
+        $("#scan").hide(500);
+        $("#excel").hide(500);
+        $( "#listGrid" ).show(500);
+
+        if (imeiProcess == "barcode") {
+            $("#scan").show(500);
+        } else {
+            $("#excel").show(500);
+        }
+
+
+        sampleData = [];
+        //get master and details information----------------
+        var requisition_master_id = requisitionMasterId;
+
+        Loading(true);
+        $.ajax({
+            type: "POST",
+            url: "@UrlConfig.Action("GetRequisitionByIdForDelivery", "Requisition")",
+            data: {
+                requisition_master_id: requisition_master_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+
+
+
+                $('#party_type_id').data("kendoComboBox").value(data.RequisitionMasterData.party_type_id);
+                $('#region_id').data("kendoComboBox").value(data.RequisitionMasterData.region_id);
+                $('#area_id').data("kendoComboBox").value(data.RequisitionMasterData.area_id);
+                $('#party_id').data("kendoComboBox").value(data.RequisitionMasterData.party_id);
+                //$('#party_id').data("kendoComboBox").value(data.RequisitionMasterData.party_id);
+                $("#company_id").data("kendoComboBox").value(data.RequisitionMasterData.company_id);
+                $("#requisition_master_id").data("kendoComboBox").value(requisition_master_id);
+
+                for (var i = 0; i < data.RequisitionDetailsList.length; i++) {
+                    var requisitionDetails = {
+                        //order_no: poDetailsList[i].order_no,
+
+                        requisition_details_id: data.RequisitionDetailsList[i].requisition_details_id,
+                        product_id: data.RequisitionDetailsList[i].product_id,
+                        product_name: data.RequisitionDetailsList[i].product_name,
+                        requisition_master_id: data.RequisitionDetailsList[i].requisition_master_id,
+                        unit_id: data.RequisitionDetailsList[i].unit_id,
+                        unit_name: data.RequisitionDetailsList[i].unit_name,
+                        product_version_id: data.RequisitionDetailsList[i].product_version_id,
+                        product_version_name: data.RequisitionDetailsList[i].product_version_name,
+                        price: data.RequisitionDetailsList[i].price,
+                        quantity: (data.RequisitionDetailsList[i].quantity - data.RequisitionDetailsList[i].delivered_quantity),
+                        delivered_quantity: 0,
+                        amount: 0,//data.PoDetailsList[i].amount,
+                        is_gift: data.RequisitionDetailsList[i].is_gift,
+                        gift_type: data.RequisitionDetailsList[i].gift_type,
+                        is_live_dummy: data.RequisitionDetailsList[i].is_live_dummy,
+                        brand_id: data.RequisitionDetailsList[i].brand_id,
+                        brand_name: data.RequisitionDetailsList[i].brand_name,
+                        color_id: data.RequisitionDetailsList[i].color_id,
+                        color_name: data.RequisitionDetailsList[i].color_name,
+                        vat_amount:0,// data.PoDetailsList[i].vat_amount,
+                        tax_amount: 0,//data.PoDetailsList[i].tax_amount,
+                        line_total: 0,//data.PoDetailsList[i].line_total,
+                        size_id: data.RequisitionDetailsList[i].size_id,
+                        size_name: data.RequisitionDetailsList[i].size_name,
+                        status: data.RequisitionDetailsList[i].status,
+                        vat_pcnt: data.RequisitionDetailsList[i].vat_pcnt,
+                        tax_pcnt: data.RequisitionDetailsList[i].tax_pcnt,
+                        product_category_id: data.RequisitionDetailsList[i].product_category_id,
+                        has_serial: data.RequisitionDetailsList[i].has_serial
+
+                    };
+                    if (requisitionDetails.is_gift==true) {
+                        requisitionDetails.price = 0;
+                    }
+                    sampleData.push(requisitionDetails);
+
+
+                }
+                //console.log(sampleData);
+
+                //productList Grid---------------------
+                // custom logic start
+
+                //var sampleDataNextID = sampleData.length + 1;
+
+                function getIndexById(id) {
+                    var idx,
+                        l = sampleData.length;
+
+                    for (var j = 0; j < l; j++) {
+                        if (sampleData[j].requisition_details_id == id) {
+                            return j;
+                        }
+                    }
+                    return null;
+                }
+
+                // custom logic end
+
+                var dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: function (e) {
+                            // on success
+                            e.success(sampleData);
+                        },
+                        create: function (e) {
+
+                        },
+                        update: function (e) {
+                            // locate item in original datasource and update it
+                            //console.log(e.data);
+                            
+                            var productColorName = e.data.product_name +"_"+ e.data.color_name;
+                            //productColorName=productColorName.replace(" ","_");
+                            productColorName=productColorName.replace(/ /g,"_");
+                            productColorName=productColorName.replace("(","");
+                            productColorName=productColorName.replace(")","");
+                            
+                            if (e.data.is_gift) {
+                                //productColorName = productColorName + "_Gift";
+                                if (e.data.gift_type == "Sales Gift")
+                                {
+                                    productColorName = productColorName + "_SGift";
+                                }
+                                else if(e.data.gift_type == "Promotional Gift")
+                                {
+                                    productColorName = productColorName + "_PGift";
+                                }else
+                                {
+                                    productColorName = productColorName + "_Gift";
+                                }
+                            }
+                            if (e.data.is_live_dummy) {
+                                productColorName = productColorName + "_Dummy";
+                            }
+                            if ($("#delivery_date").val() == "") {
+                                sweetAlert("Sorry...", "Delivery Date is empty", "error");
+                                return false;
+                            }
+                            if ($("#from_warehouse_id").val() == "") {
+                                sweetAlert("Sorry...", "Please Select From Warehouse", "error");
+                                return false;
+                            }
+                            if ($("#to_warehouse_id").val() == "") {
+                                sweetAlert("Sorry...", "Please Select To Warehouse", "error");
+                                return false;
+                            }
+                            if (e.data.delivered_quantity === null) {
+                                sweetAlert("Sorry...", "Delivery quantity is empty", "error");
+                                return false;
+                            }
+                            //if (e.data.has_serial == true) {
+                                if (e.data.has_serial == true && (e.data.color_id === 0||(!e.data.color_id))) {
+                                    sweetAlert("Sorry...", "Please select color", "error");
+                                    return false;
+                                }    
+                            //}
+                            else {
+                               // alert("OK");
+                                if (e.data.delivered_quantity>e.data.quantity) {
+                                    sweetAlert("Sorry...", "Delivery quantity must less then quantity", "error");
+                                    return false;
+                                }
+                                else if($("#"+productColorName).length>0 && e.data.delivered_quantity > 0) {
+                                    sampleData[getIndexById(e.data.requisition_details_id)] = e.data;
+                                    e.success();
+                                    return false;
+                                }
+                                else {
+                                    sampleData[getIndexById(e.data.requisition_details_id)] = e.data;
+                                    
+                                    e.success();
+                                    
+                                    var listData = "";
+                                    //var productColorName = e.data.product_name +"_"+ e.data.color_name;
+                                    //productColorName=productColorName.replace(" ","_");
+                                    //if(e.data.has_serial == true){alert("Serialed Product");}else{alert("Non Serialed Product");}
+                                    if (e.data.has_serial == true && imeiProcess == "barcode") {
+                                        if (e.data.delivered_quantity > 0) {
+                                            listData += '<div class="row" id="row_' + productColorName + '">';
+                                            listData += '<div class="col-md-12">';
+                                            listData += '<div class="col-md-4">';
+                                            listData += '<label for="' + productColorName + '" >' + productColorName + '</label>';
+                                            listData += '</div>';
+                                            listData += '<div class="col-md-7">';
+                                            listData += '<input id="' + productColorName + '" name="' + productColorName + '" class="k-textbox" />';
+                                            listData += '<input id="delivered_quantity_' + productColorName + '" type="hidden" name="delivered_quantity_' + productColorName + '" value='+e.data.delivered_quantity+'>';
+                                            listData += '<input id="product_id_' + productColorName + '" type="hidden" name="product_id_' + productColorName + '" value='+e.data.product_id+'>';
+                                            listData += '<input id="brand_id_' + productColorName + '" type="hidden" name="brand_id_' + productColorName + '" value='+e.data.brand_id+'>';
+                                            listData += '<input id="color_id_' + productColorName + '" type="hidden" name="color_id_' + productColorName + '" value='+e.data.color_id+'>';
+                                            listData += '<input id="is_gift_' + productColorName + '" type="hidden" name="is_gift_' + productColorName + '" value='+e.data.is_gift+'>';
+                                            listData += '<input id="gift_type_' + productColorName + '" type="hidden" name="gift_type_' + productColorName + '" value='+e.data.gift_type+'>';
+                                            listData += '<input id="is_live_dummy_' + productColorName + '" type="hidden" name="is_live_dummy_' + productColorName + '" value='+e.data.is_live_dummy+'>';
+                                            listData += '</div>';
+                                            listData += '<div class="col-md-1">';
+                                            listData += '<i class="fa fa-check-circle fa-3x" id="icon_' + productColorName + '" style="color: gainsboro" aria-hidden="true"></i>';
+                                            listData += '</div>';
+                                            listData += '</div>';
+                                            listData += '</div>';
+                                            $("#daynamicPanel").hide();
+                                            $("#daynamicPanel").append(listData);
+                                            $("#daynamicPanel").show(500);
+                                            return true;
+                                        } else {
+                                            $("#daynamicPanel").hide();
+                                            $("#daynamicPanel>#row_"+productColorName).remove();
+                                            $("#imei_list").empty();
+                                            $("#daynamicPanel").show(500);
+                                            receiveSerialNoList= receiveSerialNoList.filter(function(el) { return (el.product_id !== ""+e.data.product_id+"" && el.color_id !== ""+e.data.color_id+""); });
+                                            //console.log(receiveSerialNoList.length);
+                                            return true;
+                                        }
+                                    } else {
+                                        return false;
+                                    }
+                                }
+                            }
+                        },
+                        destroy: function (e) {
+
+                        }
+                    },
+                    error: function (e) {
+                        // handle data operation error
+                        alert("Status: " + e.status + "; Error message: " + e.errorThrown);
+                    },
+                    pageSize: 10,
+                    batch: false,
+                    schema: {
+                        model: {
+                            id: "requisition_details_id",
+                            fields: {
+                                requisition_details_id: { editable: false, nullable: true },
+                                requisition_master_id:{ field: "requisition_master_id", type: "integer" },
+                                product_id: { field: "product_id", type: "integer" },
+                                product_name: { type: "string" },
+                                product_category_id: { field: "product_category_id" },
+                                product_category_name: { type: "string", editable: false },
+                                brand_id: { field: "brand_id", type: "integer" },
+                                brand_name: { type: "string", editable: false },
+                                unit_id: { field: "unit_id", type: "integer" },
+                                unit_name: { type: "string", editable: false },
+                                color_id: { field: "color_id", type: "integer" },
+                                color_name: { type: "string" },
+                                size_id: { field: "size_id", type: "integer" },
+                                size_name: { type: "string" },
+                                quantity: { type: "string" },
+                                delivered_quantity:{ type: "number" },
+                                is_gift: { type: "boolean", editable: false },
+                                gift_type: { type: "string", editable: false },
+                                is_live_dummy: { type: "boolean", editable: false },
+                                price: { type: "number" },
+                                amount: { type: "string", editable: true },
+                                vat_pcnt: { type: "string" },
+                                vat_amount: { type: "string", editable: true },
+                                tax_pcnt: { type: "string" },
+                                tax_amount: { type: "string", editable: true },
+                                line_total: { type: "string", editable: true },
+                                has_serial: { type: "boolean", editable: false }
+
+                            }
+                        }
+                    }
+                });
+
+
+
+                $("#poDetailsGrid").kendoGrid({
+                    dataSource: dataSource,
+                    pageable: true,
+                    selectable: true,
+                    save: function (data) {
+
+
+                        var lineTotal = data.model.price * data.model.delivered_quantity;
+                        data.model.set("line_total", lineTotal);
+
+                        var entityGrid = $("#poDetailsGrid").data("kendoGrid");
+                        var gridData = entityGrid.dataSource.data();
+                        var totalNumber = gridData.length;
+
+                        var totalAmount = 0;
+
+                        for (var i = 0; i < totalNumber; i++) {
+
+                            var deliveredQuantity=gridData[i].delivered_quantity;
+
+                            if (deliveredQuantity > 0) {
+                                totalAmount += +parseFloat(gridData[i].line_total).toFixed(2);
+                            }
+
+                        }
+
+                        $("#total_amount").val(totalAmount);
+
+
+                    },
+                    edit: function (e) {
+                        $('input[name="line_total"]').attr('readonly', 'readonly');
+                        $('input[name="quantity"]').attr('readonly', 'readonly');
+                        $('input[name="is_gift"]').attr('readonly', 'readonly');
+                        $('input[name="gift_type"]').attr('readonly', 'readonly');
+                        $('input[name="is_live_dummy"]').attr('readonly', 'readonly');
+
+                    },
+                    cancel: function(data) {
+
+                        //console.log(data);
+                        var lineTotal = data.model.price * data.model.delivered_quantity;
+                        data.model.set("line_total", lineTotal);
+
+                        var gridData = sampleData;
+                        var totalNumber = gridData.length;
+
+                        var totalAmount = 0;
+
+                        for (var i = 0; i < totalNumber; i++) {
+                            var deliveredQuantity=gridData[i].delivered_quantity;
+
+                            if (deliveredQuantity > 0) {
+                                totalAmount += +parseFloat(gridData[i].line_total).toFixed(2);
+
+                            }
+                        }
+
+                        $("#total_amount").val(totalAmount);
+
+                        //console.log(sampleData);
+
+                    },
+                    columns: [
+                        { field: "product_id", title: "Product", template: "#= product_name #", editor: productDropDownEditor, width: "50px" },
+                        { field: "color_id", title: "Color", template: "#= color_name #", editor: colorDropDownEditor, width: "50px" },
+                        { field: "product_version_id", title: "Version", template: "#= product_version_name #", editor: productVersionDropDownEditor, width: "50px" },
+                        { field: "quantity", title: "Req Quantity", width: "50px" },
+                        { field: "delivered_quantity", title: "Delivered Quantity", width: "50px" },
+                        { field: "price", title: "Price", width: "50px" },
+                        { field: "line_total", title: "Amount", width: "50px" },
+                        { command: ["edit"], title: "&nbsp;", width: "110px" }
+                    ],
+                    editable: "inline"
+                });
+
+
+                //disable all colomn without receive_qty---------------
+                var len = $("#poDetailsGrid").find("tbody tr").length;
+
+                for(var j=0;j<=len ; j++)
+                {
+                    var model = $("#poDetailsGrid").data("kendoGrid").dataSource.at(j);
+                    if (model) {
+                        model.fields["product_id"].editable = false;
+                        //model.fields["color_id"].editable = false;
+
+                    }
+
+                }
+                //template for product comboBox
+                function productDropDownEditor(container, options) {
+                    jQuery('<input id="productId" required data-text-field="product_name" data-value-field="product_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+
+                        .kendoComboBox({
+                            autoBind: true,
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllProducts", "Product")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_id = dataItem.product_id,
+                                gridData[sel_idx].product_name = dataItem.product_name;
+                                gridData[sel_idx].product_category_id = dataItem.product_category_id;
+                                gridData[sel_idx].product_category_name = dataItem.product_category_name;
+                                gridData[sel_idx].brand_id = dataItem.brand_id;
+                                gridData[sel_idx].brand_name = dataItem.brand_name;
+                                gridData[sel_idx].unit_id = dataItem.unit_id;
+                                gridData[sel_idx].unit_name = dataItem.unit_name;
+
+                            }
+                        });
+                }
+
+
+                //template for color comboBox
+                function colorDropDownEditor(container, options) {
+                    jQuery('<input data-text-field="color_name" data-value-field="color_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+
+                        .kendoComboBox({
+                            autoBind: true,
+                            cascadeFrom: "productId",
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllColorMapping", "ProductColorMapping")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].color_id = dataItem.color_id,
+                                    gridData[sel_idx].color_name = dataItem.color_name;
+
+
+                            }
+                        });
+                }
+
+                //template for product version comboBox
+                function productVersionDropDownEditor(container, options) {
+                    jQuery('<input data-text-field="product_version_name" data-value-field="product_version_id" data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoComboBox({
+                            autoBind: true,
+                            cascadeFrom: "productId",
+                            placeholder: "-Select-",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetProductwiseVersion", "ProductVersionMapping")",
+                                        type: "GET"
+                                    }
+                                }
+
+                            },
+
+                            change: function (e) {
+                                var dataItem = this.dataItem(e.item);
+
+                                console.log(dataItem.product_name);
+                                var grid = $("#poDetailsGrid").data("kendoGrid");
+                                var sel = grid.select();
+                                var sel_idx = sel.index();
+                                var gridData = grid.dataSource.data();
+                                gridData[sel_idx].product_version_id = dataItem.product_version_id,
+                                    gridData[sel_idx].product_version_name = dataItem.product_version_name;
+
+
+                            }
+                        });
+                }
+                //productList Grid---------------------
+
+
+            }
+        });
+
+        $('#daynamicPanel :input').live('keyup', function(e) {
+
+            if(e.keyCode === 13) {
+               // var grnDetailsGrid = $("#poDetailsGrid").data("kendoGrid").dataSource.data();
+
+                $(this).trigger("enterKey");
+                var id = this.id;
+                var imei= $("#" + id + "").val();
+                //alert(imei);
+                $("#imei_list>#row_").remove();
+
+                var deliveredQuantity= $("#delivered_quantity_" + id + "").val();
+
+                //check IMEI string contains comma(,)  or not
+                if (imei.indexOf(",")>=0) {
+                    var array = imei.split(',');
+                    var cartonNo = array[0];
+
+                    //remove carton number from imei array
+                    array.shift();
+
+                    if (receiveSerialNoList.length === 0) {
+                        $.each(array, function(key, value) {
+                         
+                            var productId =  $("#product_id_" + id + "").val();
+                            var colorId = $("#color_id_" + id + "").val();
+                       
+                       
+                            var imeiDetails = {
+                                sku_code:id,
+                                product_id:productId,
+                                brand_id: $("#brand_id_" + id + "").val(),
+                                color_id: colorId,
+                                imei_no: value,
+                                received_warehouse_id: $("#warehouse_id").val(),
+                                received_date: $("#delivery_date").val(),
+                                is_gift: $("#is_gift_" + id + "").val(),
+                                gift_type: $("#gift_type_" + id + "").val(),
+                                is_live_dummy: $("#is_live_dummy_" + id + "").val()
+                            };
+
+                            receiveSerialNoList.push(imeiDetails);
+                            counter++;
+
+                        });
+                    } else {
+                        var duplicateImeis = "";
+                        $.each(array, function(obj, data) {
+                            var productId =  $("#product_id_" + id + "").val();
+                            var colorId = $("#color_id_" + id + "").val();
+
+                            var imeiDetails = {
+                                sku_code:id,
+                                product_id:productId,
+                                brand_id: $("#brand_id_" + id + "").val(),
+                                color_id: colorId,
+                                imei_no: data,
+                                received_warehouse_id: $("#warehouse_id").val(),
+                                received_date: $("#grn_date").val(),
+                                is_gift: $("#is_gift_" + id + "").val(),
+                                gift_type: $("#gift_type_" + id + "").val(),
+                                is_live_dummy: $("#is_live_dummy_" + id + "").val()
+                            };
+                            var exist=false;
+                            $.each(receiveSerialNoList, function(key , value) {
+                                if (imeiDetails.imei_no === value.imei_no) {
+                                    console.log("Duplicate" + imeiDetails.imei_no + "");
+                                    exist=true;
+                                    duplicateImeis += imeiDetails.imei_no+" ";
+                                    return false;
+                                }
+                            });
+                            if (!exist) {
+                                receiveSerialNoList.push(imeiDetails);
+                                counter++;
+                            } else {
+                                swal("Duplicate Product IMEI", duplicateImeis, "error");
+                            }
+                        });
+                    }
+
+                    if (counter == deliveredQuantity) {
+                        $("#icon_" + id + "").hide();
+                        $("#icon_" + id + "").css("color", "green");
+                        $("#icon_" + id + "").fadeIn("slow");
+
+                        $("#" + id + "").val("");
+                        $($("#" + id + "")).prop('disabled', true);
+                        counter = 0;
+                    } else {
+                        $("#icon_" + id + "").hide();
+                        $("#icon_" + id + "").css("color", "orange");
+                        $("#icon_" + id + "").fadeIn(700);
+                        $("#" + id + "").val("");
+                    }
+                } else {
+                    var productId =  $("#product_id_" + id + "").val();
+                    var colorId = $("#color_id_" + id + "").val();
+                 
+                    var imeiDetails = {
+                        sku_code:id,
+                        product_id:productId,
+                        brand_id: $("#brand_id_" + id + "").val(),
+                        color_id: colorId,
+                        imei_no: imei,
+                        received_warehouse_id: $("#warehouse_id").val(),
+                        received_date: $("#grn_date").val(),
+                        is_gift: $("#is_gift_" + id + "").val(),
+                        gift_type: $("#gift_type_" + id + "").val(),
+                        is_live_dummy: $("#is_live_dummy_" + id + "").val()
+                    };
+
+                    if (receiveSerialNoList.length === 0) {
+
+                        receiveSerialNoList.push(imeiDetails);
+                        //console.log(receiveSerialNoList);
+
+                        counter++;
+                    } else {
+
+
+                        var exist=false;
+                        $.each(receiveSerialNoList, function(key , value) {
+
+                            if (imeiDetails.imei_no === value.imei_no) {
+                                console.log("Duplicate" + imeiDetails.imei_no + "");
+                                swal("Exception", "Duplicate Product IMEI :"+imei+"", "error");
+                                exist=true;
+                                return false;
+                            }
+
+                        });
+                        if (!exist) {
+                            receiveSerialNoList.push(imeiDetails);
+                            counter++;
+                        }else {
+                            swal("Exception", "Duplicate Product IMEI :"+imei+"", "error");
+                        }
+
+                    }
+
+                    if (counter == deliveredQuantity) {
+                        $("#icon_" + id + "").hide();
+                        $("#icon_" + id + "").css("color", "green");
+                        $("#icon_" + id + "").fadeIn("slow");
+
+                        $("#" + id + "").val("");
+                        $($("#" + id + "")).prop('disabled', true);
+                        counter = 0;
+
+                    } else {
+                        $("#icon_" + id + "").hide();
+                        $("#icon_" + id + "").css("color", "orange");
+                        $("#icon_" + id + "").fadeIn(700);
+                        $("#" + id + "").val("");
+                    }
+                }
+
+                listData = "";
+                skuCount = [];
+                totalSku = 0;
+                $.each(receiveSerialNoList, function(key, value) {
+                    totalSku++;
+                    if (skuExistsThanUpdateCount(skuCount, value.sku_code)) {
+
+                    } else {
+                        var row = {
+                            sku_code: value.sku_code,
+                            sku_count: 1
+                        };
+                        skuCount.push(row);
+                    }
+                    //console.log("skuCount: ");
+                    //console.log(skuCount);
+                    listData += '<div class="col-md-5" id="row_">';
+                    listData += '<h6><b>'+value.sku_code+': </b>'+value.imei_no+'</h6>';
+                    listData += '</div>';
+
+                    //$("#imei_list").hide();
+                    //$("#imei_list").html(listData);
+                    //$("#imei_list").show(500);
+                });
+                $("#imei_list").html(listData);
+
+                // displaying total count
+                $("#barcodeImeiCount").text(totalSku);
+                // displaying sku count
+                $('#barcodeImeiSum').empty();
+                for (var i = 0; i < skuCount.length; i++) {
+                    $('#barcodeImeiSum').append(skuCount[i].sku_code + ': ' + skuCount[i].sku_count + ', ');
+                }
+
+                var colorName = $("#icon_" + id + "").css("color");
+
+                if (colorName === "rgb(0, 128, 0)") {
+                    $("#btnDiv").show(500);
+                } else {
+                    $("#btnDiv").hide(500);
+                }
+
+                //console.log(sampleData);
+                //var grnDetailsGrid = $("#poDetailsGrid").data("kendoGrid").dataSource.data();
+                //console.log(grnDetailsGrid);
+                //console.log(grnDetailsGrid.length);
+            }
+        });
+
+        // maruf: 18.Oct.2016
+        function skuExistsThanUpdateCount(hayStack, skuCode) {
+            if (!hayStack) {
+                return false;
+            } else {
+                for (var i = 0; i < hayStack.length; i++) {
+                    //console.log(hayStack[i].sku_code + '==' + skuCode);
+                    if (hayStack[i].sku_code == skuCode) {
+                        hayStack[i].sku_count++;
+                        //console.log("Quantity Updated");
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        //date time picker
+        $("#delivery_date").kendoDatePicker({
+            animation: {
+                close: {
+                    effects: "fadeOut zoom:out",
+                    duration: 300
+                },
+                open: {
+                    effects: "fadeIn zoom:in",
+                    duration: 300
+                }
+            },
+            format: "yyyy/MM/dd"
+        });
+        //Company
+        $("#company_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Company ---",
+            dataTextField: "company_name",
+            dataValueField: "company_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCompany", "Company")"
+                }
+            }
+        }
+        }).data("kendoComboBox");
+
+        $("#requisition_master_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Requisition ---",
+            dataTextField: "requisition_code",
+            dataValueField: "requisition_master_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAAllRequisition", "Requisition")"
+                    }
+                }
+            }
+        });
+
+        //warehouse list
+        $("#from_warehouse_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAdaWarehouse", "Warehouse")"
+                    }
+                }
+            }
+
+        });
+
+        $("#from_warehouse_id").data("kendoComboBox").value(1);
+
+        $("#imei_process").kendoDropDownList();
+
+        $("#party_type_id").kendoComboBox({
+            autoBind: false,
+            placeholder: "--- Select Channel Type ---",
+            dataTextField: "party_type_name",
+            dataValueField: "party_type_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetClientPartyTypes", "PartyType")"
+                    }
+                }
+            }
+        });
+
+        $("#party_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Channel Name ---",
+            dataTextField: "party_name",
+            dataValueField: "party_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllParty", "Party")"
+                    }
+                }
+            }
+        });
+
+
+
+        //region dropdown
+        $("#region_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Region ---",
+            dataTextField: "region_name",
+            dataValueField: "region_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllRegions", "Region")"
+                    }
+                }
+            }
+        });
+
+        //area dropdown by region_wise
+        $("#area_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "region_id",
+            placeholder: "--- Select Area ---",
+            dataTextField: "area_name",
+            dataValueField: "area_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllArea", "Area")"
+                    }
+                }
+            }
+        });
+
+
+        //area change event will load area wise party
+        $('#area_id').change(function () {
+            var partytypeId=$('#party_type_id').val();
+            var areaId = $('#area_id').val();
+            $("#party_id").kendoComboBox({
+                autoBind: true,
+                placeholder: "--- Select Channel ---",
+                dataTextField: "party_name",
+                dataValueField: "party_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAreaNPartyTypewiseParty", "Party")",
+                            data: { party_type_id: partytypeId,area_id: areaId}
+                        }
+                    }
+                }
+            });
+            $("#party_id").data("kendoComboBox").enable(true);
+        });
+
+        $("#to_warehouse_id").kendoComboBox({
+            autoBind: true,
+            cascadeFrom: "party_id",
+            placeholder: "--- Select Warehouse ---",
+            dataTextField: "warehouse_name",
+            dataValueField: "warehouse_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllWarehouses", "Warehouse")"
+                    }
+
+                }
+            },
+            dataBound: function() {
+                this.select(0);
+                //console.log(this.value());
+            }
+        });
+
+        // Upload Excel--------------
+
+        // 2. Get data from excel file
+        $("#uploadExcel").click(function () {
+            var data = new FormData();
+            var excelFiles = ($("#excelFile"))[0].files[0];
+            if (!excelFiles) {
+                sweetAlert("File Upload", "Please select an Excel file to upload", "error");
+                return false;
+            }
+            data.append("ExcelFiles", excelFiles);
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UploadExcel", "Grn")",
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (returnData) {
+                    console.log(returnData);
+                    if (returnData=='null') {
+                        sweetAlert("File Format", "Please check your excel format", "error");
+                        return false;
+                    }
+                    var excelData = JSON.parse(returnData);
+                    var imeiCount = (excelData.length > 0) ? excelData.length : "";
+                    $("#imei_count").text(imeiCount);
+                    //---------------------------------------------
+                    // CHECK IF MODEL EXISTS
+                    // get unique model list
+                    var models = $.unique(excelData.map(function(d) { return d.MODEL; }));
+                    console.log(models);
+                    var modelIdNamesConfirmation = getModelIdsByNames(models);
+                    if (modelIdNamesConfirmation.output == "error") {
+                        sweetAlert("Sorry...", modelIdNamesConfirmation.msg, "error");
+                        return false;
+                    }
+                    var modelIdNames = modelIdNamesConfirmation.returnvalue;
+                    console.log("Model ID Names:");
+                    console.log(modelIdNames);
+
+                    // CHECK IF COLOR EXISTS
+                    // get unique color list
+                    //var colors = $.unique(excelData.map(function(d) { return d.COLOR; }));
+                    var colors = $.unique(excelData.map(function(d) { return  d.COLOR; }));
+                    console.log(colors);
+                    var colorIdNamesConfirmation = getColorIdsByNames(colors);
+                    if (colorIdNamesConfirmation.output == "error") {
+                        sweetAlert("Sorry...", colorIdNamesConfirmation.msg, "error");
+                        return false;
+                    }
+                    var colorIdNames = colorIdNamesConfirmation.returnvalue;
+                    console.log("Color ID Names:");
+                    console.log(colorIdNames);
+
+                    // GET GRN DETAILS LIST
+                    var grnDetailsList = [];
+                    var grnDetailsGrid = $("#poDetailsGrid").data("kendoGrid").dataSource.data();
+                    for (var i = 0; i < grnDetailsGrid.length; i++) {
+                        var grnDetails = {
+                            product_id: grnDetailsGrid[i].product_id,
+                            product_name: grnDetailsGrid[i].product_name,
+                            color_id: grnDetailsGrid[i].color_id,
+                            color_name: grnDetailsGrid[i].color_name,
+                            delivered_quantity: grnDetailsGrid[i].delivered_quantity,
+                            // future implementation
+                            // brand_id: grnDetailsGrid[i].brand_id,
+                            // unit_id: grnDetailsGrid[i].unit_id,
+                        };
+                        grnDetailsList.push(grnDetails);
+                    }
+
+                    // CREATE LIST FOR IMEI SAVE
+                    receiveSerialNoList = [];
+                    $("#excelImei").empty();
+                    excelData.forEach(function(row) {
+                        $("#excelImei").append("<div class='row'><div class='col-md-4'>" + row.IMEI + "</div><div class='col-md-4'>" + row.MODEL + "</div><div class='col-md-4'>" + row.COLOR + "</div></div>");
+
+                        // get product id
+                        //var productId = modelIdNames.map(function(x) {return x.productName; }).indexOf(row.MODEL);
+                        var productId = modelIdNames.find(x => x.productName === row.MODEL).productId;
+                        var colorId = colorIdNames.find(x => x.colorName === row.COLOR).colorId;
+                        //var objectFound = array[elementPos];
+                        console.log("Product ID:" + productId +", Color ID: " + colorId);
+                        var imeiDetails = {
+                            //sku_code:id,
+                            product_id: productId,
+                            brand_id: 2,
+                            color_id: colorId,
+                            imei_no: row.IMEI,
+                            received_warehouse_id: $("#warehouse_id").val(),
+                            received_date: $("#delivery_date").val()
+                        };
+                        receiveSerialNoList.push(imeiDetails);
+                    });
+
+                    // IMEI Quantity for display purpose only
+                    $('#excelImeiSum').empty();
+                    models.forEach(function(aModel) {
+                        colors.forEach(function(aColor) {
+                            var excelImeiCount = 0;
+                            excelData.forEach(function(row) {
+                                if (row.MODEL == aModel && row.COLOR == aColor) {
+                                    excelImeiCount++;
+                                }
+                            });
+                            if (excelImeiCount > 0) {
+                                $('#excelImeiSum').append(aModel + ' ' + aColor + ': ' + excelImeiCount + ', ');
+                            }
+                        });
+                    });
+
+                    // CHECK RECEIVE QUANTITY FOR EACH PRODUCT
+                    var isValidGrn = true;
+                    var deliveryList = [];
+                    grnDetailsList.forEach(function(row) {
+                        // check if color has been choosed
+                        if (row.color_id != 0 && row.delivered_quantity!=0) {
+                            if (!skuExistsInHayStackThanUpdateQuantity(deliveryList, row.product_id, row.color_id, row.delivered_quantity)) {
+                                deliveryList.push(row);
+                            }
+                        }
+                    });
+                    console.log("deliveryList:");
+                    console.log(deliveryList);
+                    if (deliveryList.length<1) {
+                        sweetAlert("Sorry...", "No product quantity mentioned for delivery!", "error");
+                        return false;
+                    }
+                    deliveryList.forEach(function(row) {
+                        console.log("searching product: "+ row.product_name + ", color: "+ row.color_name + ", GRN Quantity: "+row.receive_quantity);
+                        var imeiList = receiveSerialNoList.filter(function (el) { return (el.product_id == row.product_id && el.color_id == row.color_id) ;});
+                        var imeiQuantity = imeiList.length;
+                        console.log("IMEI List: ");
+                        console.log(imeiList);
+                        console.log("IMEI Quantity: ");
+                        console.log(imeiQuantity);
+                        if (row.delivered_quantity != imeiQuantity) {
+                            isValidGrn = false;
+                            sweetAlert("Sorry...", "delivered quantity(" + row.delivered_quantity + ") and IMEI count(" + imeiQuantity + ") does not match for the product " + row.product_name + " "+row.color_name, "error");
+                            return false;
+                        }
+                    });
+
+                    if (isValidGrn == true && receiveSerialNoList.length > 0) {
+                        // enable save button
+                        $("#btnDiv").show(500);
+                    } else {
+                        $("#btnDiv").hide(500);
+                    }
+                    //---------------------------------------------
+                }
+            });
+        });
+
+        function skuExistsInHayStackThanUpdateQuantity(hayStack, productId, colorId, deliveredQuantity) {
+            if (!hayStack) {
+                return false;
+            } else {
+                for (var i = 0; i < hayStack.length; i++) {
+                    if (hayStack[i].product_id == productId && hayStack[i].color_id == colorId) {
+                        hayStack[i].delivered_quantity += deliveredQuantity;
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        function getModelIdsByNames(models) {
+            var returnValue;
+            $.ajax({
+                type: "POST",
+                async: false,
+                url: "@UrlConfig.Action("GetModelIdsByNames", "Grn")",
+                data: JSON.stringify(models),
+                dataType: "json",
+                contentType: "application/json",
+                success: function(modelData) {
+                    returnValue=modelData;
+                }
+            });
+            return returnValue;
+        }
+
+        function getColorIdsByNames(colors) {
+            var returnValue;
+            $.ajax({
+                type: "POST",
+                async: false,
+                url: "@UrlConfig.Action("GetColorIdsByNames", "Grn")",
+                data: JSON.stringify(colors),
+                dataType: "json",
+                contentType: "application/json",
+                success: function(colorData) {
+                    returnValue=colorData;
+                }
+            });
+            return returnValue;
+        }
+
+
+
+
+        $("#btnSaveDelivery").click(function () {
+
+
+            var delivery_no = $('#delivery_no').val();
+            var delivery_date = $('#delivery_date').val();
+            var party_id = $('#party_id').val();
+            var requisition_master_id = $('#requisition_master_id').val();
+            var from_warehouse_id = $('#from_warehouse_id').val();
+            var to_warehouse_id = $('#to_warehouse_id').val();
+            var lot_no = $('#lot_no').val();
+            var remarks = $('#remarks').val();
+            var courier_id = $('#courier_id').val();
+            var courier_slip_no = $('#courier_slip_no').val();
+            var vehicle_no = $('#vehicle_no').val();
+            var truck_driver_name = $('#truck_driver_name').val();
+            var truck_driver_mobile = $('#truck_driver_mobile').val();
+            var delivery_address = $('#delivery_address').val();
+            var status = $('#status').val();
+            var total_amount = $('#total_amount').val();
+
+
+
+            var deliveryMasterData = {
+                delivery_no: delivery_no,
+                delivery_date: delivery_date,
+                party_id: party_id,
+                requisition_master_id: requisition_master_id,
+                from_warehouse_id: from_warehouse_id,
+                to_warehouse_id: to_warehouse_id,
+                lot_no:lot_no,
+                remarks: remarks,
+                vehicle_no:vehicle_no,
+                courier_id: courier_id,
+                courier_slip_no: courier_slip_no,
+                truck_driver_name: truck_driver_name,
+                truck_driver_mobile: truck_driver_mobile,
+                delivery_address: delivery_address,
+                total_amount: total_amount,
+                status: status,
+                delivered_by: userId,
+                updated_by: userId
+            };
+
+            var deliveryDetailsList = [];
+            var deliveryDetailsGrid = $("#poDetailsGrid").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < deliveryDetailsGrid.length; i++) {
+                var grnDetails = {
+                    //order_no: poDetailsList[i].order_no,
+                    product_id: deliveryDetailsGrid[i].product_id,
+                    requisition_details_id: deliveryDetailsGrid[i].requisition_details_id,
+                    unit_id: deliveryDetailsGrid[i].unit_id,
+                    unit_price: deliveryDetailsGrid[i].price,
+                    requisition_quantity: deliveryDetailsGrid[i].quantity,
+                    delivered_quantity:deliveryDetailsGrid[i].delivered_quantity,
+                    brand_id: deliveryDetailsGrid[i].brand_id,
+                    color_id: deliveryDetailsGrid[i].color_id,
+                    product_version_id: deliveryDetailsGrid[i].product_version_id,
+                    is_gift: deliveryDetailsGrid[i].is_gift,
+                    gift_type: deliveryDetailsGrid[i].gift_type,
+                    line_total: deliveryDetailsGrid[i].line_total,
+                    size_id: deliveryDetailsGrid[i].size_id,
+                    status: deliveryDetailsGrid[i].status,
+                    product_category_id: deliveryDetailsGrid[i].product_category_id,
+                    is_live_dummy: deliveryDetailsGrid[i].is_live_dummy
+
+                };
+                deliveryDetailsList.push(grnDetails);
+
+            }
+
+            var deliveryModel = {
+                DeliveryMasterData: deliveryMasterData,
+                DeliveryDetailsList: deliveryDetailsList,
+                ReceiveSerialNoDetails: receiveSerialNoList
+            };
+            //console.log(deliveryModel);
+            //return false;
+
+            Loading(true);
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "Delivery")",
+                data: JSON.stringify(deliveryModel),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        swal("Success", data.msg, "success");
+
+                        setTimeout(function () {
+                            window.location.href = '/requisition/deliverablerequisition';
+                        }, 1000);
+
+                        return false;
+
+                    } else {
+                        swal("Exception", data.msg, "error");
+                        return false;
+                    }
+                }
+            });
+
+        });
+
+    });
+
+
+</script>

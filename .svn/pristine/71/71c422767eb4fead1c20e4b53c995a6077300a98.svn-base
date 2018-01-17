@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<div>
+    
+</div>
+<div class="panel panel-success" id="context">
+    <div class="panel-heading"><h4>Add Region</h4></div>
+    <div class="panel-body">
+
+        <div id="grid"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+      
+        var dataSource = new kendo.data.DataSource({
+            pageSize:20,
+            transport: {
+                read: {
+                    url: "@UrlConfig.Action("GetAllRegions", "Region")",
+                    type: "GET"
+                },
+                update: {
+                    url: "@UrlConfig.Action("Put", "Region")",
+                    type: "PUT",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: "@UrlConfig.Action("Delete", "Region")",
+                    type: "DELETE"
+                },
+                create: {
+                    url: "@UrlConfig.Action("Post", "Region")",
+                    type: "POST",
+                    complete: function (e) {
+                        jQuery("#grid").data("kendoGrid").dataSource.read();
+                    }
+                }
+            },
+            //    code: "Ok",
+            autoSync: false,
+            schema: {
+                errors: function (e) {
+                    console.log(e.errors);
+                    //alert(e.error);
+                    if (e.output === "error") {
+                        console.log(e.output);
+                        sweetAlert("Sorry...", e.msg, "error");
+                        this.cancelChanges();
+                    }
+                },
+
+                model: {
+                    id: "region_id",
+                    fields: {
+                        region_id: { editable: false, nullable: true },
+                        region_name: { type: "string", validation: { required: true } },
+                        region_code: { type: "string", validation: { required: true }},
+                        is_active: { type: "boolean" }                  
+
+
+                                }
+
+                            }
+                        
+                    }
+
+                });
+       
+        jQuery("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            pageable: {
+                refresh: true,
+                input: true,
+                pageSize: 20,
+                numeric: false,
+                pageSizes: [10, 20, 50]
+            },
+            sortable: true,
+            groupable: true,
+            resizable: true,
+            update: true,
+            destroy: true,
+
+            toolbar: [{ name: "create", text: "Add Region" }],
+            columns: [
+                { field: "region_name", title: "Region", id: "region_id", width: "150px" },
+                { field: "region_code", title: "Region Code", width: "150px" },
+                { field: "is_active", title: "Is Active", width: "150px" },
+                { command: ["edit", "destroy"], title: "Action", width: "230px" }],
+            editable: "inline"
+        });
+        @*function WarehouseDropDownEditor(container, options) {
+            jQuery('<input required data-text-field="warehouse_name" data-value-field="warehouse_id" data-bind="value:' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: false,
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    url: "@UrlConfig.Action("GetAllWarehouse", "Warehouse")",
+                                    type: "GET"
+                                }
+                            }
+
+                        },
+                        optionLabel: "Select WarehouseName "
+                    });
+        }*@
+        //function ChannelManagerDropDownEditor(container, options) {
+        //    jQuery('<input required data-text-field="Channelmanager" data-value-field="Id" data-bind="value:' + options.field + '"/>')
+        //            .appendTo(container)
+        //            .kendoDropDownList({
+        //                autoBind: false,
+        //                dataSource: {
+        //                    transport: {
+        //                        read: {
+        //                            url: "/Api/DesignationApi/GetAllDesignation",
+        //                            type: "GET"
+        //                        }
+        //                    }
+
+        //                },
+        //                optionLabel: "Select WarehouseName "
+        //            });
+        //}
+
+        //function AsstChannelmanagerDropDownEditor(container, options) {
+        //    jQuery('<input required data-text-field="AsstChannelmanager" data-value-field="Id" data-bind="value:' + options.field + '"/>')
+        //            .appendTo(container)
+        //            .kendoDropDownList({
+        //                autoBind: false,
+        //                dataSource: {
+        //                    transport: {
+        //                        read: {
+        //                            url: "/Api/DesignationApi/GetAllDesignation",
+        //                            type: "GET"
+        //                        }
+        //                    }
+
+        //                },
+        //                optionLabel: "Select WarehouseName "
+        //            });
+        //}
+
+        
+
+    });
+
+
+</script>
+
+
+
+<div id="kWindow"></div>
+

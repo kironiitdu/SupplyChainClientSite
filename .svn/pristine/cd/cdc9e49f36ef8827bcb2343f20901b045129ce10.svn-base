@@ -1,0 +1,210 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Add";
+}
+
+<div class="row">
+    <div class="panel panel-success">
+        <div class="panel-heading">Role wise Page Mapping</div>
+        <div class="panel-body">
+
+            <div class="clearfix"></div>
+            <br />
+            <form name="frm1">
+
+                <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="role_id">Role</label>
+                    </div>
+                    <div class="col-md-8">
+                        <input type="text" name="role_id" id="role_id" style="width:80%;">
+                        <input type="hidden" name="hid_role_id" id="hid_role_id" style="width:80%;">
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <br />
+                <br />
+                @*<br />*@
+
+                <!--<div class="col-md-12">-->
+                <div style="border: 1px solid #72AF46; min-height:200px;" class="col-md-12">
+                    <h5 style="text-align:center;">Pages</h5>
+                    <div id="valueCheck1">
+
+                    </div>
+                    <div id="chkboxdata"></div>
+                    <hr style="margin-top: -2px;" />
+                    @*<input id="role_id" name="role_name" style="width: 80%;" value="" />*@
+                </div>
+
+                @{
+                    string companyId = "";
+
+                    if (Session["company_id"] != null)
+                    {
+                        companyId = (string)Session["company_id"];
+                    }
+                }
+
+                <script type="text/javascript">
+
+                    var company_id = '@companyId'
+                    $(document).ready(function () {
+                        var role = $("#role_id").kendoComboBox({
+                            placeholder: "Select Roles..",
+                            dataTextField: "role_name",
+                            dataValueField: "role_id",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        url: "@UrlConfig.Action("GetAllRoles", "Role")?companyId=" + company_id,
+                                        type: "GET"
+                                    }
+                                }
+                            },
+                            optionLabel: "Select Role"
+                        }).data("kendoComboBox");
+
+                        $(document).on('change', '#role_id', function () {
+                            var role_id = $("#role_id").val();
+                            $('input:checkbox').removeAttr('checked');
+                            $.ajax({
+                                type: 'GET',
+                                url: "@UrlConfig.Action("GetAllPagesByRole", "RoleWisePageMapping")?role_id=" + role_id,
+                                success: function (response) {
+                                    $.each(response, function (key, obj) {
+                                        $("#page_id_" + obj.page_id).prop('checked', true);
+
+                                        if (obj.process_id == "undefined") {
+
+                                        } else {
+                                            $("#" + obj.page_id + "_" + obj.process_id).prop('checked', true);
+                                        }
+                                    });
+                                }
+                            });
+                        });
+
+                        $.ajax({
+                            type: 'GET',
+                            url: "@UrlConfig.Action("GetAllPages", "RoleWisePageMapping")",
+
+                            success: function (response) {
+                                var checkBoxHtml = "";
+                                $("#valueCheck1").html('');
+                                var i = 0;
+                                checkBoxHtml += '<div class="col-md-12" style="100%">';
+                                $(response).each(function (index, obj) {
+
+                                    i += 1;
+                                    str = "test_run_" + obj.page_id;
+                                    result = str.replace(/\s/g, '');
+                                    checkBoxHtml += '<div class="col-md-12" style="border: 1px solid gray;">';
+                                    checkBoxHtml += '<input class="case1 page" style="margin-bottom: 3%" type="checkbox" name="page_name[]" page_id="' + obj.page_id + '" id="page_id_' + obj.page_id + '">&nbsp;&nbsp;<span style="color:black; font-weight:bold;">' + obj.page_name + '</span><hr style="margin-top:-10px;"/>';
+                                    checkBoxHtml += '<div class="col-md-12" id="' + result + '" style=""></div>';
+                                    checkBoxHtml += '</div>';
+                                    var testhtml = '';
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: "@UrlConfig.Action("GetAllbuttonsByPageid", "RoleWisePageMapping")?page_id=" + obj.page_id,
+                                        success: function (response_2) {
+
+                                            $(response_2).each(function (index, obj2) {
+                                                str = "test_run_" + obj2.page_id;
+                                                result = str.replace(/\s/g, '');
+                                                testhtml += '<input class= "case2 pageButton" style="margin-bottom: 3%" type="checkbox" name="process[]" id="' + obj.page_id + '_' + obj2.process_id + '">&nbsp;&nbsp;' + obj2.process + '&nbsp;&nbsp;&nbsp;&nbsp;';
+                                                $("#" + result).html(testhtml);
+                                            });
+                                        }
+                                    });
+                                    if (i == 1) {
+                                        checkBoxHtml += '<div class="clearfix"> </div>';
+                                        checkBoxHtml += '<br />';
+                                        i = 0;
+                                    }
+                                });
+                                checkBoxHtml += '</div>';
+                                $("#valueCheck1").html(checkBoxHtml);
+                            }
+                        });
+                    });
+                </script>
+                <div class="clearfix"></div>
+                <br />
+
+                @*<div class="clearfix"> </div>
+                <br />*@
+                <!--</div>-->
+                <!---------------------------------------------------------------------------- -->
+
+                <div class="form-actions">
+                    <input type="button" id="AddmapData" value="Save Mapping Data" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
+    <script type="text/javascript">
+        $("#AddmapData").click(function () {
+            var pages = [];
+            var pagebutton = [];
+
+            $(".page:checked").each(function () {
+                pages.push($(this).attr("page_id"));
+            });
+
+            $(".pageButton:checked").each(function () {
+                pagebutton.push($(this).attr("id"));
+            });
+
+            @*var data = new FormData();*@
+
+            var data = {
+                role_id: $("#role_id").val(),
+                pages: pages,
+                pagebutton: pagebutton
+            };
+
+            Loading(true);
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "RoleWisePageMapping")",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    Loading(false);
+                    if (data.output == "success") {
+                        NotificationMessageWithRefresh(data);
+                    } else {
+                        NotificationMessage(data);
+                    }
+                },
+                error: function (a, b, c) {
+                    alert(a.responseText);
+                }
+            });
+        });
+    </script>
+    <div id="kWindow"></div>
+
+@*<script type="text/javascript">
+        //  TO Do 23 January 2016  ///////////////////////
+
+        function updateTextArea() {
+            var allVals = [];
+
+            $('#test_run_2 :checked').each(function () {
+                allVals.push($(this).val());
+                alert("dfgdfg");
+            });
+            console.log(allVals);
+            $('#chkboxdata').val(allVals);
+        }
+        //$(function () {
+        $('#test_run_2').click(updateTextArea);
+        updateTextArea();
+        //});
+    </script>*@

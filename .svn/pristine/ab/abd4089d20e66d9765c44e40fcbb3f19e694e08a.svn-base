@@ -1,0 +1,199 @@
+﻿@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var companyId = "";
+    if (Session["company_id"] != null)
+    {
+        companyId = Session["company_id"].ToString();
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#context').addClass('animated zoomIn');
+        var delivery_master_id = '@ViewBag.delivery_master_id';
+        Loading(false);
+        $.ajax({
+            type: "GET",
+            url: "@UrlConfig.Action("GetCourierInformation", "Delivery")",
+            data: {
+                delivery_master_id: delivery_master_id
+            },
+            dataType: "json",
+            success: function (data) {
+                Loading(false);
+
+                $("#courier_slip_no").val(data.courier_slip_no);
+                $("#delivery_no").val(data.delivery_no);
+                $("#vehicle_no").val(data.vehicle_no);
+                $("#truck_driver_name").val(data.truck_driver_name);
+                $("#truck_driver_mobile").val(data.truck_driver_mobile);
+                $("#delivery_address").val(data.delivery_address);
+                $("#courier_id").data("kendoComboBox").value(data.courier_id);
+                //Added by Kiron: 4/10/2016
+                //Disable dropdown, so that client can't change
+                //$("#courier_id").data("kendoComboBox").enable(false);
+
+
+            }
+        });
+    });
+</script>
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading"><h4>Add Delivered Courier Information</h4></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="courier_id">Courier Servicen Name &nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="courier_id" name="courier_id" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="delivery_no">Delivery No</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="delivery_no" name="delivery_no" class="k-textbox" disabled />
+                    </div>
+
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="courier_slip_no">Courier Slip No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="courier_slip_no" name="courier_slip_no" class="k-textbox" />
+                    </div>
+
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="truck_driver_name">Driver Name&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="truck_driver_name" name="truck_driver_name" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        <label for="truck_driver_mobile">Driver Mobile&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="truck_driver_mobile" name="truck_driver_mobile" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2">
+                        <label for="delivery_address">Delivery Address&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="delivery_address" name="delivery_address" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+
+
+                    <div class="col-md-2">
+                        <label for="vehicle_no">Vehicle No&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="vehicle_no" name="vehicle_no" class="k-textbox" />
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="group-box" id="btnDiv">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="button" class="k-button" id="btnCourierUpdate" name="btnCourierUpdate" value="Update Courier Information" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#courier_id").kendoComboBox({
+            autoBind: true,
+            placeholder: "--- Select Courier Service ---",
+            dataTextField: "courier_name",
+            dataValueField: "courier_id",
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllCouriers", "Courier")"
+                    }
+                }
+            }
+
+        });
+
+
+        $("#btnCourierUpdate").click(function () {
+            Loading(false);
+            var delivery_master_id = '@ViewBag.delivery_master_id';
+            var courier_id = $("#courier_id").val();
+            var courier_slip_no = $("#courier_slip_no").val();
+            var delivery_no = $("#delivery_no").val();
+            var vehicle_no = $("#vehicle_no").val();
+            var truck_driver_name = $("#truck_driver_name").val();
+            var truck_driver_mobile = $("#truck_driver_mobile").val();
+            var delivery_address = $("#delivery_address").val();
+
+
+            var updateCourierInformation = {
+
+                courier_id: courier_id,
+                delivery_master_id: delivery_master_id,
+                courier_slip_no: courier_slip_no,
+                delivery_no: delivery_no,
+                vehicle_no: vehicle_no,
+                truck_driver_name: truck_driver_name,
+                truck_driver_mobile: truck_driver_mobile,
+                delivery_address: delivery_address
+
+            };
+
+            $.ajax({
+                type: "PUT",
+                url: "@UrlConfig.Action("put", "Delivery")",
+                data: JSON.stringify(updateCourierInformation),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+                    if (data.output === "success") {
+                        sweetAlert("Yes...", data.msg, "success");
+                         window.location.href = '/Delivery/index';
+                        return false;
+                    } else {
+                        sweetAlert("Sorry...", data.msg, "warning");
+                        return false;
+                    }
+                }
+            });
+        });
+
+
+    });
+</script>

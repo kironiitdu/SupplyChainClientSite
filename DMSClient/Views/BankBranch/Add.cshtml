@@ -1,0 +1,252 @@
+﻿@*Author: farzana islam
+    Date: 22/08/2016*@
+@{
+    ViewBag.Title = "Add";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+}
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" id="context">
+    @*<div class="widget">*@
+    <div class="panel panel-success">
+        <div class="panel-heading"><h5>Add Bank Information</h5></div>
+        <div class="panel-body">
+            <form id="BankBranchAdd">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="bank_name">Bank Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="dropdown" name="bank_name" id="bank_name" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="bank_branch_name_pro">Bank Branch Name:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="k-textbox" name="branch_code" id="branch_code" style="width:80%;">
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <div class="row"><br /></div>
+                    <div class="row">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">Account Number List</div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div id="account"></div>
+                                    </div>
+                                </div>
+                                <br />
+
+
+                        </div>
+                        </div>
+                    </div>
+
+                    @*<div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="emp_id">Swift Code:&nbsp;<i class="fa fa-asterisk fieldRequired"></i></label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="k-textbox" name="swift_code" id="swift_code" style="width:80%;">
+                            </div>
+                        </div>*@
+
+                    <div class="clearfix"></div>
+
+                </div>
+                <div class="clearfix"></div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="button" class="k-button" id="BankBranchAddSubmit" value="Save Information" />
+                    </div>
+
+                    <div id="kWindow"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Bank Branch Combobox
+      
+        $("#bank_name").kendoComboBox({
+            autoBind: true,
+            placeholder: "Select Bank...",
+            dataTextField: "bank_name",
+            dataValueField: "bank_id",
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "@UrlConfig.Action("GetAllBank", "Bank")",
+                        type: "GET"
+                    }
+                },
+
+            }
+        }).data("kendoComboBox");
+
+    });
+
+    var accountNumberList = [];
+    var accountNumberListNextID = accountNumberList.length + 1;
+
+    function getIndexById(id) {
+        var idx,
+            l = accountNumberList.length;
+
+        for (var j = 0; j < l; j++) {
+            if (accountNumberList[j].bank_account_id == id) {
+                return j;
+            }
+        }
+        return null;
+    }
+
+    var dataSource = new kendo.data.DataSource({
+        transport: {
+            read: function (e) {
+                e.success(accountNumberList);
+            },
+            create: function (e) {
+                e.data.bank_account_id = accountNumberListNextID++;
+
+                var gridData = accountNumberList;
+                var totalNumber = gridData.length;
+                var count = 0;
+
+                for (var i = 0; i < totalNumber; i++) {
+                    var accountName = gridData[i].bank_account_name;
+                    if (e.data.bank_account_name === accountName) {
+                        count++;
+                    }
+                }
+
+                if ($("#branch_code").val() == "") {
+                    sweetAlert("Sorry...", "please select bank branch name !!!", "warning");
+                    return false;
+                }
+
+                if (count > 0) {
+                    sweetAlert("Sorry...", "Selected Account No. is Duplicate !!!", "warning");
+
+                    return false;
+                } else {
+                    accountNumberList.push(e.data);
+                    e.success(e.data);
+
+                    return true;
+                }
+            },
+            update: function (e) {
+
+                accountNumberList[getIndexById(e.data.bank_account_id)] = e.data;
+
+                e.success();
+            },
+            destroy: function (e) {
+                accountNumberList.splice(getIndexById(e.data.bank_account_id), 1);
+                e.success();
+            }
+        },
+        pageSize: 10,
+        batch: false,
+        schema: {
+            model: {
+                id: "bank_account_id",
+                fields: {
+                    bank_account_id: { editable: false, nullable: true },
+                    bank_account_name: { type: "string", editable: true }
+                }
+            }
+        }
+    });
+
+    $("#account").kendoGrid({
+        dataSource: dataSource,
+        pageable: true,
+        selectable: true,
+        toolbar:["create"],
+
+        columns: [
+            { field: "bank_account_name", title: "Account No.", width: "100px" },
+            { command: ["edit","destory"], title: "&nbsp;", width: "110px" }
+        ],
+        editable: "inline"
+    });
+
+
+    $(document).ready(function () {
+        $("#BankBranchAddSubmit").click(function () {
+            Loading(false);
+            var userId = @userId;
+            var bank_id = $("#bank_name").val();
+            var bank_branch_name = $("#branch_code").val();
+            //var swift_code = $("#swift_code").val();
+
+            var oBranch = {
+                bank_id: bank_id,
+                bank_branch_name: bank_branch_name,
+                created_by: userId,
+
+            };
+
+            var oAccountList = [];
+            var accountList = $("#account").data("kendoGrid").dataSource.data();
+            for (var i = 0; i < accountList.length; i++) {
+                var acc = {
+                    bank_account_name: accountList[i].bank_account_name,
+                };
+                oAccountList.push(acc);
+            }
+
+            var modelOfBankBranch = {
+                oBranch:oBranch,
+                oAccountList:oAccountList
+            };
+            console.log(modelOfBankBranch);
+
+            $.ajax({
+                type: "POST",
+                url: "@UrlConfig.Action("Post", "BankBranch")",
+                dataType: 'json',
+                contentType: "application/json",
+                data: JSON.stringify(modelOfBankBranch),
+                success: function (data) {
+                    Loading(false);
+                    console.log(data);
+
+                    if (data.output === 'success') {
+                        NotificationMessage(data);
+                        //alert(1);
+                        window.location.href = '/BankBranch/Index';
+                        return false;
+                    } else {
+                        //alert(2);
+                        NotificationMessage(data);
+                        // KendoWindowFunction(data.msg, "error", "");
+                        return false;
+                    }
+                }
+            });
+
+        });
+    });
+</script>
+
+

@@ -1,0 +1,149 @@
+﻿@{
+    ViewBag.Title = "Get SalesTrend Status";
+}
+
+<div class="panel panel-success" id="context">
+    <div class="panel-heading">Sales Trend Report</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <label for="from_date">From Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="from_date" name="from_date"/>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="to_date">To Date</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="to_date" name="to_date"/>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-1">
+                    <label for="product_id">Product</label>
+                </div>
+                <div class="col-md-1">
+                    <input id="product_id" name="product_id"/>
+                </div>
+                <div class="col-md-1"><input type="button" class="k-button " id="btnSearch" name="btnSearch" value="Search" style="margin-top: 6px"/>
+                </div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1">
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+        <hr/>
+        <br/>
+        <div id="sales_trend_status"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                $("#product_id").kendoComboBox({
+                    autoBind: true,
+                    placeholder: "--- Select Product ---",
+                    dataTextField: "product_name",
+                    dataValueField: "product_id",
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: "@UrlConfig.Action("GetProductWithoutAssocories", "Product")"
+                            }
+                        }
+                    }
+                });
+
+                //date time picker
+                $("#from_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                //date time picker
+                $("#to_date").kendoDatePicker({
+                    animation: {
+                        close: {
+                            effects: "fadeOut zoom:out",
+                            duration: 300
+                        },
+                        open: {
+                            effects: "fadeIn zoom:in",
+                            duration: 300
+                        }
+                    },
+                    format: "yyyy/MM/dd"
+                });
+
+                //Excel Export---------
+                $("#btnSearch").click(function () {
+                    Loading(true);
+
+                    var from_date = $("#from_date").val();
+                    var to_date = $("#to_date").val();
+                    var product_id = $("#product_id").val();
+
+                    if (product_id == "" || product_id == null) {
+                        product_id = 0;
+                    }
+
+                    if (from_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select From Date", "warning");
+                    }
+                    else if (to_date == '') {
+                        Loading(false);
+                        sweetAlert("Sorry...", "Select To Date", "warning");
+                    } else {
+
+                        $.ajax({
+                            type: "GET",
+                            url: "@UrlConfig.Action("GetSalesTrendStatus", "Dashboard")?from_date=" + from_date + "&to_date=" + to_date + "&product_id=" + product_id + "",
+                            dataType: "json",
+                            contentType: "application/json",
+                            success: function (datax) {
+                                Loading(false);
+                                google.charts.load("current", { packages: ["corechart", 'bar'] });
+                                google.charts.setOnLoadCallback(drawChartBar);
+
+                                function drawChartBar() {
+                                    var data = new google.visualization.DataTable();
+                                    data.addColumn('string', 'Day');
+                                    data.addColumn('number', 'Sale');
+
+                                    $.each(datax, function (key, obj) {
+                                        data.addRows([[obj.delivery_date, obj.quantity]]);
+                                    });
+
+                                    var options = {
+                                        chart: {
+                                            title: '',
+                                            subtitle: ''
+                                        }
+                                    };
+
+                                    var chart = new google.charts.Bar(document.getElementById('sales_trend_status'));
+                                    chart.draw(data, google.charts.Bar.convertOptions(options));
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

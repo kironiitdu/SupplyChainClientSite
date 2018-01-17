@@ -1,0 +1,26 @@
+﻿@helper DropdownProperties(string idName,string valueName,string ActionName,string propety_id,string ControllerName) {
+
+                <input id="prop_@propety_id" style="width: 100%" />
+
+            <script>
+
+                $(document).ready(function () {
+
+                    var url =  @UrlConfig.Action(ActionName, ControllerName)+"?property_id="+ @propety_id+"&idName="+@idName+"&valueName="+@valueName+"";
+
+                    $("#prop_@propety_id").kendoDropDownList({
+                        dataTextField: "@idName",
+                        dataValueField: "@valueName",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    dataType: "json",
+                                    url: url,
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+
+}

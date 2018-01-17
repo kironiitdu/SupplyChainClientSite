@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "GetAllHOSApprovedRequisitionList";
+    var userId = "";
+    if (Session["user_au_id"] != null)
+    {
+        userId = Session["user_au_id"].ToString();
+    }
+    var roleId = "";
+    if (Session["user_role_id"] != null)
+    {
+        roleId = Session["user_role_id"].ToString();
+    }
+    var partyId = "";
+    if (Session["user_role_id"] != null)
+    {
+        partyId = Session["party_id"].ToString();
+    }
+}
+
+
+<div id="context">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h4>HOS Approved Requisition List</h4></div>
+        <div class="panel-body">
+            <script id="report-template" type="text/x-kendo-template">
+                <a style="font-size:11px; text-decoration: none;" href="/Requisition/GetRequisitionReport?requisition_master_id=#= requisition_master_id #" target="_blank" class="k-button k-grid-even">Report</a>
+            </script>
+            <div class="k-grid  k-secondary" data-role="grid">
+                <div class="k-grid  k-secondary" data-role="grid">
+                    <div class="k-toolbar k-grid-toolbar">
+                        <a class="k-button k-button-icontext k-grid-add" id="btnExportExcel">
+                            <span class="k-icon k-add"></span>
+                            Export Full Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="grid"></div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var userId = @userId;
+                var roleId=@roleId;
+                var partyId=@partyId;
+
+
+                $("#btnExportExcel").click(function () {
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.saveAsExcel();
+                });
+
+
+
+                var dataSource = new kendo.data.DataSource({
+                    pageSize: 20,
+                    transport: {
+                        read: {
+                            url: "@UrlConfig.Action("GetAllHOSApprovedRequisitionList", "Requisition")?userId="+userId+"",
+                            type: "GET"
+                        },
+                        update: {
+                            url: "@UrlConfig.Action("Put", "Requisition")",
+                            type: "PUT",
+                            complete: function (e) {
+                                jQuery("#grid").data("kendoGrid").dataSource.read();
+                            }
+                        },
+
+                    },
+                    //    code: "Ok",
+                    autoSync: false,
+                    schema: {
+                        errors: function (e) {
+                            console.log(e.errors);
+                            //alert(e.error);
+                            if (e.output === "error") {
+                                console.log(e.output);
+                                //KendoWindowFunction(e.msg, "error", "");
+                                // this.cancelChanges();
+                            }
+
+                        },
+
+                        model: {
+                            id: "requisition_master_id",
+                            fields: {
+                                requisition_master_id: { editable: false, nullable: true },
+                                party_name: { type: "string" },
+                                requisition_code: { type: "string" },
+                                requisition_type: { type: "string" },
+                                status: { type: "string" },
+                                expected_receiving_date: { type: "date" },
+                                warehouse_name: { type: "string" },
+                                amount: { type: "string" },
+                                requisition_date: { type: "string" },
+                                forward_2_status: { type: "string" }
+
+                            }
+
+                        }
+                    }
+
+                });  
+
+                var d = new Date();
+                var dateTime = d.toJSON();
+                jQuery("#grid").kendoGrid({
+                    dataSource: dataSource,
+                    excel: {
+                        fileName: "HOS_Approved_Requisition_List_" + dateTime + ".xlsx",
+                        allPages: true
+                    },
+                    scrollable: true,
+                    filterable: true,
+                    pageable: {
+                        refresh: true,
+                        input: true,
+                        pageSize: 20,
+                        numeric: false,
+                        pageSizes: [10, 15, 20, 50, 100]
+                    },
+
+                    sortable: true,
+                    groupable: true,
+                    resizable: true,
+                    columns: [
+                        { field: "requisition_master_id", hidden: true },
+                        { field: "requisition_code", title: "Requisition No", id: "requisition_master_id", width: "150px" },
+                        { field: "requisition_type", title: "Requisition Type",  width: "150px" },
+                        { field: "party_name", title: "Channel Name", width: "170px" },
+                        { field: "requisition_date", title: "Req Date", width: "150px" },
+                        { field: "amount", title: "Requisition Amount", width: "150px" },
+                        { field: "status", title: "Accounts Status", width: "150px" },//accounts status
+                        { field: "finance_status", title: "HOS Status", width: "100px" },//sales status
+                        { field: "forward_2_status", title: "OOps Status", width: "100px" },//operation status
+                        { title: "Action", width: "100px",    template: kendo.template($("#report-template").html())}
+                    ],
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+
+                        for (var i = 0; i < gridData.length; i++) {
+                            var currentUid = gridData[i].uid;
+                            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                            var approvedSalesButton = $(currenRow).find(".approved");
+                            var editButtonApproved = $(currenRow).find(".edit");
+                            var approveFinanceButton = $(currenRow).find(".financeapproved");
+                            var cancellButton = $(currenRow).find(".k-grid-Cancel");
+
+
+                            if( gridData[i].status === "Not Approved" ||  gridData[i].finance_status==="Not Approved"){
+                                editButtonApproved.show();
+                                cancellButton.show();
+                            }
+                            if( gridData[i].status === "Approved" || gridData[i].finance_status==="Approved"){
+                                editButtonApproved.hide();
+                                cancellButton.hide();
+                            }
+                        }
+                    },
+
+                    editable: "inline"
+                });
+
+
+            });
+        </script>
+    </div>
+</div>
